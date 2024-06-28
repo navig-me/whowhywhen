@@ -10,8 +10,9 @@ router = APIRouter()
 @router.post("/apikeys")
 def create_user_api_key(current_user: User = Depends(get_current_user),
                          name: str = None, 
+                         user_project_id: int = None,
                          session: Session = Depends(get_session)):
-    return create_api_key(session, current_user.id, name)
+    return create_api_key(session, current_user.id, name, user_project_id)
 
 @router.delete("/apikeys/{key_id}")
 def remove_user_api_key(key_id: int, current_user: User = Depends(get_current_user), session: Session = Depends(get_session)):
@@ -22,4 +23,7 @@ def remove_user_api_key(key_id: int, current_user: User = Depends(get_current_us
 
 @router.get("/apikeys")
 def get_user_api_keys(current_user: User = Depends(get_current_user), session: Session = Depends(get_session)):
-    return current_user.api_keys
+    api_keys = []
+    for project in current_user.projects:
+        api_keys.extend(project.api_keys)
+    return api_keys

@@ -7,9 +7,10 @@ from typing import Optional
 from jose import jwt
 from app.config import ACCESS_TOKEN_EXPIRE_MINUTES, SECRET_KEY, ALGORITHM
 from app.database import get_session
-from app.crud.user import create_user, get_user_by_email, User
+from app.crud.user import create_user, get_user_by_email, User, save_user_project, get_user_projects
 from app.schemas.user import UserCreate, UserRead
 from app.dependencies.auth import get_current_user
+from app.dependencies.auth import verify_password
 
 router = APIRouter()
 
@@ -23,7 +24,7 @@ def register(user: UserCreate, session: Session = Depends(get_session)):
 @router.post("/token")
 def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), session: Session = Depends(get_session)):
     user = get_user_by_email(session, form_data.username)
-    if not user or not bcrypt.checkpw(form_data.password.encode('utf-8'), user.password_hash):
+    if not user or not verify_password(form_data.password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
@@ -46,3 +47,12 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
 @router.get("/users/me", response_model=UserRead)
 def read_users_me(current_user: User = Depends(get_current_user)):
     return current_user
+
+@router.post("/users/me/projects")
+def create_user_project(project_name: str, current_user: User = Depends(get_current_user), session: Session = Depends(get_session)):
+    return save_user_project(session, current_user.id, project_name)
+
+@router.get("/users/me/projects")
+def read_user_projects(current_user: User = Depends(get_current_user), session: Session = Depends(get_session)):
+    return get_user_projects(session, current_user.id)
+    

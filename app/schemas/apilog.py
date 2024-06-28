@@ -3,8 +3,9 @@ from typing import Optional
 from datetime import datetime
 
 class APILogCreate(BaseModel):
+    endpoint: str
+    ip_address: str
     request_info: str
-    is_bot: bool
     location: Optional[str]
 
 class APILogRead(BaseModel):

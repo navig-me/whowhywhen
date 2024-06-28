@@ -2,8 +2,8 @@ from sqlmodel import Session, select
 from app.models.apikey import APIKey
 from uuid import uuid4
 
-def create_api_key(db: Session, user_id: int, name: str = None):
-    api_key = APIKey(key=str(uuid4()), user_id=user_id, name=name)
+def create_api_key(db: Session, user_id: int, name: str = None, user_project_id: int = None):
+    api_key = APIKey(key=str(uuid4()), user_id=user_id, name=name, user_project_id=user_project_id)
     db.add(api_key)
     db.commit()
     db.refresh(api_key)

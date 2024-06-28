@@ -1,19 +1,23 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from typing import Optional
 from datetime import datetime
 
 class UserCreate(BaseModel):
-    email: str
+    name: str
+    email: EmailStr
     password: str
-    domain: str
+    project_name: str
 
-class UserRead(BaseModel):
+class UserProjectRead(BaseModel):
     id: int
-    email: str
-    domain: str
+    project_name: str
     created: datetime
     modified: datetime
     active: bool
 
-    class Config:
-        orm_mode = True
+class UserRead(BaseModel):
+    id: int
+    email: str
+    created: datetime
+    modified: datetime
+    active: bool

@@ -3,7 +3,7 @@ from fastapi.security.api_key import APIKeyHeader
 from sqlmodel import Session, select
 from app.database import get_session
 from app.models.apikey import APIKey
-from app.models.user import User
+from app.models.user import User, UserProject
 
 API_KEY_NAME = "X-API-KEY"
 api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
@@ -18,9 +18,9 @@ def get_api_key(api_key_header: str = Security(api_key_header), session: Session
         raise HTTPException(
             status_code=403, detail="Invalid API key"
         )
-    user = session.exec(select(User).where(User.id == api_key.user_id)).first()
-    if user is None or not user.active:
+    user_project = session.exec(select(UserProject).where(User.id == api_key.user_project_id)).first()
+    if user_project is None:
         raise HTTPException(
-            status_code=403, detail="User associated with API key is inactive or does not exist"
+            status_code=403, detail="User project not found"
         )
-    return user
+    return user_project

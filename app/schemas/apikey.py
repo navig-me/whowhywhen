@@ -3,6 +3,7 @@ from datetime import datetime
 
 class APIKeyCreate(BaseModel):
     key: str
+    
 
 class APIKeyRead(BaseModel):
     id: int

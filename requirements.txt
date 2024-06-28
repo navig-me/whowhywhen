@@ -7,3 +7,4 @@ jwt
 stripe
 python-dotenv
 python-jose
+psycopg2
