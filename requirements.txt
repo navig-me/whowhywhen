@@ -1,0 +1,9 @@
+fastapi
+sqlalchemy
+sqlmodel
+pydantic
+bcrypt
+jwt
+stripe
+python-dotenv
+python-jose
