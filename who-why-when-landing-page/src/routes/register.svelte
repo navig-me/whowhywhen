@@ -33,23 +33,24 @@
   
   <section class="register-section">
     <div class="container">
-      <h2>Register</h2>
+      <h2>Create Your Account</h2>
+      <p class="hint">Fill in the details below to create your account.</p>
       <form on:submit|preventDefault={handleSubmit}>
         <div class="form-group">
           <label for="name">Name</label>
-          <input type="text" id="name" bind:value={name} required />
+          <input type="text" id="name" bind:value={name} placeholder="Enter your full name" required />
         </div>
         <div class="form-group">
           <label for="email">Email</label>
-          <input type="email" id="email" bind:value={email} required />
+          <input type="email" id="email" bind:value={email} placeholder="Enter your email address" required />
         </div>
         <div class="form-group">
           <label for="password">Password</label>
-          <input type="password" id="password" bind:value={password} required />
+          <input type="password" id="password" bind:value={password} placeholder="Create a password" required />
         </div>
         <div class="form-group">
           <label for="project_name">Project Name</label>
-          <input type="text" id="project_name" bind:value={project_name} required />
+          <input type="text" id="project_name" bind:value={project_name} placeholder="Enter your project name" required />
         </div>
         <button type="submit" class="btn-primary">Register</button>
       </form>
@@ -58,49 +59,68 @@
   
   <style>
     .register-section {
-      padding: 60px 0;
+      padding: 80px 0;
       text-align: center;
-      background: #f9f9f9;
+      background: linear-gradient(135deg, #663399, #ff4000);
+      color: #fff;
     }
   
     .container {
-      max-width: 600px;
+      max-width: 400px;
       margin: 0 auto;
       background: #fff;
-      padding: 20px;
+      padding: 40px;
       border-radius: 10px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      text-align: left;
     }
   
     h2 {
       margin-bottom: 20px;
+      color: #663399;
+      text-align: center;
+    }
+  
+    .hint {
+      margin-bottom: 20px;
+      color: #888;
+      text-align: center;
     }
   
     .form-group {
       margin-bottom: 20px;
-      text-align: left;
     }
   
     label {
       display: block;
-      margin-bottom: 5px;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #333;
     }
   
     input {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       border: 1px solid #ccc;
       border-radius: 5px;
+      font-size: 1rem;
+    }
+  
+    input::placeholder {
+      color: #aaa;
     }
   
     .btn-primary {
+      width: 100%;
       background-color: #663399;
       color: #fff;
-      padding: 10px 20px;
+      padding: 12px;
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      font-size: 1rem;
       transition: background-color 0.3s;
+      margin-top: 20px;
     }
   
     .btn-primary:hover {
