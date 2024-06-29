@@ -1,15 +1,24 @@
 <script>
-    export let logo;
+    import { Router, Route, Link } from 'svelte-routing';
+    import Login from '../routes/Login.svelte';
+    import Register from '../routes/Register.svelte';
   </script>
+  
+  <Router>
+    <Route path="/login" component={Login} />
+    <Route path="/register" component={Register} />
+  </Router>
   
   <header class="header">
     <div class="container">
-      <!-- Uncomment this line if you have a logo -->
-      <!-- <img src={logo} alt="WhoWhyWhen Logo" class="logo" /> -->
       <h1>WhoWhyWhen</h1>
       <nav>
-        <a href="/login" class="btn-primary">Login</a>
-        <a href="/register" class="btn-secondary">Register</a>
+        <Link to="login">
+          <a class="btn-primary">Login</a>
+        </Link>
+        <Link to="register">
+          <a class="btn-secondary">Register</a>
+        </Link>
       </nav>
     </div>
   </header>
@@ -26,10 +35,6 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-    }
-  
-    .logo {
-      height: 40px;
     }
   
     .header h1 {
@@ -52,12 +57,14 @@
       border-radius: 5px;
       text-decoration: none;
       transition: background-color 0.3s, color 0.3s;
+      display: inline-block;
     }
   
     .btn-primary {
       background-color: #fff;
       color: #663399;
       border: 1px solid #fff;
+      text-decoration: none;
     }
   
     .btn-primary:hover {
@@ -69,6 +76,7 @@
       background-color: #fff;
       color: #ff4000;
       border: 1px solid #fff;
+      text-decoration: none;
     }
   
     .btn-secondary:hover {
