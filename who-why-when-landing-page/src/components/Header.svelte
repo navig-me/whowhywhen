@@ -1,22 +1,15 @@
 <script>
-    import { Router, Route, Link } from 'svelte-routing';
-    import Login from '../routes/Login.svelte';
-    import Register from '../routes/Register.svelte';
+    import { Link } from 'svelte-routing';
   </script>
-  
-  <Router>
-    <Route path="/login" component={Login} />
-    <Route path="/register" component={Register} />
-  </Router>
   
   <header class="header">
     <div class="container">
       <h1>WhoWhyWhen</h1>
       <nav>
-        <Link to="login">
+        <Link to="/login">
           <a class="btn-primary">Login</a>
         </Link>
-        <Link to="register">
+        <Link to="/register">
           <a class="btn-secondary">Register</a>
         </Link>
       </nav>
