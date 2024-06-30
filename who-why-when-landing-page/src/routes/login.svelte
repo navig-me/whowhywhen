@@ -50,7 +50,7 @@
 
 <style>
   .login-section {
-    padding: 80px 0;
+    padding: 150px 0;
     text-align: center;
     background: linear-gradient(135deg, #663399, #ff4000);
     color: #fff;
