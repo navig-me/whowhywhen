@@ -1,6 +1,6 @@
 <script>
     import { createEventDispatcher } from 'svelte';
-    import { navigate } from 'svelte-routing';
+    import { currentView } from '../stores/viewStore';
   
     let name = '';
     let email = '';
@@ -26,7 +26,7 @@
         const data = await response.json();
         dispatch('register', data);
         alert('Registration successful!');
-        navigate('/login');
+        currentView.set('login');
       } else {
         alert('Registration failed!');
       }

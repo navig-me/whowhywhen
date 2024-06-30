@@ -1,4 +1,12 @@
-<section class="pricing-section">
+<script>
+    import { currentView } from '../stores/viewStore';
+  
+    function changeView(view) {
+      currentView.set(view);
+    }
+  </script>
+  
+  <section class="pricing-section">
     <div class="container">
       <h2>Pricing</h2>
       <div class="plans">
@@ -7,14 +15,14 @@
           <p><i class="fas fa-check"></i> 50,000 monthly free calls</p>
           <p><i class="fas fa-check"></i> Basic Analytics</p>
           <p class="price">$0/month</p>
-          <a href="/register" class="btn-primary">Get Started</a>
+          <button class="btn-primary" on:click={() => changeView('register')}>Get Started</button>
         </div>
         <div class="plan best-value">
           <h3>Pro Plan</h3>
           <p><i class="fas fa-check"></i> 500,000 monthly calls</p>
           <p><i class="fas fa-check"></i> Advanced Analytics</p>
           <p class="price">$10/month</p>
-          <a href="/register" class="btn-primary">Get Started</a>
+          <button class="btn-primary" on:click={() => changeView('register')}>Get Started</button>
         </div>
       </div>
     </div>
@@ -72,40 +80,24 @@
       font-weight: bold;
     }
   
-    .btn-primary, .btn-secondary {
-      display: inline-block;
-      margin-top: 20px;
+    .btn-primary {
+      background-color: #ff4000;
+      color: #fff;
       padding: 10px 20px;
+      border: none;
       border-radius: 30px;
       text-transform: uppercase;
       font-size: 1rem;
       font-weight: bold;
-      text-decoration: none;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
       transition: background-color 0.3s, transform 0.3s;
-    }
-  
-    .btn-primary {
-      background-color: #ff4000;
-      color: #fff;
+      cursor: pointer;
+      margin-top: 20px;
     }
   
     .btn-primary:hover {
       background-color: #e63900;
       transform: scale(1.05);
-    }
-  
-    .btn-secondary {
-      background-color: #663399;
-      color: #fff;
-    }
-  
-    .btn-secondary:hover {
-      background-color: #552288;
-      transform: scale(1.05);
-    }
-  
-    .pricing-section .icon {
-      margin-right: 8px;
     }
   </style>
   

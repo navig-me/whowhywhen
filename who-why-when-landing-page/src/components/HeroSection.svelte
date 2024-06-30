@@ -1,9 +1,17 @@
-<section class="hero-section">
+<script>
+    import { currentView } from '../stores/viewStore';
+  
+    function changeView(view) {
+      currentView.set(view);
+    }
+  </script>
+  
+  <section class="hero-section">
     <div class="overlay">
       <div class="container">
-        <h2>Discover the Power of Your APIs</h2>
+        <h2>Optimize Your APIs</h2>
         <p>Unlock detailed insights on how your APIs are being used. Improve performance and grow your business.</p>
-        <a href="/register" class="btn-primary">Get Started</a>
+        <button class="btn-primary" on:click={() => changeView('register')}>Get Started</button>
       </div>
     </div>
   </section>
@@ -37,7 +45,7 @@
       max-width: 800px;
     }
   
-    .hero-section h1 {
+    .hero-section h2 {
       margin: 0 0 20px;
       font-size: 3.5rem;
       font-weight: bold;
@@ -61,6 +69,7 @@
       font-weight: bold;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
       transition: background-color 0.3s, transform 0.3s;
+      cursor: pointer;
     }
   
     .btn-primary:hover {

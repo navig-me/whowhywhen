@@ -1,21 +1,21 @@
-<script>
-    import { Link } from 'svelte-routing';
+  <script>
+    import { currentView } from '../stores/viewStore';
+
+    function changeView(view) {
+      currentView.set(view);
+    }
   </script>
-  
+
   <header class="header">
     <div class="container">
-      <h1>WhoWhyWhen</h1>
+      <h1 on:click={() => changeView('home')}>WhoWhyWhen</h1>
       <nav>
-        <Link to="/login">
-          <a class="btn-primary">Login</a>
-        </Link>
-        <Link to="/register">
-          <a class="btn-secondary">Register</a>
-        </Link>
+        <a class="btn-primary" on:click={() => changeView('login')}>Login</a>
+        <a class="btn-secondary" on:click={() => changeView('register')}>Register</a>
       </nav>
     </div>
   </header>
-  
+
   <style>
     .header {
       background-color: #fff;
@@ -23,13 +23,13 @@
       border-bottom: 1px solid #ddd;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
-  
+
     .container {
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-  
+
     .header h1 {
       margin: 0;
       font-size: 1.5rem;
@@ -38,43 +38,44 @@
       background: linear-gradient(135deg, #663399, #ff4000);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      cursor: pointer;
     }
-  
+
     nav {
       display: flex;
       gap: 10px;
     }
-  
+
     nav a {
       padding: 10px 20px;
       border-radius: 5px;
       text-decoration: none;
       transition: background-color 0.3s, color 0.3s;
       display: inline-block;
+      cursor: pointer;
     }
-  
+
     .btn-primary {
       background-color: #fff;
       color: #663399;
       border: 1px solid #fff;
       text-decoration: none;
     }
-  
+
     .btn-primary:hover {
       background-color: #663399;
       color: #fff;
     }
-  
+
     .btn-secondary {
       background-color: #fff;
       color: #ff4000;
       border: 1px solid #fff;
       text-decoration: none;
     }
-  
+
     .btn-secondary:hover {
       background-color: #ff4000;
       color: #fff;
     }
   </style>
-  

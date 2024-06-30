@@ -1,6 +1,6 @@
 <script>
   import { createEventDispatcher } from 'svelte';
-  import { navigate } from 'svelte-routing';
+  import { currentView } from '../stores/viewStore';
 
   let username = '';
   let password = '';
@@ -23,7 +23,7 @@
       const data = await response.json();
       dispatch('login', data);
       alert('Login successful!');
-      navigate('/dashboard');
+      currentView.set('dashboard');
     } else {
       alert('Login failed!');
     }
