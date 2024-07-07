@@ -2,6 +2,7 @@
   import { createEventDispatcher } from 'svelte';
   import { currentView } from '../stores/viewStore';
   import Toast from '../components/Toast.svelte';
+  import { API_BASE_URL } from '../config'; // Import the base URL
 
   let name = '';
   let email = '';
@@ -12,7 +13,7 @@
   const dispatch = createEventDispatcher();
 
   async function handleSubmit() {
-    const response = await fetch('http://localhost:8000/auth/register', {
+    const response = await fetch(`${API_BASE_URL}/auth/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

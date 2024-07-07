@@ -7,6 +7,8 @@
   import ProjectSelector from './ProjectSelector.svelte';
   import LogsTable from './LogsTable.svelte';
   import RequestsChart from './RequestsChart.svelte';
+  import { API_BASE_URL } from '../config'; // Import the base URL
+
 
   let projects = [];
   let selectedProjectId = null;
@@ -29,7 +31,7 @@
 
   async function fetchProjects() {
     const token = localStorage.getItem('token');
-    const response = await fetch('http://localhost:8000/auth/users/me/projects', {
+    const response = await fetch(`${API_BASE_URL}/auth/users/me/projects`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -48,7 +50,7 @@
 
   async function fetchApiLogs() {
     const token = localStorage.getItem('token');
-    const response = await fetch(`http://localhost:8000/api/logs/project/${selectedProjectId}?page=${currentPage}&limit=${logsPerPage}`, {
+    const response = await fetch(`${API_BASE_URL}/api/logs/project/${selectedProjectId}?page=${currentPage}&limit=${logsPerPage}`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -71,7 +73,7 @@
 
   async function fetchHourlyRequestsData() {
     const token = localStorage.getItem('token');
-    const response = await fetch(`http://localhost:8000/api/logs/project/stats/${selectedProjectId}?frequency=${frequency}`, {
+    const response = await fetch(`${API_BASE_URL}/api/logs/project/stats/${selectedProjectId}?frequency=${frequency}`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,

@@ -4,6 +4,7 @@
     import { isLoggedIn, clearToken } from '../stores/userStore';
     import { createEventDispatcher } from 'svelte';
     import Toast from '../components/Toast.svelte';
+    import { API_BASE_URL } from '../config'; // Import the base URL
   
     let projects = [];
     let apiKeys = [];
@@ -26,7 +27,7 @@
   
     async function fetchProjects() {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:8000/auth/users/me/projects', {
+      const response = await fetch(`${API_BASE_URL}/auth/users/me/projects`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -39,7 +40,7 @@
     }
   
     async function fetchIpLocation() {
-      const response = await fetch('http://localhost:8000/api/ip-location');
+      const response = await fetch(`${API_BASE_URL}/api/ip-location`);
       if (response.ok) {
         const data = await response.json();
         clientIp = data.ip;
@@ -51,7 +52,7 @@
   
     async function createProject() {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:8000/auth/users/me/projects?project_name=${newProjectName}`, {
+      const response = await fetch(`${API_BASE_URL}/auth/users/me/projects?project_name=${newProjectName}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -70,7 +71,7 @@
     async function fetchApiKeys(projectId) {
       selectedProjectId = projectId;
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:8000/api/apikeys?user_project_id=${projectId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/apikeys?user_project_id=${projectId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -85,7 +86,7 @@
   
     async function createApiKey() {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:8000/api/apikeys?user_project_id=${selectedProjectId}&name=${newApiKeyName}`, {
+      const response = await fetch(`${API_BASE_URL}/api/apikeys?user_project_id=${selectedProjectId}&name=${newApiKeyName}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -103,7 +104,7 @@
   
     async function deleteApiKey(keyId) {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:8000/api/apikeys/${keyId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/apikeys/${keyId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -118,7 +119,7 @@
     }
   
     async function testApiKey(apiKey) {
-      const response = await fetch('http://localhost:8000/api/log', {
+      const response = await fetch(`${API_BASE_URL}/api/log`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

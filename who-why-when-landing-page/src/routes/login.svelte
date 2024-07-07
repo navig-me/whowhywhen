@@ -3,6 +3,7 @@
   import { currentView } from '../stores/viewStore';
   import { isLoggedIn, setToken } from '../stores/userStore';
   import Toast from '../components/Toast.svelte';
+  import { API_BASE_URL } from '../config'; // Import the base URL
 
   let username = '';
   let password = '';
@@ -11,7 +12,7 @@
   const dispatch = createEventDispatcher();
 
   async function handleSubmit() {
-    const response = await fetch('http://localhost:8000/auth/token', {
+    const response = await fetch(`${API_BASE_URL}/auth/token`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
