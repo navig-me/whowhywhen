@@ -10,6 +10,7 @@
 	import Login from './routes/Login.svelte';
 	import Register from './routes/Register.svelte';
 	import Dashboard from './routes/Dashboard.svelte';
+	import Projects from './routes/Projects.svelte';
   
 	let view;
   
@@ -35,5 +36,7 @@
 	<Register />
   {:else if view === 'dashboard'}
 	<Dashboard />
+  {:else if view === 'projects'}
+	<Projects />
   {/if}
   

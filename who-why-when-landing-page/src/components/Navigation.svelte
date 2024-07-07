@@ -1,4 +1,4 @@
-  `<script>
+  <script>
     import { Link } from 'svelte-routing';
     import { isLoggedIn } from '../stores/userStore';
 
@@ -18,12 +18,12 @@
       <ul class="nav-links">
         <li><Link to="/">Home</Link></li>
         {#if loggedIn}
-          <li><Link to="docs">Docs</Link></li>
+          <li><a href="https://github.com/navig-me/whowhywhen-docs" target="_blank" rel="noopener noreferrer">Docs</a></li>
           <li><Link to="dashboard">Dashboard</Link></li>
-          <li><Link to="api-keys">API Keys</Link></li>
+          <li><Link to="projects">Projects</Link></li>
           <li><a on:click={logout}>Logout</a></li>
         {:else}
-          <li><Link to="docs">Docs</Link></li>
+          <li><a href="https://github.com/navig-me/whowhywhen-docs" target="_blank" rel="noopener noreferrer">Docs</a></li>
           <li><Link to="login">Login</Link></li>
           <li><Link to="register">Register</Link></li>
         {/if}
@@ -69,4 +69,3 @@
       background-color: #552288;
     }
   </style>
-`

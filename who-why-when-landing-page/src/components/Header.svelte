@@ -22,12 +22,12 @@
       <h1 on:click={() => changeView('home')}>WhoWhyWhen</h1>
       <nav>
         {#if loggedIn}
-          <a class="btn-primary" on:click={() => changeView('docs')}>Docs</a>
+          <a class="btn-primary" href="https://github.com/navig-me/whowhywhen-docs" target="_blank" rel="noopener noreferrer">Docs</a>
           <a class="btn-secondary" on:click={() => changeView('dashboard')}>Dashboard</a>
-          <a class="btn-primary" on:click={() => changeView('api-keys')}>API Keys</a>
+          <a class="btn-primary" on:click={() => changeView('projects')}>Projects</a>
           <a class="btn-secondary" on:click={logout}>Logout</a>
         {:else}
-          <a class="btn-primary" on:click={() => changeView('docs')}>Docs</a>
+          <a class="btn-primary" href="https://github.com/navig-me/whowhywhen-docs" target="_blank" rel="noopener noreferrer">Docs</a>
           <a class="btn-secondary" on:click={() => changeView('login')}>Login</a>
           <a class="btn-primary" on:click={() => changeView('register')}>Register</a>
         {/if}
