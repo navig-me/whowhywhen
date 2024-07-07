@@ -96,6 +96,27 @@
       }
     }
   
+    async function testApiKey(apiKey) {
+      const response = await fetch('http://localhost:8000/api/log', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-KEY': apiKey
+        },
+        body: JSON.stringify({
+          endpoint: '/test',
+          ip_address: '<Source IP>',
+          request_info: 'WhoWhyWhen Test',
+          location: '<>'
+        })
+      });
+      if (response.ok) {
+        alert('Test request successful');
+      } else {
+        alert('Test request failed');
+      }
+    }
+  
     function blurApiKey(apiKey, show) {
       return show ? apiKey : apiKey.slice(0, -4).replace(/./g, '*') + apiKey.slice(-4);
     }
@@ -142,6 +163,7 @@
                 <div class="api-key-actions">
                   <button class="btn-secondary" on:click={() => deleteApiKey(key.id)}>Delete</button>
                   <button class="btn-secondary" on:click={() => key.show = !key.show}>{key.show ? 'Hide' : 'Show'}</button>
+                  <button class="btn-secondary" on:click={() => testApiKey(key.key)}>Test API</button>
                 </div>
               </li>
             {/each}
