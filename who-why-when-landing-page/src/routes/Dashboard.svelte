@@ -19,7 +19,9 @@
   let logsPerPage = 10;
   let hourlyRequestsData = [];
   let chartData = null;
+  let frequency = "hour";
 
+  let searchParams = {};
   const dispatch = createEventDispatcher();
 
   onMount(async () => {
@@ -47,10 +49,17 @@
 
   async function fetchApiLogs() {
     const token = localStorage.getItem('token');
-    const response = await fetch(`http://localhost:8000/api/logs/project/${selectedProjectId}?page=${currentPage}&limit=${logsPerPage}`, {
+    const response = await fetch(`http://localhost:8000/api/logs/project/${selectedProjectId}`, {
+      method: 'POST',
       headers: {
-        'Authorization': `Bearer ${token}`
-      }
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        page: currentPage,
+        limit: logsPerPage,
+        search_params: searchParams
+      })
     });
     if (response.ok) {
       const data = await response.json();
@@ -64,9 +73,15 @@
   async function fetchHourlyRequestsData() {
     const token = localStorage.getItem('token');
     const response = await fetch(`http://localhost:8000/api/logs/project/stats/${selectedProjectId}`, {
+      method: 'POST',
       headers: {
-        'Authorization': `Bearer ${token}`
-      }
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        frequency: frequency,
+        search_params: searchParams
+      })
     });
     if (response.ok) {
       hourlyRequestsData = await response.json();
@@ -87,12 +102,12 @@
   }
 
   function updateChartData() {
-    const labels = hourlyRequestsData.map(data => new Date(data.hour).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+    const labels = hourlyRequestsData.map(data => new Date(data.period).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
     const data = {
       labels: labels,
       datasets: [
         {
-          label: 'Hourly Requests',
+          label: `${frequency.charAt(0).toUpperCase() + frequency.slice(1)}ly Requests`,
           data: hourlyRequestsData.map(data => data.count),
           backgroundColor: 'rgba(102, 51, 153, 0.2)',
           borderColor: 'rgba(102, 51, 153, 1)',
@@ -101,6 +116,18 @@
       ]
     };
     chartData = data;
+  }
+
+  function handleCellClick(field, value) {
+    searchParams = { [field]: value };
+    fetchApiLogs();
+    fetchHourlyRequestsData();
+  }
+
+  function resetFilters() {
+    searchParams = {};
+    fetchApiLogs();
+    fetchHourlyRequestsData();
   }
 </script>
 
@@ -114,6 +141,15 @@
           <option value={project.id}>{project.name}</option>
         {/each}
       </select>
+      <button on:click={resetFilters} class="btn-reset">Reset</button>
+    </div>
+    <div class="selected-filters">
+      <p>Selected Filters:</p>
+      <ul>
+        {#each Object.entries(searchParams) as [key, value]}
+          <li>{key}: {value}</li>
+        {/each}
+      </ul>
     </div>
     <div class="dashboard-content">
       <div class="logs-table">
@@ -131,10 +167,10 @@
           <tbody>
             {#each apiLogs as log}
               <tr>
-                <td>{log.endpoint}</td>
-                <td>{log.ip_address}</td>
-                <td>{log.request_info}</td>
-                <td>{log.location}</td>
+                <td on:click={() => handleCellClick('endpoint', log.endpoint)}>{log.endpoint}</td>
+                <td on:click={() => handleCellClick('ip_address', log.ip_address)}>{log.ip_address}</td>
+                <td on:click={() => handleCellClick('request_info', log.request_info)}>{log.request_info}</td>
+                <td on:click={() => handleCellClick('location', log.location)}>{log.location}</td>
                 <td>{new Date(log.created_at).toLocaleString()}</td>
               </tr>
             {/each}
@@ -150,7 +186,15 @@
         </div>
       </div>
       <div class="hourly-requests-chart">
-        <h3>Hourly Requests (Last 24 Hours)</h3>
+        <div class="chart-controls">
+          <label for="frequency">Frequency:</label>
+          <select id="frequency" bind:value={frequency} on:change={fetchHourlyRequestsData}>
+            <option value="minute">Minute</option>
+            <option value="hour">Hour</option>
+            <option value="day">Day</option>
+          </select>
+        </div>
+        <h3>{frequency.charAt(0).toUpperCase() + frequency.slice(1)}ly Requests (Last 24 Hours)</h3>
         {#if chartData}
           <Bar
             data={chartData}
@@ -162,7 +206,7 @@
                 },
                 title: {
                   display: true,
-                  text: 'Hourly Requests'
+                  text: `${frequency.charAt(0).toUpperCase() + frequency.slice(1)}ly Requests`
                 }
               }
             }}
@@ -203,6 +247,34 @@
     margin-bottom: 20px;
   }
 
+  .selected-filters {
+    margin-bottom: 20px;
+  }
+
+  .selected-filters ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .selected-filters li {
+    display: inline-block;
+    background: #663399;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    margin-right: 10px;
+  }
+
+  .btn-reset {
+    background-color: #ff4000;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 10px;
+  }
+
   .dashboard-content {
     display: flex;
     justify-content: space-between;
@@ -216,6 +288,7 @@
   table {
     width: 100%;
     border-collapse: collapse;
+    cursor: pointer;
   }
 
   th, td {
@@ -245,5 +318,20 @@
 
   .hourly-requests-chart {
     flex: 1;
+  }
+
+  .chart-controls {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+  }
+
+  .chart-controls label {
+    margin-right: 10px;
+    align-self: center;
+  }
+
+  .chart-controls select {
+    padding: 5px;
   }
 </style>

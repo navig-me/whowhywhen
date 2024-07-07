@@ -22,6 +22,8 @@
 	  const token = localStorage.getItem('token');
 	  if (token) {
 		isLoggedIn.set(true);
+		// Set view to dashboard
+		currentView.set('dashboard');
 	  } else {
 		isLoggedIn.set(false);
 	  }
