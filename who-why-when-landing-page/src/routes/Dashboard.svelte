@@ -4,10 +4,9 @@
   import { isLoggedIn, clearToken } from '../stores/userStore';
   import { createEventDispatcher } from 'svelte';
   import Toast from '../components/Toast.svelte';
-  import { Bar } from 'svelte-chartjs';
-  import { Chart, registerables } from 'chart.js';
-
-  Chart.register(...registerables);
+  import ProjectSelector from './ProjectSelector.svelte';
+  import LogsTable from './LogsTable.svelte';
+  import HourlyRequestsChart from './HourlyRequestsChart.svelte';
 
   let projects = [];
   let selectedProjectId = null;
@@ -20,7 +19,6 @@
   let hourlyRequestsData = [];
   let chartData = null;
   let frequency = "hour";
-
   let searchParams = {};
   const dispatch = createEventDispatcher();
 
@@ -118,8 +116,9 @@
     chartData = data;
   }
 
-  function handleCellClick(field, value) {
-    searchParams = { [field]: value };
+  function handleCellClick(event) {
+    const { field, value } = event.detail;
+    searchParams = { ...searchParams, [field]: value };
     fetchApiLogs();
     fetchHourlyRequestsData();
   }
@@ -134,15 +133,7 @@
 <section class="dashboard-section">
   <div class="container">
     <h2>Welcome to Your Dashboard</h2>
-    <div class="project-selector">
-      <label for="project">Select Project:</label>
-      <select id="project" bind:value={selectedProjectId} on:change={() => { fetchApiLogs(); fetchHourlyRequestsData(); }}>
-        {#each projects as project}
-          <option value={project.id}>{project.name}</option>
-        {/each}
-      </select>
-      <button on:click={resetFilters} class="btn-reset">Reset</button>
-    </div>
+    <ProjectSelector {projects} bind:selectedProjectId on:reset={resetFilters} on:change={async () => { await fetchApiLogs(); await fetchHourlyRequestsData(); }} />
     <div class="selected-filters">
       <p>Selected Filters:</p>
       <ul>
@@ -152,67 +143,8 @@
       </ul>
     </div>
     <div class="dashboard-content">
-      <div class="logs-table">
-        <h3>API Logs</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Endpoint</th>
-              <th>IP Address</th>
-              <th>Request Info</th>
-              <th>Location</th>
-              <th>Created At</th>
-            </tr>
-          </thead>
-          <tbody>
-            {#each apiLogs as log}
-              <tr>
-                <td on:click={() => handleCellClick('endpoint', log.endpoint)}>{log.endpoint}</td>
-                <td on:click={() => handleCellClick('ip_address', log.ip_address)}>{log.ip_address}</td>
-                <td on:click={() => handleCellClick('request_info', log.request_info)}>{log.request_info}</td>
-                <td on:click={() => handleCellClick('location', log.location)}>{log.location}</td>
-                <td>{new Date(log.created_at).toLocaleString()}</td>
-              </tr>
-            {/each}
-          </tbody>
-        </table>
-        <div class="pagination">
-          {#if currentPage > 1}
-            <button on:click={() => changePage(currentPage - 1)}>Previous</button>
-          {/if}
-          {#if currentPage < totalPages}
-            <button on:click={() => changePage(currentPage + 1)}>Next</button>
-          {/if}
-        </div>
-      </div>
-      <div class="hourly-requests-chart">
-        <div class="chart-controls">
-          <label for="frequency">Frequency:</label>
-          <select id="frequency" bind:value={frequency} on:change={fetchHourlyRequestsData}>
-            <option value="minute">Minute</option>
-            <option value="hour">Hour</option>
-            <option value="day">Day</option>
-          </select>
-        </div>
-        <h3>{frequency.charAt(0).toUpperCase() + frequency.slice(1)}ly Requests (Last 24 Hours)</h3>
-        {#if chartData}
-          <Bar
-            data={chartData}
-            options={{
-              responsive: true,
-              plugins: {
-                legend: {
-                  position: 'top',
-                },
-                title: {
-                  display: true,
-                  text: `${frequency.charAt(0).toUpperCase() + frequency.slice(1)}ly Requests`
-                }
-              }
-            }}
-          />
-        {/if}
-      </div>
+      <LogsTable {apiLogs} {currentPage} {totalPages} on:changePage={changePage} on:cellClick={handleCellClick} />
+      <HourlyRequestsChart {chartData} {frequency} on:frequencyChange={fetchHourlyRequestsData} />
     </div>
   </div>
 </section>
@@ -243,10 +175,6 @@
     color: #663399;
   }
 
-  .project-selector {
-    margin-bottom: 20px;
-  }
-
   .selected-filters {
     margin-bottom: 20px;
   }
@@ -265,73 +193,8 @@
     margin-right: 10px;
   }
 
-  .btn-reset {
-    background-color: #ff4000;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-left: 10px;
-  }
-
   .dashboard-content {
     display: flex;
     justify-content: space-between;
-  }
-
-  .logs-table {
-    flex: 1;
-    margin-right: 20px;
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    cursor: pointer;
-  }
-
-  th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-  }
-
-  th {
-    background-color: #663399;
-    color: white;
-  }
-
-  .pagination {
-    margin-top: 10px;
-  }
-
-  .pagination button {
-    margin: 0 5px;
-    padding: 5px 10px;
-    background-color: #663399;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-
-  .hourly-requests-chart {
-    flex: 1;
-  }
-
-  .chart-controls {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 10px;
-  }
-
-  .chart-controls label {
-    margin-right: 10px;
-    align-self: center;
-  }
-
-  .chart-controls select {
-    padding: 5px;
   }
 </style>
