@@ -19,7 +19,7 @@
   let hourlyRequestsData = [];
   let chartData = null;
   let frequency = "hour";
-  let searchParams = {};
+  let searchParams = [];
 
   const dispatch = createEventDispatcher();
 
@@ -57,7 +57,7 @@
       body: JSON.stringify({
         page: currentPage,
         limit: logsPerPage,
-        search_params: searchParams
+        search_params: Object.fromEntries(searchParams)
       })
     });
     if (response.ok) {
@@ -79,7 +79,7 @@
       },
       body: JSON.stringify({
         frequency: frequency,
-        search_params: searchParams
+        search_params: Object.fromEntries(searchParams)
       })
     });
     if (response.ok) {
@@ -105,15 +105,15 @@
     let periods = [];
 
     if (frequency === "minute") {
-      startDate.setHours(startDate.getHours() - 1);
+      startDate.setMinutes(startDate.getMinutes() - 60);
       periods = Array.from({ length: 60 }, (_, i) => {
         const date = new Date(startDate.getTime());
         date.setMinutes(startDate.getMinutes() + i);
         return date;
       });
     } else if (frequency === "day") {
-      startDate.setDate(startDate.getDate() - 7);
-      periods = Array.from({ length: 7 }, (_, i) => {
+      startDate.setDate(startDate.getDate() - 30);
+      periods = Array.from({ length: 30 }, (_, i) => {
         const date = new Date(startDate.getTime());
         date.setDate(startDate.getDate() + i);
         return date;
@@ -164,6 +164,12 @@
     fetchHourlyRequestsData();
   }
 
+  function removeFilter(key) {
+    delete searchParams[key];
+    fetchApiLogs();
+    fetchHourlyRequestsData();
+  }
+
   function resetFilters() {
     searchParams = {};
     fetchApiLogs();
@@ -173,13 +179,14 @@
 
 <section class="dashboard-section">
   <div class="container">
-    <h2>Welcome to Your Dashboard</h2>
     <ProjectSelector {projects} bind:selectedProjectId on:reset={resetFilters} on:change={async () => { await fetchApiLogs(); await fetchHourlyRequestsData(); }} />
     <div class="selected-filters">
       <p>Selected Filters:</p>
       <ul>
         {#each Object.entries(searchParams) as [key, value]}
-          <li>{key}: {value}</li>
+          <li>
+            {key}: {value} <button on:click={() => removeFilter(key)}>✖</button>
+          </li>
         {/each}
       </ul>
     </div>
@@ -232,6 +239,14 @@
     padding: 5px 10px;
     border-radius: 5px;
     margin-right: 10px;
+  }
+
+  .selected-filters li button {
+    background: none;
+    border: none;
+    color: #fff;
+    margin-left: 5px;
+    cursor: pointer;
   }
 
   .dashboard-content {

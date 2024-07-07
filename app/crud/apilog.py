@@ -43,12 +43,15 @@ def get_apilogs_stats(db: Session, user_id: int, project_id: int = None, search_
 
     if frequency == "minute":
         start_date = end_date - timedelta(hours=1)
+        period_fmt = '%Y-%m-%d %H:%M'
         date_trunc = func.date_trunc('minute', APILog.created_at)
     elif frequency == "day":
-        start_date = end_date - timedelta(days=7)
+        start_date = end_date - timedelta(days=30)
+        period_fmt = '%Y-%m-%d'
         date_trunc = func.date_trunc('day', APILog.created_at)
     else:  # Default to hourly data
         start_date = end_date - timedelta(hours=24)
+        period_fmt = '%Y-%m-%d %H'
         date_trunc = func.date_trunc('hour', APILog.created_at)
 
     query = db.query(APILog)
@@ -79,4 +82,21 @@ def get_apilogs_stats(db: Session, user_id: int, project_id: int = None, search_
     )
     
     results = stats_query.all()
-    return [{"period": result[0], "count": result[1]} for result in results]
+    
+    # Generate a full set of periods
+    full_periods = []
+    current_period = start_date
+    while current_period <= end_date:
+        full_periods.append(current_period.strftime(period_fmt))
+        if frequency == "minute":
+            current_period += timedelta(minutes=1)
+        elif frequency == "day":
+            current_period += timedelta(days=1)
+        else:
+            current_period += timedelta(hours=1)
+    
+    # Create a dictionary for counts and fill in zeros for missing periods
+    counts = {result[0].strftime(period_fmt): result[1] for result in results}
+    full_results = [{"period": period, "count": counts.get(period, 0)} for period in full_periods]
+    
+    return full_results
