@@ -15,7 +15,13 @@ def save_api_log(apilog: APILogCreate, current_user_project: UserProject = Depen
 
 
 @router.get("/logs/project/{project_id}")
-def get_api_logs(current_user: User = Depends(get_current_user), page: int = 1, limit: int = 10, project_id: int = None, session: Session = Depends(get_session)):
+def get_api_logs(
+    project_id: int,
+    page: int = 1,
+    limit: int = 10,
+    current_user: User = Depends(get_current_user),
+    session: Session = Depends(get_session)
+):
     return get_apilogs(session, current_user.id, page, limit, project_id)
 
 

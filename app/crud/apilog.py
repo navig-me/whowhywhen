@@ -13,10 +13,19 @@ def create_apilog(db: Session, user_project_id: int, apilog: APILogCreate):
     return db_apilog
 
 def get_apilogs(db: Session, user_id: int, page: int = 1, limit: int = 10, project_id: int = None):
+    offset = (page - 1) * limit
+    
     if project_id:
-        return db.exec(select(APILog).where(APILog.user_project_id == project_id).offset((page - 1) * limit).limit(limit).order_by(APILog.created_at.desc()).all())
+        query = select(APILog).where(APILog.user_project_id == project_id)
     else:
-        return db.exec(select(APILog).where(APILog.user_id == user_id).offset((page - 1) * limit).limit(limit).order_by(APILog.created_at.desc()).all())
+        query = select(APILog).where(APILog.user_id == user_id)
+    
+    query = query.offset(offset).limit(limit).order_by(APILog.created_at.desc())
+    
+    results = db.execute(query).scalars().all()
+    total = db.query(APILog).filter(APILog.user_project_id == project_id if project_id else APILog.user_id == user_id).count()
+    
+    return {"logs": results, "total": total}
 
 def get_apilogs_stats(db: Session, user_id: int, project_id: int = None):
     # Set start_date to 24 hours ago and end_date to now
