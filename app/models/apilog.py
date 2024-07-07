@@ -13,3 +13,4 @@ class APILog(SQLModel, table=True):
     created: datetime = Field(default_factory=datetime.now)
     user_project: "UserProject" = Relationship(back_populates="api_logs")
     botinfo: "BotInfo" = Relationship(back_populates="api_logs")
+    created_at: datetime = Field(default_factory=datetime.now)
