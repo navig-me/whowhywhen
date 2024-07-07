@@ -19,7 +19,7 @@
   let hourlyRequestsData = [];
   let chartData = null;
   let frequency = "hour";
-  let searchParams = [];
+  let searchParams = {};
 
   const dispatch = createEventDispatcher();
 
@@ -57,7 +57,7 @@
       body: JSON.stringify({
         page: currentPage,
         limit: logsPerPage,
-        search_params: Object.fromEntries(searchParams)
+        search_params: searchParams
       })
     });
     if (response.ok) {
@@ -71,15 +71,14 @@
 
   async function fetchHourlyRequestsData() {
     const token = localStorage.getItem('token');
-    const response = await fetch(`http://localhost:8000/api/logs/project/stats/${selectedProjectId}`, {
+    const response = await fetch(`http://localhost:8000/api/logs/project/stats/${selectedProjectId}?frequency=${frequency}`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        frequency: frequency,
-        search_params: Object.fromEntries(searchParams)
+        search_params: searchParams
       })
     });
     if (response.ok) {
@@ -106,7 +105,7 @@
       labels: labels,
       datasets: [
         {
-          label: `${frequency.charAt(0).toUpperCase() + frequency.slice(1)}ly Requests`,
+          label: `Requests per ${frequency.charAt(0).toUpperCase() + frequency.slice(1)}`,
           data: hourlyRequestsData.map(data => data.count),
           backgroundColor: 'rgba(102, 51, 153, 0.2)',
           borderColor: 'rgba(102, 51, 153, 1)',
@@ -119,19 +118,24 @@
 
   function handleCellClick(event) {
     const { field, value } = event.detail;
-    searchParams = [...searchParams, [field, value]];
+    searchParams = { ...searchParams, [field]: value };
     fetchApiLogs();
     fetchHourlyRequestsData();
   }
 
+  function handleFrequencyChange(event) {
+    frequency = event.detail;
+    fetchHourlyRequestsData();
+  }
+
   function removeFilter(key) {
-    searchParams = searchParams.filter(([k, _]) => k !== key);
+    delete searchParams[key];
     fetchApiLogs();
     fetchHourlyRequestsData();
   }
 
   function resetFilters() {
-    searchParams = [];
+    searchParams = {};
     fetchApiLogs();
     fetchHourlyRequestsData();
   }
@@ -143,7 +147,7 @@
     <div class="selected-filters">
       <p>Selected Filters:</p>
       <ul>
-        {#each searchParams as [key, value]}
+        {#each Object.entries(searchParams) as [key, value]}
           <li>
             {key}: {value} <button on:click={() => removeFilter(key)}>✖</button>
           </li>
@@ -152,7 +156,7 @@
     </div>
     <div class="dashboard-content">
       <LogsTable {apiLogs} {currentPage} {totalPages} on:changePage={changePage} on:cellClick={handleCellClick} />
-      <RequestsChart {chartData} {frequency} on:frequencyChange={fetchHourlyRequestsData} />
+      <RequestsChart {chartData} {frequency} on:frequencyChange={handleFrequencyChange} />
     </div>
   </div>
 </section>

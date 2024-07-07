@@ -23,7 +23,7 @@
       <option value="day">Day</option>
     </select>
   </div>
-  <h3>{frequency.charAt(0).toUpperCase() + frequency.slice(1)}ly Requests</h3>
+  <h3>Requests per {frequency.charAt(0).toUpperCase() + frequency.slice(1)}</h3>
   {#if chartData}
     <Bar
       data={chartData}
@@ -35,7 +35,7 @@
           },
           title: {
             display: true,
-            text: `${frequency.charAt(0).toUpperCase() + frequency.slice(1)}ly Requests`
+            text: `Requests per ${frequency.charAt(0).toUpperCase() + frequency.slice(1)}`
           }
         }
       }}
