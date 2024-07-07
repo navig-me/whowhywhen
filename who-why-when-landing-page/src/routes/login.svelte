@@ -2,9 +2,12 @@
   import { createEventDispatcher } from 'svelte';
   import { currentView } from '../stores/viewStore';
   import { isLoggedIn, setToken } from '../stores/userStore';
+  import Toast from '../components/Toast.svelte';
 
   let username = '';
   let password = '';
+  let toastMessage = '';
+  let toastType = '';
   const dispatch = createEventDispatcher();
 
   async function handleSubmit() {
@@ -23,11 +26,16 @@
     if (response.ok) {
       const data = await response.json();
       setToken(data.access_token); // Save the token
-      alert('Login successful!');
+      showToast('Login successful!', 'success');
       currentView.set('dashboard');
     } else {
-      alert('Login failed!');
+      showToast('Login failed!', 'error');
     }
+  }
+
+  function showToast(message, type) {
+    toastMessage = message;
+    toastType = type;
   }
 </script>
 
@@ -48,6 +56,10 @@
     </form>
   </div>
 </section>
+
+{#if toastMessage}
+  <Toast message={toastMessage} type={toastType} />
+{/if}
 
 <style>
   .login-section {

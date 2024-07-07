@@ -1,132 +1,143 @@
 <script>
-    import { createEventDispatcher } from 'svelte';
-    import { currentView } from '../stores/viewStore';
-  
-    let name = '';
-    let email = '';
-    let password = '';
-    let project_name = '';
-    const dispatch = createEventDispatcher();
-  
-    async function handleSubmit() {
-      const response = await fetch('http://localhost:8000/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          name,
-          email,
-          password,
-          project_name
-        })
-      });
-  
-      if (response.ok) {
-        const data = await response.json();
-        dispatch('register', data);
-        alert('Registration successful!');
-        currentView.set('login');
-      } else {
-        alert('Registration failed!');
-      }
+  import { createEventDispatcher } from 'svelte';
+  import { currentView } from '../stores/viewStore';
+  import Toast from '../components/Toast.svelte';
+
+  let name = '';
+  let email = '';
+  let password = '';
+  let project_name = '';
+  let toastMessage = '';
+  let toastType = '';
+  const dispatch = createEventDispatcher();
+
+  async function handleSubmit() {
+    const response = await fetch('http://localhost:8000/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        name,
+        email,
+        password,
+        project_name
+      })
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      dispatch('register', data);
+      showToast('Registration successful!', 'success');
+      currentView.set('login');
+    } else {
+      showToast('Registration failed!', 'error');
     }
-  </script>
-  
-  <section class="register-section">
-    <div class="container">
-      <h2>Create Your Account</h2>
-      <p class="hint">Fill in the details below to create your account.</p>
-      <form on:submit|preventDefault={handleSubmit}>
-        <div class="form-group">
-          <label for="name">Name</label>
-          <input type="text" id="name" bind:value={name} placeholder="Enter your full name" required />
-        </div>
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input type="email" id="email" bind:value={email} placeholder="Enter your email address" required />
-        </div>
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input type="password" id="password" bind:value={password} placeholder="Create a password" required />
-        </div>
-        <div class="form-group">
-          <label for="project_name">Project Name</label>
-          <input type="text" id="project_name" bind:value={project_name} placeholder="Enter your project name" required />
-        </div>
-        <button type="submit" class="btn-primary">Register</button>
-      </form>
-    </div>
-  </section>
-  
-  <style>
-    .register-section {
-      padding: 80px 0;
-      text-align: center;
-      background: linear-gradient(135deg, #663399, #ff4000);
-      color: #fff;
-    }
-  
-    .container {
-      max-width: 400px;
-      margin: 0 auto;
-      background: #fff;
-      padding: 40px;
-      border-radius: 10px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-      text-align: left;
-    }
-  
-    h2 {
-      margin-bottom: 20px;
-      color: #663399;
-      text-align: center;
-    }
-  
-    .hint {
-      margin-bottom: 20px;
-      color: #888;
-      text-align: center;
-    }
-  
-    .form-group {
-      margin-bottom: 20px;
-    }
-  
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: bold;
-      color: #333;
-    }
-  
-    input {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 1rem;
-    }
-  
-    input::placeholder {
-      color: #aaa;
-    }
-  
-    .btn-primary {
-      width: 100%;
-      background-color: #663399;
-      color: #fff;
-      padding: 12px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: background-color 0.3s;
-      margin-top: 20px;
-    }
-  
-    .btn-primary:hover {
-      background-color: #552288;
-    }
-  </style>
-  
+  }
+
+  function showToast(message, type) {
+    toastMessage = message;
+    toastType = type;
+  }
+</script>
+
+<section class="register-section">
+  <div class="container">
+    <h2>Create Your Account</h2>
+    <p class="hint">Fill in the details below to create your account.</p>
+    <form on:submit|preventDefault={handleSubmit}>
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" id="name" bind:value={name} placeholder="Enter your full name" required />
+      </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" bind:value={email} placeholder="Enter your email address" required />
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" bind:value={password} placeholder="Create a password" required />
+      </div>
+      <div class="form-group">
+        <label for="project_name">Project Name</label>
+        <input type="text" id="project_name" bind:value={project_name} placeholder="Enter your project name" required />
+      </div>
+      <button type="submit" class="btn-primary">Register</button>
+    </form>
+  </div>
+</section>
+
+{#if toastMessage}
+  <Toast message={toastMessage} type={toastType} />
+{/if}
+
+<style>
+  .register-section {
+    padding: 80px 0;
+    text-align: center;
+    background: linear-gradient(135deg, #663399, #ff4000);
+    color: #fff;
+  }
+
+  .container {
+    max-width: 400px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    text-align: left;
+  }
+
+  h2 {
+    margin-bottom: 20px;
+    color: #663399;
+    text-align: center;
+  }
+
+  .hint {
+    margin-bottom: 20px;
+    color: #888;
+    text-align: center;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #333;
+  }
+
+  input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+  }
+
+  input::placeholder {
+    color: #aaa;
+  }
+
+  .btn-primary {
+    width: 100%;
+    background-color: #663399;
+    color: #fff;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+    margin-top: 20px;
+  }
+
+  .btn-primary:hover {
+    background-color: #552288;
+  }
+</style>

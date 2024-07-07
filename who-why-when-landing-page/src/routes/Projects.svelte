@@ -3,6 +3,7 @@
     import { currentView } from '../stores/viewStore';
     import { isLoggedIn, clearToken } from '../stores/userStore';
     import { createEventDispatcher } from 'svelte';
+    import Toast from '../components/Toast.svelte';
   
     let projects = [];
     let apiKeys = [];
@@ -10,6 +11,8 @@
     let newApiKeyName = '';
     let showApiKeysModal = false;
     let selectedProjectId = null;
+    let toastMessage = '';
+    let toastType = '';
   
     const dispatch = createEventDispatcher();
   
@@ -27,7 +30,7 @@
       if (response.ok) {
         projects = await response.json();
       } else {
-        console.error('Failed to fetch projects');
+        showToast('Failed to fetch projects', 'error');
       }
     }
   
@@ -43,8 +46,9 @@
       if (response.ok) {
         newProjectName = '';
         await fetchProjects();
+        showToast('Project created successfully', 'success');
       } else {
-        console.error('Failed to create project');
+        showToast('Failed to create project', 'error');
       }
     }
   
@@ -60,7 +64,7 @@
         apiKeys = await response.json();
         showApiKeysModal = true;
       } else {
-        console.error('Failed to fetch API keys');
+        showToast('Failed to fetch API keys', 'error');
       }
     }
   
@@ -76,8 +80,9 @@
       if (response.ok) {
         newApiKeyName = '';
         await fetchApiKeys(selectedProjectId);
+        showToast('API key created successfully', 'success');
       } else {
-        console.error('Failed to create API key');
+        showToast('Failed to create API key', 'error');
       }
     }
   
@@ -91,8 +96,9 @@
       });
       if (response.ok) {
         await fetchApiKeys(selectedProjectId);
+        showToast('API key deleted successfully', 'success');
       } else {
-        console.error('Failed to delete API key');
+        showToast('Failed to delete API key', 'error');
       }
     }
   
@@ -111,9 +117,9 @@
         })
       });
       if (response.ok) {
-        alert('Test request successful');
+        showToast('Test request successful', 'success');
       } else {
-        alert('Test request failed');
+        showToast('Test request failed', 'error');
       }
     }
   
@@ -124,6 +130,11 @@
     function logout() {
       clearToken();
       currentView.set('home');
+    }
+  
+    function showToast(message, type) {
+      toastMessage = message;
+      toastType = type;
     }
   </script>
   
@@ -176,6 +187,10 @@
       </div>
     {/if}
   </div>
+  
+  {#if toastMessage}
+    <Toast message={toastMessage} type={toastType} />
+  {/if}
   
   <style>
     .projects-container {
