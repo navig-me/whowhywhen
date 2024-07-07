@@ -40,12 +40,18 @@
         }
       }}
     />
+  {:else}
+    <p>No data available</p>
   {/if}
 </div>
 
 <style>
   .requests-chart {
     flex: 1;
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   }
 
   .chart-controls {
@@ -60,6 +66,19 @@
   }
 
   .chart-controls select {
-    padding: 5px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1em;
+  }
+
+  h3 {
+    margin-bottom: 20px;
+    color: #663399;
+  }
+
+  p {
+    text-align: center;
+    color: #666;
   }
 </style>

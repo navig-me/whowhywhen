@@ -27,6 +27,20 @@
   <style>
     .project-selector {
       margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #fff;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+  
+    select {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 1em;
     }
   
     .btn-reset {
@@ -36,7 +50,11 @@
       border: none;
       border-radius: 5px;
       cursor: pointer;
-      margin-left: 10px;
+      transition: background 0.3s ease;
+    }
+  
+    .btn-reset:hover {
+      background-color: #ff6347;
     }
   </style>
   

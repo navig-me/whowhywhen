@@ -9,7 +9,6 @@
   import RequestsChart from './RequestsChart.svelte';
   import { API_BASE_URL } from '../config'; // Import the base URL
 
-
   let projects = [];
   let selectedProjectId = null;
   let apiLogs = [];
@@ -57,8 +56,6 @@
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        page: currentPage,
-        limit: logsPerPage,
         ...searchParams
       })
     });
@@ -140,6 +137,14 @@
     fetchApiLogs();
     fetchHourlyRequestsData();
   }
+  
+  function formatKey(key) {
+    return key
+      .split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  }
+
 </script>
 
 <section class="dashboard-section">
@@ -148,11 +153,15 @@
     <div class="selected-filters">
       <p>Selected Filters:</p>
       <ul>
-        {#each Object.entries(searchParams) as [key, value]}
-          <li>
-            {key}: {value} <button on:click={() => removeFilter(key)}>✖</button>
-          </li>
-        {/each}
+        {#if Object.keys(searchParams).length === 0}
+          <li>Select values in the table to filter</li>
+        {:else}
+          {#each Object.entries(searchParams) as [key, value]}
+            <li>
+              {formatKey(key)}: {value} <button on:click={() => removeFilter(key)}>✖</button>
+            </li>
+          {/each}
+        {/if}
       </ul>
     </div>
     <div class="dashboard-content">
@@ -168,7 +177,7 @@
 
 <style>
   .dashboard-section {
-    padding: 80px 0;
+    padding: 60px 0;
     text-align: center;
     background: #f9f9f9;
     color: #333;
@@ -179,17 +188,21 @@
     margin: 0 auto;
     background: #fff;
     padding: 40px;
-    border-radius: 10px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.1);
   }
 
   h2 {
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     color: #663399;
+    font-size: 2.5em;
   }
 
   .selected-filters {
-    margin-bottom: 20px;
+    margin-bottom: 30px;
+    padding: 10px;
+    background: #f1f1f1;
+    border-radius: 10px;
   }
 
   .selected-filters ul {
@@ -201,21 +214,62 @@
     display: inline-block;
     background: #663399;
     color: #fff;
-    padding: 5px 10px;
-    border-radius: 5px;
-    margin-right: 10px;
+    padding: 5px 15px;
+    border-radius: 20px;
+    margin: 5px;
+    font-size: 0.9em;
+    transition: background 0.3s ease;
   }
 
   .selected-filters li button {
     background: none;
     border: none;
     color: #fff;
-    margin-left: 5px;
+    margin-left: 10px;
     cursor: pointer;
+    font-size: 1.2em;
+  }
+
+  .selected-filters li:hover {
+    background: #7d42a6;
   }
 
   .dashboard-content {
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 15px 30px;
+    border-radius: 30px;
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.1);
+    color: white;
+    font-weight: bold;
+    z-index: 1000;
+    animation: fadeInOut 6s ease-in-out;
+  }
+
+  .toast.info {
+    background-color: #663399;
+  }
+
+  .toast.success {
+    background-color: #28a745;
+  }
+
+  .toast.error {
+    background-color: #dc3545;
+  }
+
+  @keyframes fadeInOut {
+    0% { opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { opacity: 0; }
   }
 </style>

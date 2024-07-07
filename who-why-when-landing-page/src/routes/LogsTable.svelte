@@ -28,15 +28,21 @@
         </tr>
       </thead>
       <tbody>
-        {#each apiLogs as log}
+        {#if apiLogs.length === 0}
           <tr>
-            <td on:click={() => handleCellClick('endpoint', log.endpoint)}>{log.endpoint}</td>
-            <td on:click={() => handleCellClick('ip_address', log.ip_address)}>{log.ip_address}</td>
-            <td on:click={() => handleCellClick('request_info', log.request_info)}>{log.request_info}</td>
-            <td on:click={() => handleCellClick('location', log.location)}>{log.location}</td>
-            <td>{new Date(log.created_at).toLocaleString()}</td>
+            <td colspan="5">No logs available</td>
           </tr>
-        {/each}
+        {:else}
+          {#each apiLogs as log}
+            <tr>
+              <td on:click={() => handleCellClick('endpoint', log.endpoint)}>{log.endpoint}</td>
+              <td on:click={() => handleCellClick('ip_address', log.ip_address)}>{log.ip_address}</td>
+              <td on:click={() => handleCellClick('request_info', log.request_info)}>{log.request_info}</td>
+              <td on:click={() => handleCellClick('location', log.location)}>{log.location}</td>
+              <td>{new Date(log.created_at).toLocaleString()}</td>
+            </tr>
+          {/each}
+        {/if}
       </tbody>
     </table>
     <div class="pagination">
@@ -53,37 +59,53 @@
     .logs-table {
       flex: 1;
       margin-right: 20px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     }
   
     table {
       width: 100%;
       border-collapse: collapse;
       cursor: pointer;
+      margin-bottom: 10px;
     }
   
     th, td {
       border: 1px solid #ddd;
-      padding: 8px;
+      padding: 12px;
       text-align: left;
     }
   
     th {
       background-color: #663399;
       color: white;
+      font-size: 1.1em;
+    }
+  
+    tr:hover {
+      background-color: #f1f1f1;
     }
   
     .pagination {
-      margin-top: 10px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
     }
   
     .pagination button {
-      margin: 0 5px;
-      padding: 5px 10px;
+      padding: 10px 15px;
       background-color: #663399;
       color: white;
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      transition: background 0.3s ease;
+    }
+  
+    .pagination button:hover {
+      background-color: #7d42a6;
     }
   </style>
   
