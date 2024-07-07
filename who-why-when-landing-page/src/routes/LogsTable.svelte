@@ -1,17 +1,17 @@
 <script>
+    import { createEventDispatcher } from 'svelte';
+  
     export let apiLogs = [];
     export let currentPage = 1;
     export let totalPages = 1;
-    import { createEventDispatcher } from 'svelte';
-  
     const dispatch = createEventDispatcher();
-  
-    function changePage(newPage) {
-      dispatch('changePage', newPage);
-    }
   
     function handleCellClick(field, value) {
       dispatch('cellClick', { field, value });
+    }
+  
+    function changePage(newPage) {
+      dispatch('changePage', newPage);
     }
   </script>
   

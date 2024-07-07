@@ -23,7 +23,7 @@
         <option value="day">Day</option>
       </select>
     </div>
-    <h3>{frequency.charAt(0).toUpperCase() + frequency.slice(1)}ly Requests (Last 24 Hours)</h3>
+    <h3>{frequency.charAt(0).toUpperCase() + frequency.slice(1)}ly Requests</h3>
     {#if chartData}
       <Bar
         data={chartData}

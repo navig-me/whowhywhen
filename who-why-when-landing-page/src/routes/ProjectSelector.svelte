@@ -1,12 +1,12 @@
 <script>
-    export let projects = [];
-    export let selectedProjectId = null;
     import { createEventDispatcher } from 'svelte';
   
+    export let projects = [];
+    export let selectedProjectId = null;
     const dispatch = createEventDispatcher();
   
-    function handleChange() {
-      dispatch('change');
+    function handleProjectChange(event) {
+      dispatch('change', event.target.value);
     }
   
     function resetFilters() {
@@ -16,7 +16,7 @@
   
   <div class="project-selector">
     <label for="project">Select Project:</label>
-    <select id="project" bind:value={selectedProjectId} on:change={handleChange}>
+    <select id="project" bind:value={selectedProjectId} on:change={handleProjectChange}>
       {#each projects as project}
         <option value={project.id}>{project.name}</option>
       {/each}

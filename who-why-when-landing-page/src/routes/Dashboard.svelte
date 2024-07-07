@@ -20,6 +20,7 @@
   let chartData = null;
   let frequency = "hour";
   let searchParams = {};
+
   const dispatch = createEventDispatcher();
 
   onMount(async () => {
@@ -100,13 +101,53 @@
   }
 
   function updateChartData() {
-    const labels = hourlyRequestsData.map(data => new Date(data.period).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+    let startDate = new Date();
+    let periods = [];
+
+    if (frequency === "minute") {
+      startDate.setHours(startDate.getHours() - 1);
+      periods = Array.from({ length: 60 }, (_, i) => {
+        const date = new Date(startDate.getTime());
+        date.setMinutes(startDate.getMinutes() + i);
+        return date;
+      });
+    } else if (frequency === "day") {
+      startDate.setDate(startDate.getDate() - 7);
+      periods = Array.from({ length: 7 }, (_, i) => {
+        const date = new Date(startDate.getTime());
+        date.setDate(startDate.getDate() + i);
+        return date;
+      });
+    } else {
+      startDate.setHours(startDate.getHours() - 24);
+      periods = Array.from({ length: 24 }, (_, i) => {
+        const date = new Date(startDate.getTime());
+        date.setHours(startDate.getHours() + i);
+        return date;
+      });
+    }
+
+    const periodCounts = hourlyRequestsData.reduce((acc, { period, count }) => {
+      acc[new Date(period).getTime()] = count;
+      return acc;
+    }, {});
+
+    const labels = periods.map(date => {
+      if (frequency === "minute") {
+        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      } else if (frequency === "day") {
+        return date.toLocaleDateString();
+      } else {
+        return date.toLocaleTimeString([], { hour: '2-digit' });
+      }
+    });
+
     const data = {
       labels: labels,
       datasets: [
         {
           label: `${frequency.charAt(0).toUpperCase() + frequency.slice(1)}ly Requests`,
-          data: hourlyRequestsData.map(data => data.count),
+          data: periods.map(date => periodCounts[date.getTime()] || 0),
           backgroundColor: 'rgba(102, 51, 153, 0.2)',
           borderColor: 'rgba(102, 51, 153, 1)',
           borderWidth: 1
