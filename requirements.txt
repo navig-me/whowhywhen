@@ -8,3 +8,4 @@ stripe
 python-dotenv
 python-jose
 psycopg2
+httpx
