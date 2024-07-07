@@ -6,7 +6,7 @@
   import Toast from '../components/Toast.svelte';
   import ProjectSelector from './ProjectSelector.svelte';
   import LogsTable from './LogsTable.svelte';
-  import HourlyRequestsChart from './HourlyRequestsChart.svelte';
+  import RequestsChart from './RequestsChart.svelte';
 
   let projects = [];
   let selectedProjectId = null;
@@ -101,53 +101,13 @@
   }
 
   function updateChartData() {
-    let startDate = new Date();
-    let periods = [];
-
-    if (frequency === "minute") {
-      startDate.setMinutes(startDate.getMinutes() - 60);
-      periods = Array.from({ length: 60 }, (_, i) => {
-        const date = new Date(startDate.getTime());
-        date.setMinutes(startDate.getMinutes() + i);
-        return date;
-      });
-    } else if (frequency === "day") {
-      startDate.setDate(startDate.getDate() - 30);
-      periods = Array.from({ length: 30 }, (_, i) => {
-        const date = new Date(startDate.getTime());
-        date.setDate(startDate.getDate() + i);
-        return date;
-      });
-    } else {
-      startDate.setHours(startDate.getHours() - 24);
-      periods = Array.from({ length: 24 }, (_, i) => {
-        const date = new Date(startDate.getTime());
-        date.setHours(startDate.getHours() + i);
-        return date;
-      });
-    }
-
-    const periodCounts = hourlyRequestsData.reduce((acc, { period, count }) => {
-      acc[new Date(period).getTime()] = count;
-      return acc;
-    }, {});
-
-    const labels = periods.map(date => {
-      if (frequency === "minute") {
-        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      } else if (frequency === "day") {
-        return date.toLocaleDateString();
-      } else {
-        return date.toLocaleTimeString([], { hour: '2-digit' });
-      }
-    });
-
+    const labels = hourlyRequestsData.map(data => data.period);
     const data = {
       labels: labels,
       datasets: [
         {
           label: `${frequency.charAt(0).toUpperCase() + frequency.slice(1)}ly Requests`,
-          data: periods.map(date => periodCounts[date.getTime()] || 0),
+          data: hourlyRequestsData.map(data => data.count),
           backgroundColor: 'rgba(102, 51, 153, 0.2)',
           borderColor: 'rgba(102, 51, 153, 1)',
           borderWidth: 1
@@ -159,19 +119,19 @@
 
   function handleCellClick(event) {
     const { field, value } = event.detail;
-    searchParams = { ...searchParams, [field]: value };
+    searchParams = [...searchParams, [field, value]];
     fetchApiLogs();
     fetchHourlyRequestsData();
   }
 
   function removeFilter(key) {
-    delete searchParams[key];
+    searchParams = searchParams.filter(([k, _]) => k !== key);
     fetchApiLogs();
     fetchHourlyRequestsData();
   }
 
   function resetFilters() {
-    searchParams = {};
+    searchParams = [];
     fetchApiLogs();
     fetchHourlyRequestsData();
   }
@@ -183,7 +143,7 @@
     <div class="selected-filters">
       <p>Selected Filters:</p>
       <ul>
-        {#each Object.entries(searchParams) as [key, value]}
+        {#each searchParams as [key, value]}
           <li>
             {key}: {value} <button on:click={() => removeFilter(key)}>✖</button>
           </li>
@@ -192,7 +152,7 @@
     </div>
     <div class="dashboard-content">
       <LogsTable {apiLogs} {currentPage} {totalPages} on:changePage={changePage} on:cellClick={handleCellClick} />
-      <HourlyRequestsChart {chartData} {frequency} on:frequencyChange={fetchHourlyRequestsData} />
+      <RequestsChart {chartData} {frequency} on:frequencyChange={fetchHourlyRequestsData} />
     </div>
   </div>
 </section>
