@@ -23,6 +23,13 @@
           <h3>Seamless Integration</h3>
           <p>Integrate WhoWhyWhen effortlessly into your platform with our easy-to-use code snippets and comprehensive documentation.</p>
         </div>
+        <div class="feature">
+          <div class="icon">
+            <i class="fas fa-envelope"></i>
+          </div>
+          <h3>Email Support</h3>
+          <p>Get instant support and assistance with any questions or issues related to your WhoWhyWhen account.</p>
+        </div>
       </div>
     </div>
   </section>
@@ -43,7 +50,7 @@
     }
   
     .feature {
-      width: 30%;
+      width: 18%;
       background: #fff;
       padding: 30px;
       border-radius: 10px;

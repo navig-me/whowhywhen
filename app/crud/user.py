@@ -6,7 +6,8 @@ import bcrypt
 from datetime import datetime, timedelta
 
 FREE_PLAN_LIMIT = 10000
-PAID_PLAN_LIMIT = 100000
+STARTER_PLAN_LIMIT = 100000
+PAID_PLAN_LIMIT = 500000
 
 def get_password_hash(password):
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
