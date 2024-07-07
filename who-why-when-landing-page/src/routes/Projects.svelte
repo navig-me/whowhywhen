@@ -65,15 +65,12 @@
   
     async function createApiKey() {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:8000/api/apikeys', {
+      const response = await fetch(`http://localhost:8000/api/apikeys?user_project_id=${selectedProjectId}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          user_project_id: selectedProjectId
-        })
+        }
       });
       if (response.ok) {
         await fetchApiKeys(selectedProjectId);
