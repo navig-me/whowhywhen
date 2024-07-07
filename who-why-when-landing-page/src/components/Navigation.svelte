@@ -19,12 +19,12 @@
       <ul class="nav-links">
         <li><Link to="/">Home</Link></li>
         {#if loggedIn}
-          <li><a href="https://github.com/navig-me/whowhywhen-docs" target="_blank" rel="noopener noreferrer">Docs</a></li>
+          <li><a href="https://whowhywhen.github.io" target="_blank" rel="noopener noreferrer">Docs</a></li>
           <li><Link to="dashboard">Dashboard</Link></li>
           <li><Link to="projects">Projects</Link></li>
           <li><a on:click={logout}>Logout</a></li>
         {:else}
-          <li><a href="https://github.com/navig-me/whowhywhen-docs" target="_blank" rel="noopener noreferrer">Docs</a></li>
+          <li><a href="https://whowhywhen.github.io" target="_blank" rel="noopener noreferrer">Docs</a></li>
           <li><Link to="login">Login</Link></li>
           <li><Link to="register">Register</Link></li>
         {/if}
