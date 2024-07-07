@@ -116,6 +116,7 @@
   function handleCellClick(event) {
     const { field, value } = event.detail;
     searchParams = { ...searchParams, [field]: value };
+    currentPage = 1; // Reset to first page when filters are applied
     fetchApiLogs();
     fetchHourlyRequestsData();
   }
@@ -128,12 +129,14 @@
   function removeFilter(key) {
     const { [key]: _, ...rest } = searchParams; // Destructure to remove the key
     searchParams = rest;
+    currentPage = 1; // Reset to first page when filters are removed
     fetchApiLogs();
     fetchHourlyRequestsData();
   }
 
   function resetFilters() {
     searchParams = {};
+    currentPage = 1; // Reset to first page when filters are reset
     fetchApiLogs();
     fetchHourlyRequestsData();
   }
@@ -165,7 +168,7 @@
       </ul>
     </div>
     <div class="dashboard-content">
-      <LogsTable {apiLogs} {currentPage} {totalPages} on:changePage={changePage} on:cellClick={handleCellClick} />
+      <LogsTable {apiLogs} {currentPage} {totalPages} on:changePage={(e) => changePage(e.detail.page)} on:cellClick={handleCellClick} />
       <RequestsChart {chartData} {frequency} on:frequencyChange={handleFrequencyChange} />
     </div>
   </div>

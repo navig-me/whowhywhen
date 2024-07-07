@@ -11,7 +11,7 @@
     }
   
     function changePage(newPage) {
-      dispatch('changePage', newPage);
+      dispatch('changePage', { page: newPage });
     }
   </script>
   
@@ -108,4 +108,3 @@
       background-color: #7d42a6;
     }
   </style>
-  
