@@ -7,6 +7,7 @@
     let projects = [];
     let apiKeys = [];
     let newProjectName = '';
+    let newApiKeyName = '';
     let showApiKeysModal = false;
     let selectedProjectId = null;
   
@@ -65,7 +66,7 @@
   
     async function createApiKey() {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:8000/api/apikeys?user_project_id=${selectedProjectId}`, {
+      const response = await fetch(`http://localhost:8000/api/apikeys?user_project_id=${selectedProjectId}&name=${newApiKeyName}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -73,6 +74,7 @@
         }
       });
       if (response.ok) {
+        newApiKeyName = '';
         await fetchApiKeys(selectedProjectId);
       } else {
         console.error('Failed to create API key');
@@ -133,13 +135,21 @@
           <ul class="api-keys-list">
             {#each apiKeys as key}
               <li class="api-key-item">
-                <span class={key.show ? 'unblurred' : 'blurred'}>{blurApiKey(key.key, key.show)}</span>
-                <button class="btn-secondary" on:click={() => deleteApiKey(key.id)}>Delete</button>
-                <button class="btn-secondary" on:click={() => key.show = !key.show}>{key.show ? 'Hide' : 'Show'}</button>
+                <div class="api-key-details">
+                  <span class="api-key-name">{key.name}</span>
+                  <span class={key.show ? 'unblurred' : 'blurred'}>{blurApiKey(key.key, key.show)}</span>
+                </div>
+                <div class="api-key-actions">
+                  <button class="btn-secondary" on:click={() => deleteApiKey(key.id)}>Delete</button>
+                  <button class="btn-secondary" on:click={() => key.show = !key.show}>{key.show ? 'Hide' : 'Show'}</button>
+                </div>
               </li>
             {/each}
           </ul>
-          <button class="btn-primary" on:click={createApiKey}>Create New API Key</button>
+          <div class="create-api-key">
+            <input type="text" bind:value={newApiKeyName} placeholder="API Key Name" class="input-field" />
+            <button class="btn-primary" on:click={createApiKey}>Create New API Key</button>
+          </div>
         </div>
       </div>
     {/if}
@@ -261,6 +271,24 @@
   
     .unblurred {
       filter: none;
+    }
+  
+    .api-key-details {
+      display: flex;
+      align-items: center;
+    }
+  
+    .api-key-name {
+      margin-right: 10px;
+    }
+  
+    .api-key-actions {
+      display: flex;
+      gap: 10px;
+    }
+  
+    .create-api-key {
+      margin-top: 10px;
     }
   </style>
   
