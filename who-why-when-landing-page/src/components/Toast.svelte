@@ -1,20 +1,23 @@
-<script>
+  <script>
     export let message = '';
     export let type = 'info'; // Can be 'info', 'success', 'error'
-  
+
     let show = true;
-  
-    setTimeout(() => {
-      show = false;
-    }, 3000);
+
+    $: {
+      show = true;
+      setTimeout(() => {
+        show = false;
+      }, 3000);
+    }
   </script>
-  
+
   {#if show}
     <div class="toast {type}">
       {message}
     </div>
   {/if}
-  
+
   <style>
     .toast {
       position: fixed;
@@ -28,17 +31,16 @@
       font-weight: bold;
       z-index: 1000;
     }
-  
+
     .toast.info {
       background-color: #663399;
     }
-  
+
     .toast.success {
       background-color: #28a745;
     }
-  
+
     .toast.error {
       background-color: #dc3545;
     }
   </style>
-  
