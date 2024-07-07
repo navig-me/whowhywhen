@@ -5,6 +5,7 @@ from app.models.user import User
 from sqlmodel import select, Session
 from app.database import create_db_and_tables, engine
 from app.crud.user import reset_request_count_if_needed
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
     title="WhoWhyWhen API",
@@ -12,6 +13,16 @@ app = FastAPI(
     version="0.1.0",
     docs_url="/",
 )
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 def reset_request_counts_periodically():
     with Session(engine) as session:

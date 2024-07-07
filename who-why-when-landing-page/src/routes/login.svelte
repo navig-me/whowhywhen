@@ -1,6 +1,7 @@
 <script>
   import { createEventDispatcher } from 'svelte';
   import { currentView } from '../stores/viewStore';
+  import { isLoggedIn } from '../stores/userStore';
 
   let username = '';
   let password = '';
@@ -23,6 +24,7 @@
       const data = await response.json();
       dispatch('login', data);
       alert('Login successful!');
+      isLoggedIn.set(true); // Set the login status
       currentView.set('dashboard');
     } else {
       alert('Login failed!');

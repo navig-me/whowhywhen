@@ -1,8 +1,19 @@
   <script>
     import { currentView } from '../stores/viewStore';
+    import { isLoggedIn } from '../stores/userStore';
+
+    let loggedIn;
+    isLoggedIn.subscribe(value => {
+      loggedIn = value;
+    });
 
     function changeView(view) {
       currentView.set(view);
+    }
+
+    function logout() {
+      isLoggedIn.set(false);
+      changeView('home');
     }
   </script>
 
@@ -10,8 +21,16 @@
     <div class="container">
       <h1 on:click={() => changeView('home')}>WhoWhyWhen</h1>
       <nav>
-        <a class="btn-primary" on:click={() => changeView('login')}>Login</a>
-        <a class="btn-secondary" on:click={() => changeView('register')}>Register</a>
+        {#if loggedIn}
+          <a class="btn-primary" on:click={() => changeView('docs')}>Docs</a>
+          <a class="btn-secondary" on:click={() => changeView('dashboard')}>Dashboard</a>
+          <a class="btn-primary" on:click={() => changeView('api-keys')}>API Keys</a>
+          <a class="btn-secondary" on:click={logout}>Logout</a>
+        {:else}
+          <a class="btn-primary" on:click={() => changeView('docs')}>Docs</a>
+          <a class="btn-secondary" on:click={() => changeView('login')}>Login</a>
+          <a class="btn-primary" on:click={() => changeView('register')}>Register</a>
+        {/if}
       </nav>
     </div>
   </header>
