@@ -1,3 +1,14 @@
 import { writable } from 'svelte/store';
 
-export const isLoggedIn = writable(false);
+const storedToken = localStorage.getItem('token');
+export const isLoggedIn = writable(!!storedToken);
+
+export function setToken(token) {
+  localStorage.setItem('token', token);
+  isLoggedIn.set(true);
+}
+
+export function clearToken() {
+  localStorage.removeItem('token');
+  isLoggedIn.set(false);
+}

@@ -1,6 +1,7 @@
+  <!-- Navigation.svelte -->
   <script>
     import { Link } from 'svelte-routing';
-    import { isLoggedIn } from '../stores/userStore';
+    import { isLoggedIn, clearToken } from '../stores/userStore';
 
     let loggedIn;
     isLoggedIn.subscribe(value => {
@@ -8,7 +9,7 @@
     });
 
     function logout() {
-      isLoggedIn.set(false);
+      clearToken();
     }
   </script>
 

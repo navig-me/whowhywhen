@@ -1,7 +1,7 @@
 <script>
     import { onMount } from 'svelte';
     import { currentView } from '../stores/viewStore';
-    import { isLoggedIn } from '../stores/userStore';
+    import { isLoggedIn, clearToken } from '../stores/userStore';
     import { createEventDispatcher } from 'svelte';
   
     let projects = [];
@@ -17,9 +17,10 @@
     });
   
     async function fetchProjects() {
+      const token = localStorage.getItem('token');
       const response = await fetch('http://localhost:8000/auth/users/me/projects', {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${token}`
         }
       });
       if (response.ok) {
@@ -30,10 +31,11 @@
     }
   
     async function createProject() {
+      const token = localStorage.getItem('token');
       const response = await fetch(`http://localhost:8000/auth/users/me/projects?project_name=${newProjectName}`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
@@ -47,9 +49,10 @@
   
     async function fetchApiKeys(projectId) {
       selectedProjectId = projectId;
+      const token = localStorage.getItem('token');
       const response = await fetch(`http://localhost:8000/api/apikeys?user_project_id=${projectId}`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${token}`
         }
       });
       if (response.ok) {
@@ -61,10 +64,11 @@
     }
   
     async function createApiKey() {
+      const token = localStorage.getItem('token');
       const response = await fetch('http://localhost:8000/api/apikeys', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -79,10 +83,11 @@
     }
   
     async function deleteApiKey(keyId) {
+      const token = localStorage.getItem('token');
       const response = await fetch(`http://localhost:8000/api/apikeys/${keyId}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${token}`
         }
       });
       if (response.ok) {
@@ -92,55 +97,132 @@
       }
     }
   
-    function blurApiKey(apiKey) {
-      return apiKey.slice(0, -4).replace(/./g, '*') + apiKey.slice(-4);
+    function blurApiKey(apiKey, show) {
+      return show ? apiKey : apiKey.slice(0, -4).replace(/./g, '*') + apiKey.slice(-4);
     }
   
     function logout() {
-      isLoggedIn.set(false);
+      clearToken();
       currentView.set('home');
     }
   </script>
   
-  <template>
-    <div>
-      <h2>Your Projects</h2>
-      <button on:click={() => currentView.set('dashboard')}>Back to Dashboard</button>
-      <ul>
-        {#each projects as project}
-          <li>
-            {project.name} {project.is_default ? '★' : ''}
-            <button on:click={() => fetchApiKeys(project.id)}>View API Keys</button>
-          </li>
-        {/each}
-      </ul>
-  
-      <h3>Create New Project</h3>
-      <input type="text" bind:value={newProjectName} placeholder="Project Name" />
-      <button on:click={createProject}>Create Project</button>
-  
-      {#if showApiKeysModal}
-        <div class="modal">
-          <div class="modal-content">
-            <span class="close" on:click={() => showApiKeysModal = false}>&times;</span>
-            <h3>API Keys</h3>
-            <ul>
-              {#each apiKeys as key}
-                <li>
-                  <span class="blurred">{blurApiKey(key.key)}</span>
-                  <button on:click={() => deleteApiKey(key.id)}>Delete</button>
-                  <button on:click={() => key.show = !key.show}>{key.show ? 'Hide' : 'Show'}</button>
-                </li>
-              {/each}
-            </ul>
-            <button on:click={createApiKey}>Create New API Key</button>
+  <div class="projects-container">
+    <h2>Your Projects</h2>
+    <button class="btn-back" on:click={() => currentView.set('dashboard')}>Back to Dashboard</button>
+    <ul class="project-list">
+      {#each projects as project}
+        <li class="project-item">
+          <div class="project-details">
+            <span class="project-name">{project.name}</span>
+            {#if project.is_default}
+              <span class="default-star">★</span>
+            {/if}
           </div>
+          <button class="btn-primary" on:click={() => fetchApiKeys(project.id)}>View API Keys</button>
+        </li>
+      {/each}
+    </ul>
+  
+    <h3>Create New Project</h3>
+    <input type="text" bind:value={newProjectName} placeholder="Project Name" class="input-field" />
+    <button class="btn-primary" on:click={createProject}>Create Project</button>
+  
+    {#if showApiKeysModal}
+      <div class="modal">
+        <div class="modal-content">
+          <span class="close" on:click={() => showApiKeysModal = false}>&times;</span>
+          <h3>API Keys</h3>
+          <ul class="api-keys-list">
+            {#each apiKeys as key}
+              <li class="api-key-item">
+                <span class={key.show ? 'unblurred' : 'blurred'}>{blurApiKey(key.key, key.show)}</span>
+                <button class="btn-secondary" on:click={() => deleteApiKey(key.id)}>Delete</button>
+                <button class="btn-secondary" on:click={() => key.show = !key.show}>{key.show ? 'Hide' : 'Show'}</button>
+              </li>
+            {/each}
+          </ul>
+          <button class="btn-primary" on:click={createApiKey}>Create New API Key</button>
         </div>
-      {/if}
-    </div>
-  </template>
+      </div>
+    {/if}
+  </div>
   
   <style>
+    .projects-container {
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: #f9f9f9;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+  
+    h2, h3 {
+      color: #663399;
+    }
+  
+    .btn-back {
+      background-color: #ff4000;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+  
+    .project-list, .api-keys-list {
+      list-style: none;
+      padding: 0;
+    }
+  
+    .project-item, .api-key-item {
+      background-color: #fff;
+      padding: 15px;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+  
+    .project-details {
+      display: flex;
+      align-items: center;
+    }
+  
+    .project-name {
+      font-weight: bold;
+      margin-right: 10px;
+    }
+  
+    .default-star {
+      color: #ff4000;
+    }
+  
+    .btn-primary, .btn-secondary {
+      background-color: #663399;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  
+    .btn-secondary {
+      background-color: #ff4000;
+    }
+  
+    .input-field {
+      width: calc(100% - 22px);
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      margin-bottom: 10px;
+    }
+  
     .modal {
       display: block;
       position: fixed;
@@ -150,16 +232,17 @@
       width: 100%;
       height: 100%;
       overflow: auto;
-      background-color: rgb(0, 0, 0);
       background-color: rgba(0, 0, 0, 0.4);
     }
   
     .modal-content {
-      background-color: #fefefe;
+      background-color: #fff;
       margin: 15% auto;
       padding: 20px;
       border: 1px solid #888;
       width: 80%;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
   
     .close {
@@ -167,17 +250,20 @@
       float: right;
       font-size: 28px;
       font-weight: bold;
+      cursor: pointer;
     }
   
-    .close:hover,
-    .close:focus {
+    .close:hover, .close:focus {
       color: black;
       text-decoration: none;
-      cursor: pointer;
     }
   
     .blurred {
       filter: blur(4px);
+    }
+  
+    .unblurred {
+      filter: none;
     }
   </style>
   

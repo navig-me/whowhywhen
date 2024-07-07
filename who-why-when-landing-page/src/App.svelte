@@ -11,11 +11,21 @@
 	import Register from './routes/Register.svelte';
 	import Dashboard from './routes/Dashboard.svelte';
 	import Projects from './routes/Projects.svelte';
+	import { isLoggedIn } from './stores/userStore';
   
 	let view;
   
 	// Subscribe to the currentView store
 	$: view, currentView.subscribe(value => view = value);
+  
+	onMount(() => {
+	  const token = localStorage.getItem('token');
+	  if (token) {
+		isLoggedIn.set(true);
+	  } else {
+		isLoggedIn.set(false);
+	  }
+	});
   </script>
   
   <style>
