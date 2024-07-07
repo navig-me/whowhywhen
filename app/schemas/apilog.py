@@ -8,6 +8,13 @@ class APILogCreate(BaseModel):
     request_info: str
     location: Optional[str]
 
+class APILogSearch(BaseModel):
+    endpoint: Optional[str] = None
+    ip_address: Optional[str] = None
+    request_info: Optional[str] = None
+    location: Optional[str] = None
+
+
 class APILogRead(BaseModel):
     id: int
     request_info: str
