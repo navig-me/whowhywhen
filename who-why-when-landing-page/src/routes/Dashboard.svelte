@@ -54,7 +54,11 @@
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(searchParams)
+      body: JSON.stringify({
+        page: currentPage,
+        limit: logsPerPage,
+        ...searchParams
+      })
     });
     if (response.ok) {
       const data = await response.json();
@@ -123,7 +127,8 @@
   }
 
   function removeFilter(key) {
-    delete searchParams[key];
+    const { [key]: _, ...rest } = searchParams; // Destructure to remove the key
+    searchParams = rest;
     fetchApiLogs();
     fetchHourlyRequestsData();
   }
