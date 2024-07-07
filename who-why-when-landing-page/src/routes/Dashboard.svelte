@@ -48,17 +48,13 @@
 
   async function fetchApiLogs() {
     const token = localStorage.getItem('token');
-    const response = await fetch(`http://localhost:8000/api/logs/project/${selectedProjectId}`, {
+    const response = await fetch(`http://localhost:8000/api/logs/project/${selectedProjectId}?page=${currentPage}&limit=${logsPerPage}`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        page: currentPage,
-        limit: logsPerPage,
-        search_params: searchParams
-      })
+      body: JSON.stringify(searchParams)
     });
     if (response.ok) {
       const data = await response.json();
@@ -77,9 +73,7 @@
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        search_params: searchParams
-      })
+      body: JSON.stringify(searchParams)
     });
     if (response.ok) {
       hourlyRequestsData = await response.json();
