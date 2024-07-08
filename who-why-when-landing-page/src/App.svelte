@@ -36,7 +36,7 @@
   
   <Header />
   
-  {#if view === 'home'}
+{#if view === 'home'}
 	<HeroSection />
 	<FeatureSection />
 	<PricingSection />
