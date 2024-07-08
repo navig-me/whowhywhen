@@ -50,8 +50,8 @@
   }
 
   function getNextPlan(currentPlan) {
-    if (currentPlan === 'free') return 'STARTER';
-    if (currentPlan === 'starter') return 'PRO';
+    if (currentPlan === 'free') return 'starter';
+    if (currentPlan === 'starter') return 'pro';
     return '';
   }
 
@@ -111,7 +111,7 @@
                 <span class="request-count">{userRequestCount}/{monthlyCreditLimit}</span>
               </div>
             </div>
-            <a class="upgrade-button" href={upgradeLink} target="_blank" rel="noopener noreferrer">Upgrade to {getNextPlan(user.subscription_plan)}</a>
+            <a class="upgrade-button" href={upgradeLink} target="_blank" rel="noopener noreferrer">Upgrade to {getNextPlan(user.subscription_plan).toUpperCase()}</a>
           </div>
         {/if}
         <a class="btn-primary" href="https://whowhywhen.github.io" target="_blank" rel="noopener noreferrer">Docs</a>

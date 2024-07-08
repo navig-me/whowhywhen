@@ -15,6 +15,7 @@ from app.models.apilog import APILog
 from app.dependencies.auth import verify_password
 from app.config import TURNSTILE_SECRET_KEY, STRIPE_PUBLISHABLE_KEY, STRIPE_SECRET_KEY
 import stripe
+from app.crud.user import FREE_PLAN_LIMIT, STARTER_PLAN_LIMIT, PAID_PLAN_LIMIT
 
 stripe.api_key = STRIPE_SECRET_KEY
 
@@ -43,6 +44,46 @@ def get_stripe_payment_link(current_user: User = Depends(get_current_user), plan
     )
     return checkout_session.url
     
+def get_user_subscription_from_stripe(current_user: User):
+    user_email = current_user.email
+    customers = stripe.Customer.list(email=user_email).data
+    
+    if not customers:
+        return SubscriptionPlan.free
+    
+    print("Stripe customer found:", customers[0])
+
+    customer_id = customers[0].id
+    subscriptions = stripe.Subscription.list(customer=customer_id).data
+
+    print("Subscriptions:", subscriptions)
+
+    for subscription in subscriptions:
+        if subscription.status == 'active':
+            print("Subscription item:", subscription.plan)
+            if subscription.plan.id == 'price_1PaBdIC0V9GgAoCfI9gq9MSL':
+                return SubscriptionPlan.starter
+            elif subscription.plan.id == 'price_1PaBfwC0V9GgAoCfzrHuBtZs':
+                return SubscriptionPlan.pro
+    return SubscriptionPlan.free
+        
+def refresh_user_subscription(current_user: User, session: Session = Depends(get_session)):
+    user_subscription_plan = current_user.subscription_plan
+    stripe_subscription = get_user_subscription_from_stripe(current_user)
+    if user_subscription_plan != stripe_subscription:
+        # Update user's subscription plan in the database, update monthly limit, and credit reset date
+        current_user.subscription_plan = stripe_subscription
+        if current_user.subscription_plan == SubscriptionPlan.free:
+            current_user.monthly_credit_limit = FREE_PLAN_LIMIT
+        elif current_user.subscription_plan == SubscriptionPlan.starter:
+            current_user.monthly_credit_limit = STARTER_PLAN_LIMIT
+        elif current_user.subscription_plan == SubscriptionPlan.pro:
+            current_user.monthly_credit_limit = PAID_PLAN_LIMIT
+        current_user.monthly_credit_usage_crossed = False
+        current_user.monthly_credit_limit_reset = datetime.now()
+        session.add(current_user)
+        session.commit()
+        
 
 @router.post("/register", response_model=UserRead)
 def register(user: UserCreate, session: Session = Depends(get_session)):
@@ -79,7 +120,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
 
 @router.get("/users/me", response_model=UserStatusRead)
 def read_users_me(current_user: User = Depends(get_current_user), session: Session = Depends(get_session)):
-    # Check Stripe subscription status first
+    refresh_user_subscription(current_user, session)
     user_projects = get_user_projects(session,current_user.id)
     user_request_count = 0
     for project in user_projects:
