@@ -23,13 +23,13 @@
       <nav>
         {#if loggedIn}
           <a class="btn-primary" href="https://whowhywhen.github.io" target="_blank" rel="noopener noreferrer">Docs</a>
-          <a class="btn-secondary" on:click={() => changeView('dashboard')}>Dashboard</a>
+          <a class="btn-primary" on:click={() => changeView('dashboard')}>Dashboard</a>
           <a class="btn-primary" on:click={() => changeView('projects')}>Projects</a>
           <a class="btn-secondary" on:click={logout}>Logout</a>
         {:else}
           <a class="btn-primary" href="https://whowhywhen.github.io" target="_blank" rel="noopener noreferrer">Docs</a>
           <a class="btn-secondary" on:click={() => changeView('login')}>Login</a>
-          <a class="btn-primary" on:click={() => changeView('register')}>Register</a>
+          <a class="btn-secondary" on:click={() => changeView('register')}>Register</a>
         {/if}
       </nav>
     </div>

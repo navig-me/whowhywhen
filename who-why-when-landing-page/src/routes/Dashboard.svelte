@@ -42,6 +42,10 @@
         await fetchApiLogs();
         await fetchHourlyRequestsData();
       }
+    }  else if (response.status === 401) {
+      // Log out if the user is not authorized
+      clearToken();
+      currentView.set('login');
     } else {
       showToast('Failed to fetch projects', 'error');
     }
@@ -63,6 +67,10 @@
       const data = await response.json();
       apiLogs = data.logs;
       totalPages = Math.ceil(data.total / logsPerPage);
+    }  else if (response.status === 401) {
+      // Log out if the user is not authorized
+      clearToken();
+      currentView.set('login');
     } else {
       showToast('Failed to fetch API logs', 'error');
     }
@@ -81,7 +89,12 @@
     if (response.ok) {
       hourlyRequestsData = await response.json();
       updateChartData();
-    } else {
+    } else if (response.status === 401) {
+      // Log out if the user is not authorized
+      clearToken();
+      currentView.set('login');
+    }
+    else {
       showToast('Failed to fetch hourly requests data', 'error');
     }
   }
