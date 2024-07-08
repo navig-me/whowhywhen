@@ -139,7 +139,8 @@
           endpoint: '/test',
           ip_address: clientIp,
           request_info: 'WhoWhyWhen Test',
-          location: JSON.stringify(clientLocation)
+          location: JSON.stringify(clientLocation),
+          response_code: 200
         })
       });
       if (response.ok) {

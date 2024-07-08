@@ -29,6 +29,8 @@ def get_apilogs(db: Session, user_id: int, page: int = 1, limit: int = 10, proje
             query = query.where(APILog.request_info.ilike(f'{search_params.request_info}%'))
         if search_params.location:
             query = query.where(APILog.location.ilike(f'{search_params.location}%'))
+        if search_params.response_code:
+            query = query.where(APILog.response_code == search_params.response_code)
     
     query = query.offset(offset).limit(limit).order_by(APILog.created_at.desc())
     
@@ -71,6 +73,8 @@ def get_apilogs_stats(db: Session, user_id: int, project_id: int = None, search_
             query = query.filter(APILog.request_info.ilike(f'{search_params.request_info}%'))
         if search_params.location:
             query = query.filter(APILog.location.ilike(f'{search_params.location}%'))
+        if search_params.response_code:
+            query = query.filter(APILog.response_code == search_params.response_code)
 
     stats_query = (
         query.with_entities(

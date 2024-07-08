@@ -23,6 +23,8 @@
           <th>Endpoint</th>
           <th>IP Address</th>
           <th>Request Info</th>
+          <th>Response Code</th>
+          <th>Response Time</th>
           <th>Location</th>
           <th>Created At</th>
         </tr>
@@ -30,7 +32,7 @@
       <tbody>
         {#if apiLogs.length === 0}
           <tr>
-            <td colspan="5">No logs available</td>
+            <td colspan="7">No logs available</td>
           </tr>
         {:else}
           {#each apiLogs as log}
@@ -38,6 +40,8 @@
               <td on:click={() => handleCellClick('endpoint', log.endpoint)}>{log.endpoint}</td>
               <td on:click={() => handleCellClick('ip_address', log.ip_address)}>{log.ip_address}</td>
               <td on:click={() => handleCellClick('request_info', log.request_info)}>{log.request_info}</td>
+              <td on:click={() => handleCellClick('response_code', log.response_code)}>{log.response_code}</td>
+              <td>{log.response_time}</td>
               <td on:click={() => handleCellClick('location', log.location)}>{log.location}</td>
               <td>{new Date(log.created_at).toLocaleString()}</td>
             </tr>
