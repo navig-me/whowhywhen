@@ -38,7 +38,7 @@ async def lifespan(app: FastAPI):
             # Get total requests count since monthly_credit_limit_reset. For each Project the user has, add the total count to the total_requests_count variable.
             total_requests_count = 0
             for project in user.projects:
-                total_requests_count += app.state.db.query(APILog).filter(APILog.user_project_id == project.id).count()
+                total_requests_count += db.query(APILog).filter(APILog.user_project_id == project.id, APILog.created_at >= user.monthly_credit_limit_reset).count()
 
             print(f"Total requests count: {total_requests_count}")
             print(f"Monthly credit limit: {user.monthly_credit_limit}")

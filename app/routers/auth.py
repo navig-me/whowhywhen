@@ -8,8 +8,10 @@ from jose import jwt
 from app.config import ACCESS_TOKEN_EXPIRE_MINUTES, SECRET_KEY, ALGORITHM
 from app.database import get_session
 from app.crud.user import create_user, get_user_by_email, User, save_user_project, get_user_projects, verify_turnstile_token
-from app.schemas.user import UserCreate, UserRead
+from app.schemas.user import UserCreate, UserRead, UserStatusRead
 from app.dependencies.auth import get_current_user
+from app.models.user import User, UserProject
+from app.models.apilog import APILog
 from app.dependencies.auth import verify_password
 
 TURNSTILE_SECRET_KEY = "0x4AAAAAAAelvYaX_D2kAiR7VM2LnTwAwR4"
@@ -49,9 +51,17 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-@router.get("/users/me", response_model=UserRead)
-def read_users_me(current_user: User = Depends(get_current_user)):
-    return current_user
+@router.get("/users/me", response_model=UserStatusRead)
+def read_users_me(current_user: User = Depends(get_current_user), session: Session = Depends(get_session)):
+    # Check Stripe subscription status first
+    user_projects = get_user_projects(session,current_user.id)
+    user_request_count = 0
+    for project in user_projects:
+        user_request_count += session.query(APILog).filter(APILog.user_project_id == project.id).filter(APILog.created_at >= current_user.monthly_credit_limit_reset).count()
+    return {
+        "user": current_user,
+        "user_request_count": user_request_count
+    }
 
 @router.post("/users/me/projects")
 def create_user_project(project_name: str, current_user: User = Depends(get_current_user), session: Session = Depends(get_session)):

@@ -1,10 +1,20 @@
   <script>
+    import { onMount } from 'svelte';
     import { currentView } from '../stores/viewStore';
     import { clearToken, isLoggedIn } from '../stores/userStore';
+    import { API_BASE_URL } from '../config'; // Import the base URL
 
     let loggedIn;
+    let user = null;
+    let userRequestCount = 0;
+    let monthlyCreditLimit = 0;
+    let monthlyCreditUsageCrossed = false;
+
     isLoggedIn.subscribe(value => {
       loggedIn = value;
+      if (loggedIn) {
+        fetchUserDetails();
+      }
     });
 
     function changeView(view) {
@@ -16,86 +26,180 @@
       clearToken();
       changeView('home');
     }
+
+    async function fetchUserDetails() {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE_URL}/auth/users/me`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        user = data.user;
+        userRequestCount = data.user_request_count;
+        monthlyCreditLimit = data.user.monthly_credit_limit;
+        monthlyCreditUsageCrossed = data.user.monthly_credit_usage_crossed;
+      } else if (response.status === 401) {
+        clearToken();
+        changeView('home');
+      }
+    }
+    function getPlanColor(planName) {
+      if (planName === 'free') return '#0000FF'; // FREE
+      if (planName === 'starter') return '#ff4000'; // STARTER
+      if (planName === 'pro') return '#663399'; // PRO
+      return '#0000FF'; // Default to black if no plan found
+    }
+
+    function getPlanName(planName) {
+      if (planName === 'free') return 'FREE';
+      if (planName === 'starter') return 'STARTER';
+      if (planName === 'pro') return 'PRO';
+      return 'FREE';
+    }
+
+    function getRequestBarWidth(used, limit) {
+      return (used / limit) * 100;
+    }
+
+    function getRequestBarClass(used, limit) {
+      const percentage = (used / limit) * 100;
+      if (percentage > 90 || monthlyCreditUsageCrossed) return 'bar-red';
+      return 'bar-green';
+    }
+
   </script>
 
-  <header class="header">
-    <div class="container">
-      <h1 on:click={() => changeView('home')}>WhoWhyWhen</h1>
-      <nav>
-        {#if loggedIn}
-          <a class="btn-primary" href="https://whowhywhen.github.io" target="_blank" rel="noopener noreferrer">Docs</a>
-          <a class="btn-primary" on:click={() => changeView('dashboard')}>Dashboard</a>
-          <a class="btn-primary" on:click={() => changeView('projects')}>Projects</a>
-          <a class="btn-secondary" on:click={logout}>Logout</a>
-        {:else}
-          <a class="btn-primary" href="https://whowhywhen.github.io" target="_blank" rel="noopener noreferrer">Docs</a>
-          <a class="btn-secondary" on:click={() => changeView('login')}>Login</a>
-          <a class="btn-secondary" on:click={() => changeView('register')}>Register</a>
-        {/if}
-      </nav>
-    </div>
-  </header>
+<header class="header">
+  <div class="container">
+    <h1 on:click={() => changeView('home')}>WhoWhyWhen</h1>
+    <nav>
+      {#if loggedIn}
+        <div class="user-info">
+          {#if user}
+            <div class="plan-info" style="color: {getPlanColor(user.subscription_plan)}">
+              Plan: {getPlanName(user.subscription_plan)}
+            </div>
+            <div class="request-info">
+              Requests: {userRequestCount}/{monthlyCreditLimit}
+              <div class="request-bar">
+                <div class="request-bar-inner {getRequestBarClass(userRequestCount, monthlyCreditLimit)}" style="width: {getRequestBarWidth(userRequestCount, monthlyCreditLimit)}%"></div>
+              </div>
+            </div>
+          {/if}
+        </div>
+        <a class="btn-primary" href="https://whowhywhen.github.io" target="_blank" rel="noopener noreferrer">Docs</a>
+        <a class="btn-primary" on:click={() => changeView('dashboard')}>Dashboard</a>
+        <a class="btn-primary" on:click={() => changeView('projects')}>Projects</a>
+        <a class="btn-secondary" on:click={logout}>Logout</a>
+      {:else}
+        <a class="btn-primary" href="https://whowhywhen.github.io" target="_blank" rel="noopener noreferrer">Docs</a>
+        <a class="btn-secondary" on:click={() => changeView('login')}>Login</a>
+        <a class="btn-secondary" on:click={() => changeView('register')}>Register</a>
+      {/if}
+    </nav>
+  </div>
+</header>
 
-  <style>
-    .header {
-      background-color: #fff;
-      padding: 20px 0;
-      border-bottom: 1px solid #ddd;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
+<style>
+  .header {
+    background-color: #fff;
+    padding: 20px 0;
+    border-bottom: 1px solid #ddd;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
 
-    .container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+  .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
 
-    .header h1 {
-      margin: 0;
-      font-size: 1.5rem;
-      font-weight: bold;
-      letter-spacing: 1px;
-      background: linear-gradient(135deg, #663399, #ff4000);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      cursor: pointer;
-    }
+  .header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+    background: linear-gradient(135deg, #663399, #ff4000);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    cursor: pointer;
+  }
 
-    nav {
-      display: flex;
-      gap: 10px;
-    }
+  nav {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
 
-    nav a {
-      padding: 10px 20px;
-      border-radius: 5px;
-      text-decoration: none;
-      transition: background-color 0.3s, color 0.3s;
-      display: inline-block;
-      cursor: pointer;
-    }
+  nav a {
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s;
+    display: inline-block;
+    cursor: pointer;
+  }
 
-    .btn-primary {
-      background-color: #fff;
-      color: #663399;
-      border: 1px solid #fff;
-      text-decoration: none;
-    }
+  .btn-primary {
+    background-color: #fff;
+    color: #663399;
+    border: 1px solid #fff;
+    text-decoration: none;
+  }
 
-    .btn-primary:hover {
-      background-color: #663399;
-      color: #fff;
-    }
+  .btn-primary:hover {
+    background-color: #663399;
+    color: #fff;
+  }
 
-    .btn-secondary {
-      background-color: #fff;
-      color: #ff4000;
-      border: 1px solid #fff;
-      text-decoration: none;
-    }
+  .btn-secondary {
+    background-color: #fff;
+    color: #ff4000;
+    border: 1px solid #fff;
+    text-decoration: none;
+  }
 
-    .btn-secondary:hover {
-      background-color: #ff4000;
-      color: #fff;
-    }
-  </style>
+  .btn-secondary:hover {
+    background-color: #ff4000;
+    color: #fff;
+  }
+
+  .user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-right: 20px;
+  }
+
+  .plan-info {
+    font-weight: bold;
+  }
+
+  .request-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .request-bar {
+    width: 100px;
+    height: 10px;
+    background-color: #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+
+  .request-bar-inner {
+    height: 100%;
+  }
+
+  .bar-green {
+    background-color: #28a745;
+  }
+
+  .bar-red {
+    background-color: #dc3545;
+  }
+</style>
