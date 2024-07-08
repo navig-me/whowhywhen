@@ -10,13 +10,39 @@ from app.database import get_session
 from app.crud.user import create_user, get_user_by_email, User, save_user_project, get_user_projects, verify_turnstile_token
 from app.schemas.user import UserCreate, UserRead, UserStatusRead
 from app.dependencies.auth import get_current_user
-from app.models.user import User, UserProject
+from app.models.user import User, UserProject, SubscriptionPlan
 from app.models.apilog import APILog
 from app.dependencies.auth import verify_password
+from app.config import TURNSTILE_SECRET_KEY, STRIPE_PUBLISHABLE_KEY, STRIPE_SECRET_KEY
+import stripe
 
-TURNSTILE_SECRET_KEY = "0x4AAAAAAAelvYaX_D2kAiR7VM2LnTwAwR4"
+stripe.api_key = STRIPE_SECRET_KEY
 
 router = APIRouter()
+
+@router.get("/stripe/payment-link/{plan_name}", response_model=str)
+def get_stripe_payment_link(current_user: User = Depends(get_current_user), plan_name: SubscriptionPlan = SubscriptionPlan.starter, session: Session = Depends(get_session)):
+    if plan_name == SubscriptionPlan.free:
+        return None
+    elif plan_name == SubscriptionPlan.starter:
+        price_id = 'price_1PaBdIC0V9GgAoCfI9gq9MSL'
+    elif plan_name == SubscriptionPlan.pro:
+        price_id = 'price_1PaBfwC0V9GgAoCfzrHuBtZs'
+
+    # Return subscription link with price_id
+    checkout_session = stripe.checkout.Session.create(
+        payment_method_types=['card'],
+        line_items=[{
+            'price': price_id,
+            'quantity': 1,
+        }],
+        mode='subscription',
+        success_url='https://whowhywhen.com/',
+        customer_email=str(current_user.email),
+        allow_promotion_codes=True,
+    )
+    return checkout_session.url
+    
 
 @router.post("/register", response_model=UserRead)
 def register(user: UserCreate, session: Session = Depends(get_session)):

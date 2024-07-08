@@ -13,9 +13,8 @@ import httpx
 from datetime import datetime, timedelta
 from contextlib import asynccontextmanager
 from fastapi_utils.tasks import repeat_every
+from app.config import STRIPE_PUBLISHABLE_KEY, STRIPE_SECRET_KEY
 
-STRIPE_PUBLISHABLE_KEY = "pk_live_51PU7s5C0V9GgAoCfCmGXtu12AufWh8cd6Isopm41b7FGlpcHiz9o0UwpXQ3d7xp39cteHdHjroHHHZ8wWEoaEZOn00CH8uRtqX"
-STRIPE_SECRET_KEY = "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"
 
 app = FastAPI(
     title="WhoWhyWhen API",
