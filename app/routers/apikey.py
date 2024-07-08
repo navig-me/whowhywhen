@@ -5,6 +5,9 @@ from app.crud.apikey import create_api_key, delete_api_key
 from app.dependencies.auth import get_current_user
 from app.models.user import User
 import uuid
+from typing import Optional
+from sqlmodel import select
+from app.models.apikey import APIKey
 
 router = APIRouter()
 
@@ -23,8 +26,11 @@ def remove_user_api_key(key_id: uuid.UUID, current_user: User = Depends(get_curr
     return {"detail": "API key deleted"}
 
 @router.get("/apikeys")
-def get_user_api_keys(current_user: User = Depends(get_current_user), session: Session = Depends(get_session)):
-    api_keys = []
-    for project in current_user.projects:
-        api_keys.extend(project.api_keys)
+def get_user_api_keys(current_user: User = Depends(get_current_user), session: Session = Depends(get_session), user_project_id: Optional[uuid.UUID] = None):
+    if user_project_id:
+        api_keys = session.exec(select(APIKey).where(APIKey.user_project_id == user_project_id)).all()
+    else:
+        api_keys = []
+        for project in current_user.projects:
+            api_keys.extend(project.api_keys)
     return api_keys
