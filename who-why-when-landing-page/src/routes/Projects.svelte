@@ -44,7 +44,6 @@
       if (response.ok) {
         const data = await response.json();
         clientIp = data.ip;
-        clientLocation = data.location;
       } else {
         showToastMessage('Failed to fetch IP and location info', 'error');
       }
@@ -136,10 +135,9 @@
           'X-API-KEY': apiKey
         },
         body: JSON.stringify({
-          endpoint: '/test',
+          endpoint: '/whowhywhen-test',
           ip_address: clientIp,
           request_info: 'WhoWhyWhen Test',
-          location: JSON.stringify(clientLocation),
           response_code: 200
         })
       });

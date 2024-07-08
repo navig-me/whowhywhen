@@ -1,13 +1,21 @@
 from fastapi import FastAPI, Request
 from app.database import create_db_and_tables
 from app.routers import auth, apikey, apilog, botinfo
-from app.models.user import User
+from app.models.user import User, UserProject
+from app.models.apilog import APILog
 from sqlmodel import select, Session
 from app.database import create_db_and_tables, engine
-from app.crud.user import reset_request_count_if_needed
+from app.crud.apilog import get_geolocation
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
+from app.database import get_session
 import httpx
+from datetime import datetime, timedelta
+from contextlib import asynccontextmanager
+from fastapi_utils.tasks import repeat_every
+
+STRIPE_PUBLISHABLE_KEY = "pk_live_51PU7s5C0V9GgAoCfCmGXtu12AufWh8cd6Isopm41b7FGlpcHiz9o0UwpXQ3d7xp39cteHdHjroHHHZ8wWEoaEZOn00CH8uRtqX"
+STRIPE_SECRET_KEY = "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"
 
 app = FastAPI(
     title="WhoWhyWhen API",
@@ -15,6 +23,38 @@ app = FastAPI(
     version="0.1.0",
     docs_url="/",
 )
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    yield
+    # Every hour, check if the user's monthly credit limit has been exceeded since monthly_credit_limit_reset. If so, set the flag for the user.monthly_credit_usage_crossed = True. 
+    # If monthly_credit_limit_reset has crossed a month, reset the flag to False and reset the value of monthly_credit_limit_reset to the current date.
+    @repeat_every(seconds=3600)
+    async def check_monthly_credit_limit():
+        print("Checking monthly credit limit...")
+        for user in app.state.db.query(User).all():
+            print(f"Checking user {user.email}...")
+            db = next(get_session())
+            # Get total requests count since monthly_credit_limit_reset. For each Project the user has, add the total count to the total_requests_count variable.
+            total_requests_count = 0
+            for project in user.projects:
+                total_requests_count += app.state.db.query(APILog).filter(APILog.user_project_id == project.id).count()
+
+            print(f"Total requests count: {total_requests_count}")
+            print(f"Monthly credit limit: {user.monthly_credit_limit}")
+            
+            # If the total_requests_count is greater than the user's monthly_credit_limit, set the user's monthly_credit_usage_crossed flag to True.
+            if total_requests_count > user.monthly_credit_limit:
+                user.monthly_credit_usage_crossed = True
+            
+            # If the user's monthly_credit_limit_reset has crossed a month, reset the user's monthly_credit_usage_crossed flag to False, reset the value of monthly_credit_limit_reset to the current date, and reset the total_requests_count to 0.
+            if datetime.now() - user.monthly_credit_limit_reset > timedelta(days=30):
+                user.monthly_credit_usage_crossed = False
+                user.monthly_credit_limit_reset = datetime.now()
+            
+            db.add(user)
+            db.commit()
+            db.refresh(user)
 
 # Add CORS middleware
 app.add_middleware(
@@ -34,30 +74,15 @@ class IPMiddleware(BaseHTTPMiddleware):
 app.add_middleware(IPMiddleware)
 
 
-def reset_request_counts_periodically():
-    with Session(engine) as session:
-        users = session.exec(select(User)).all()
-        for user in users:
-            reset_request_count_if_needed(user)
-        session.commit()
-
 @app.on_event("startup")
 def on_startup():
     create_db_and_tables()
-    reset_request_counts_periodically()
 
-async def get_geolocation(ip: str):
-    async with httpx.AsyncClient() as client:
-        response = await client.get(f'https://ipinfo.io/{ip}/json')
-        return response.json()
 
 @app.get("/api/ip-location")
 async def get_ip_location(request: Request):
     ip = request.state.ip
-    location_data = await get_geolocation(ip)
-    complete_location_name = location_data.get('city', '') + ', ' + location_data.get('region', '')
-    location_name = complete_location_name.replace(',', '').replace(' ', '')
-    return {"ip": ip, "location": location_name}
+    return {"ip": ip}
 
 
 app.include_router(auth.router, prefix="/auth", tags=["auth"])

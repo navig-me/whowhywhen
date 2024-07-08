@@ -6,7 +6,8 @@ import enum
 
 class SubscriptionPlan(enum.Enum):
     free = "free"
-    paid = "paid"
+    starter = "starter"
+    pro = "pro"
 
 class User(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -17,7 +18,9 @@ class User(SQLModel, table=True):
     modified: datetime = Field(default_factory=datetime.now)
     active: bool = Field(default=True)
     subscription_plan: SubscriptionPlan = Field(default=SubscriptionPlan.free)
-    last_request_reset: datetime = Field(default_factory=datetime.now)
+    monthly_credit_limit: int = Field(default=10000)
+    monthly_credit_usage_crossed: bool = Field(default=False)
+    monthly_credit_limit_reset: datetime = Field(default_factory=datetime.now)
     projects: List["UserProject"] = Relationship(back_populates="user")
 
 class UserProject(SQLModel, table=True):

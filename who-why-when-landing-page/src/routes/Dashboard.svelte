@@ -152,8 +152,6 @@
     chartData = data;
   }
 
-
-
   function handleCellClick(event) {
     const { field, value } = event.detail;
     searchParams = { ...searchParams, [field]: value };
@@ -210,8 +208,8 @@
     </div>
     <div class="dashboard-content">
       <LogsTable {apiLogs} {currentPage} {totalPages} on:changePage={(e) => changePage(e.detail.page)} on:cellClick={handleCellClick} />
-      <RequestsChart {chartData} {frequency} on:frequencyChange={handleFrequencyChange} />
     </div>
+    <RequestsChart {chartData} {frequency} on:frequencyChange={handleFrequencyChange} />
   </div>
 </section>
 
@@ -280,8 +278,8 @@
 
   .dashboard-content {
     display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 20px;
   }
 
   .toast {

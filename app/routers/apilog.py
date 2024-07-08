@@ -11,8 +11,8 @@ from app.models.user import UserProject, User
 router = APIRouter()
 
 @router.post("/log")
-def save_api_log(apilog: APILogCreate, current_user_project: UserProject = Depends(get_api_key), session: Session = Depends(get_session)):
-    return create_apilog(session, current_user_project.id, apilog)
+async def save_api_log(apilog: APILogCreate, current_user_project: UserProject = Depends(get_api_key), session: Session = Depends(get_session)):
+    return await create_apilog(session, current_user_project.id, apilog)
 
 @router.post("/logs/project/{project_id}")
 def get_api_logs(

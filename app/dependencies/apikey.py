@@ -23,4 +23,7 @@ def get_api_key(api_key_header: str = Security(api_key_header), session: Session
         raise HTTPException(
             status_code=403, detail="User project not found"
         )
+    user = session.exec(select(User).where(User.id == user_project.user_id)).first()
+    if user.monthly_credit_usage_crossed:
+        raise HTTPException(status_code=403, detail="Monthly credit limit exceeded")
     return user_project

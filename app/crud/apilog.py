@@ -1,12 +1,22 @@
 from sqlmodel import Session, select
 from app.models.apilog import APILog
 from app.schemas.apilog import APILogCreate
-from app.crud.user import increment_request_count, User
+from app.crud.user import User
 from datetime import datetime, timedelta
 from sqlalchemy import select, func, extract, case
+import httpx
 
-def create_apilog(db: Session, user_project_id: int, apilog: APILogCreate):
+async def get_geolocation(ip: str):
+    async with httpx.AsyncClient() as client:
+        response = await client.get(f'https://ipinfo.io/{ip}/json')
+        return response.json()
+
+
+async def create_apilog(db: Session, user_project_id: int, apilog: APILogCreate):
     db_apilog = APILog(user_project_id=user_project_id, **apilog.dict())
+    if apilog.ip_address:
+        geolocation = await get_geolocation(apilog.ip_address)
+        db_apilog.location = geolocation.get('ip', '') + ', ' + geolocation.get('city', '') + ', ' + geolocation.get('region', '')
     db.add(db_apilog)
     db.commit()
     db.refresh(db_apilog)
