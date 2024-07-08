@@ -4,6 +4,7 @@ from app.schemas.apilog import APILogCreate
 from app.crud.user import User
 from datetime import datetime, timedelta
 from sqlalchemy import select, func, extract, case
+from typing import List
 import httpx
 
 async def get_geolocation(ip: str):
@@ -21,6 +22,19 @@ async def create_apilog(db: Session, user_project_id: int, apilog: APILogCreate)
     db.commit()
     db.refresh(db_apilog)
     return db_apilog
+
+async def create_apilog_bulk(db: Session, user_project_id: int, apilogs: List[APILogCreate]):
+    db_apilogs = []
+    for apilog in apilogs:
+        db_apilog = APILog(user_project_id=user_project_id, **apilog.dict())
+        if apilog.ip_address:
+            geolocation = await get_geolocation(apilog.ip_address)
+            db_apilog.location = geolocation.get('ip', '') + ', ' + geolocation.get('city', '') + ', ' + geolocation.get('region', '')
+        db_apilogs.append(db_apilog)
+    db.add_all(db_apilogs)
+    db.commit()
+    db.refresh(db_apilogs)
+    return db_apilogs
 
 def get_apilogs(db: Session, user_id: int, page: int = 1, limit: int = 10, project_id: int = None, search_params = None):
     offset = (page - 1) * limit
