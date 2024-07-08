@@ -1,8 +1,8 @@
 <script>
-  import { createEventDispatcher } from 'svelte';
-  import { currentView } from '../stores/viewStore';
+  import { createEventDispatcher, onMount } from 'svelte';
   import Toast from '../components/Toast.svelte';
-  import { API_BASE_URL } from '../config'; // Import the base URL
+  import { API_BASE_URL } from '../config'; 
+  import { currentView } from '../stores/viewStore';
 
   let name = '';
   let email = '';
@@ -10,9 +10,33 @@
   let project_name = '';
   let toastMessage = '';
   let toastType = '';
+  let turnstileToken = '';
   const dispatch = createEventDispatcher();
 
+  onMount(() => {
+    const script = document.createElement('script');
+    script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback&render=explicit';
+    script.async = true;
+    script.defer = true;
+    document.body.appendChild(script);
+
+    window.onloadTurnstileCallback = function() {
+      turnstile.render('#turnstile-container', {
+        sitekey: '0x4AAAAAAAelvW7rvAgAqrZ5',
+        callback: function(token) {
+          turnstileToken = token;
+          console.log(`Challenge Success ${token}`);
+        },
+      });
+    };
+  });
+
   async function handleSubmit() {
+    if (!turnstileToken) {
+      showToast('Please complete the CAPTCHA challenge', 'error');
+      return;
+    }
+
     const response = await fetch(`${API_BASE_URL}/auth/register`, {
       method: 'POST',
       headers: {
@@ -22,7 +46,8 @@
         name,
         email,
         password,
-        project_name
+        project_name,
+        'cf_turnstile_response': turnstileToken
       })
     });
 
@@ -63,6 +88,7 @@
         <label for="project_name">Project Name</label>
         <input type="text" id="project_name" bind:value={project_name} placeholder="Enter your project name" required />
       </div>
+      <div id="turnstile-container" class="cf-turnstile"></div>
       <button type="submit" class="btn-primary">Register</button>
     </form>
   </div>

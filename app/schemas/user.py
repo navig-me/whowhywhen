@@ -7,6 +7,7 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str
     project_name: str
+    cf_turnstile_response: str
 
 class UserProjectRead(BaseModel):
     id: int

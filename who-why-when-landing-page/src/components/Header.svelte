@@ -1,6 +1,6 @@
   <script>
     import { currentView } from '../stores/viewStore';
-    import { isLoggedIn } from '../stores/userStore';
+    import { clearToken, isLoggedIn } from '../stores/userStore';
 
     let loggedIn;
     isLoggedIn.subscribe(value => {
@@ -13,6 +13,7 @@
 
     function logout() {
       isLoggedIn.set(false);
+      clearToken();
       changeView('home');
     }
   </script>

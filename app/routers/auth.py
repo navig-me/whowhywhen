@@ -7,15 +7,20 @@ from typing import Optional
 from jose import jwt
 from app.config import ACCESS_TOKEN_EXPIRE_MINUTES, SECRET_KEY, ALGORITHM
 from app.database import get_session
-from app.crud.user import create_user, get_user_by_email, User, save_user_project, get_user_projects
+from app.crud.user import create_user, get_user_by_email, User, save_user_project, get_user_projects, verify_turnstile_token
 from app.schemas.user import UserCreate, UserRead
 from app.dependencies.auth import get_current_user
 from app.dependencies.auth import verify_password
+
+TURNSTILE_SECRET_KEY = "0x4AAAAAAAelvYaX_D2kAiR7VM2LnTwAwR4"
 
 router = APIRouter()
 
 @router.post("/register", response_model=UserRead)
 def register(user: UserCreate, session: Session = Depends(get_session)):
+    # Verify the Turnstile token
+    verify_turnstile_token(user.cf_turnstile_response, TURNSTILE_SECRET_KEY)
+
     db_user = get_user_by_email(session, user.email)
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")

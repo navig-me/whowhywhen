@@ -4,10 +4,23 @@ from app.models.user import User, UserProject
 from app.schemas.user import UserCreate
 import bcrypt
 from datetime import datetime, timedelta
+import requests
 
 FREE_PLAN_LIMIT = 10000
 STARTER_PLAN_LIMIT = 100000
 PAID_PLAN_LIMIT = 500000
+
+def verify_turnstile_token(token: str, secret_key: str):
+    url = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
+    payload = {
+        'secret': secret_key,
+        'response': token
+    }
+    response = requests.post(url, data=payload)
+    result = response.json()
+
+    if not result.get("success"):
+        raise HTTPException(status_code=400, detail="Turnstile verification failed")
 
 def get_password_hash(password):
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
