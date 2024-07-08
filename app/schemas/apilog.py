@@ -9,7 +9,7 @@ class APILogCreate(BaseModel):
     location: Optional[str] = None
     response_code: Optional[int] = None
     response_time: Optional[float] = None
-    created_at: Optional[datetime] = datetime.now()
+    created_at: Optional[datetime] = None
 
 
 class APILogSearch(BaseModel):

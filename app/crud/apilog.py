@@ -15,6 +15,7 @@ async def get_geolocation(ip: str):
 
 async def create_apilog(db: Session, user_project_id: int, apilog: APILogCreate):
     db_apilog = APILog(user_project_id=user_project_id, **apilog.dict())
+    db_apilog.created_at = apilog.created_at or datetime.now()
     if apilog.ip_address:
         geolocation = await get_geolocation(apilog.ip_address)
         db_apilog.location = geolocation.get('ip', '') + ', ' + geolocation.get('city', '') + ', ' + geolocation.get('region', '')
