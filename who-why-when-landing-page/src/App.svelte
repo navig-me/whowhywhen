@@ -1,14 +1,14 @@
 <script>
 	import { currentView } from './stores/viewStore';
 	import { onMount } from 'svelte';
+	import LoginComponent from './routes/LoginComponent.svelte';
+	import RegisterComponent from './routes/RegisterComponent.svelte';
 	import Header from './components/Header.svelte';
 	import FeatureSection from './components/FeatureSection.svelte';
 	import PricingSection from './components/PricingSection.svelte';
 	import SnippetSection from './components/SnippetSection.svelte';
 	import Footer from './components/Footer.svelte';
 	import HeroSection from './components/HeroSection.svelte';
-	import Login from './routes/Login.svelte';
-	import Register from './routes/Register.svelte';
 	import Dashboard from './routes/Dashboard.svelte';
 	import Projects from './routes/Projects.svelte';
 	import { isLoggedIn } from './stores/userStore';
@@ -43,9 +43,9 @@
 	<SnippetSection />
 	<Footer />
   {:else if view === 'login'}
-	<Login />
+	<LoginComponent />
   {:else if view === 'register'}
-	<Register />
+	<RegisterComponent />
   {:else if view === 'dashboard'}
 	<Dashboard />
   {:else if view === 'projects'}

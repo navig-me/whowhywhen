@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from 'svelte';
   import { createEventDispatcher } from 'svelte';
   import { currentView } from '../stores/viewStore';
   import { isLoggedIn, setToken } from '../stores/userStore';
