@@ -3,7 +3,7 @@ from app.models.apilog import APILog
 from app.schemas.apilog import APILogCreate
 from app.crud.user import increment_request_count, User
 from datetime import datetime, timedelta
-from sqlalchemy import select, func, extract
+from sqlalchemy import select, func, extract, case
 
 def create_apilog(db: Session, user_project_id: int, apilog: APILogCreate):
     db_apilog = APILog(user_project_id=user_project_id, **apilog.dict())
@@ -79,7 +79,9 @@ def get_apilogs_stats(db: Session, user_id: int, project_id: int = None, search_
     stats_query = (
         query.with_entities(
             date_trunc.label('period'),
-            func.count(APILog.id).label('count')
+            func.count(case((APILog.response_code.between(200, 299), 1), else_=None)).label('success_count'),
+            func.count(case((APILog.response_code < 200, 1), (APILog.response_code >= 300, 1), else_=None)).label('error_count'),
+            func.coalesce(func.avg(APILog.response_time), 0).label('avg_response_time')
         )
         .group_by(date_trunc)
         .order_by(date_trunc)
@@ -87,7 +89,6 @@ def get_apilogs_stats(db: Session, user_id: int, project_id: int = None, search_
     
     results = stats_query.all()
     
-    # Generate a full set of periods
     full_periods = []
     current_period = start_date
     while current_period <= end_date:
@@ -99,8 +100,7 @@ def get_apilogs_stats(db: Session, user_id: int, project_id: int = None, search_
         else:
             current_period += timedelta(hours=1)
     
-    # Create a dictionary for counts and fill in zeros for missing periods
-    counts = {result[0].strftime(period_fmt): result[1] for result in results}
-    full_results = [{"period": period, "count": counts.get(period, 0)} for period in full_periods]
+    counts = {result[0].strftime(period_fmt): {"success_count": result[1], "error_count": result[2], "avg_response_time": result[3]} for result in results}
+    full_results = [{"period": period, "success_count": counts.get(period, {}).get("success_count", 0), "error_count": counts.get(period, {}).get("error_count", 0), "avg_response_time": counts.get(period, {}).get("avg_response_time", 0)} for period in full_periods]
     
     return full_results

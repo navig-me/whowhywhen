@@ -1,5 +1,5 @@
 <script>
-  import { Bar } from 'svelte-chartjs';
+  import { Bar, Line } from 'svelte-chartjs';
   import { Chart, registerables } from 'chart.js';
   import { createEventDispatcher } from 'svelte';
 
@@ -29,6 +29,26 @@
       data={chartData}
       options={{
         responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Request Count'
+            }
+          },
+          y1: {
+            beginAtZero: true,
+            position: 'right',
+            grid: {
+              drawOnChartArea: false
+            },
+            title: {
+              display: true,
+              text: 'Average Response Time (ms)'
+            }
+          }
+        },
         plugins: {
           legend: {
             position: 'top',

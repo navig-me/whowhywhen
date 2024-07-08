@@ -108,23 +108,51 @@
     currentPage = newPage;
     fetchApiLogs();
   }
-
+  
   function updateChartData() {
     const labels = hourlyRequestsData.map(data => data.period);
+    const successCounts = hourlyRequestsData.map(data => data.success_count);
+    const errorCounts = hourlyRequestsData.map(data => data.error_count);
+    const avgResponseTimes = hourlyRequestsData.map(data => data.avg_response_time);
+
     const data = {
       labels: labels,
       datasets: [
         {
-          label: `Requests per ${frequency.charAt(0).toUpperCase() + frequency.slice(1)}`,
-          data: hourlyRequestsData.map(data => data.count),
-          backgroundColor: 'rgba(102, 51, 153, 0.2)',
-          borderColor: 'rgba(102, 51, 153, 1)',
-          borderWidth: 1
+          type: 'bar',
+          label: 'Success Count',
+          data: successCounts,
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1,
+          stack: 'combined',
+          yAxisID: 'y'
+        },
+        {
+          type: 'bar',
+          label: 'Error Count',
+          data: errorCounts,
+          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+          borderColor: 'rgba(255, 99, 132, 1)',
+          borderWidth: 1,
+          stack: 'combined',
+          yAxisID: 'y'
+        },
+        {
+          type: 'line',
+          label: 'Avg Response Time',
+          data: avgResponseTimes,
+          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+          borderColor: 'rgba(54, 162, 235, 1)',
+          borderWidth: 1,
+          yAxisID: 'y1'
         }
       ]
     };
     chartData = data;
   }
+
+
 
   function handleCellClick(event) {
     const { field, value } = event.detail;
