@@ -5,7 +5,7 @@
     import { createEventDispatcher } from 'svelte';
     import Toast from '../components/Toast.svelte';
     import { API_BASE_URL } from '../config'; // Import the base URL
-  
+
     let projects = [];
     let apiKeys = [];
     let newProjectName = '';
@@ -17,14 +17,14 @@
     let showToast = false;
     let clientIp = '';
     let clientLocation = {};
-  
+
     const dispatch = createEventDispatcher();
-  
+
     onMount(async () => {
       await fetchProjects();
       await fetchIpLocation();
     });
-  
+
     async function fetchProjects() {
       const token = localStorage.getItem('token');
       const response = await fetch(`${API_BASE_URL}/auth/users/me/projects`, {
@@ -38,7 +38,7 @@
         showToastMessage('Failed to fetch projects', 'error');
       }
     }
-  
+
     async function fetchIpLocation() {
       const response = await fetch(`${API_BASE_URL}/api/ip-location`);
       if (response.ok) {
@@ -49,8 +49,12 @@
         showToastMessage('Failed to fetch IP and location info', 'error');
       }
     }
-  
+
     async function createProject() {
+      if (projects.length >= 10) {
+        showToastMessage('You have reached the maximum number of projects', 'error');
+        return;
+      }
       const token = localStorage.getItem('token');
       const response = await fetch(`${API_BASE_URL}/auth/users/me/projects?project_name=${newProjectName}`, {
         method: 'POST',
@@ -64,10 +68,11 @@
         await fetchProjects();
         showToastMessage('Project created successfully', 'success');
       } else {
-        showToastMessage('Failed to create project', 'error');
+        const errorData = await response.json();
+        showToastMessage(errorData.detail || 'Failed to create project', 'error');
       }
     }
-  
+
     async function fetchApiKeys(projectId) {
       selectedProjectId = projectId;
       const token = localStorage.getItem('token');
@@ -83,8 +88,12 @@
         showToastMessage('Failed to fetch API keys', 'error');
       }
     }
-  
+
     async function createApiKey() {
+      if (apiKeys.length >= 3) {
+        showToastMessage('You have reached the maximum number of API keys for this project', 'error');
+        return;
+      }
       const token = localStorage.getItem('token');
       const response = await fetch(`${API_BASE_URL}/api/apikeys?user_project_id=${selectedProjectId}&name=${newApiKeyName}`, {
         method: 'POST',
@@ -98,10 +107,11 @@
         await fetchApiKeys(selectedProjectId);
         showToastMessage('API key created successfully', 'success');
       } else {
-        showToastMessage('Failed to create API key', 'error');
+        const errorData = await response.json();
+        showToastMessage(errorData.detail || 'Failed to create API key', 'error');
       }
     }
-  
+
     async function deleteApiKey(keyId) {
       const token = localStorage.getItem('token');
       const response = await fetch(`${API_BASE_URL}/api/apikeys/${keyId}`, {
@@ -117,7 +127,7 @@
         showToastMessage('Failed to delete API key', 'error');
       }
     }
-  
+
     async function testApiKey(apiKey) {
       const response = await fetch(`${API_BASE_URL}/api/log`, {
         method: 'POST',
@@ -138,16 +148,16 @@
         showToastMessage('Test request failed', 'error');
       }
     }
-  
+
     function blurApiKey(apiKey, show) {
       return show ? apiKey : apiKey.slice(0, -4).replace(/./g, '*') + apiKey.slice(-4);
     }
-  
+
     function logout() {
       clearToken();
       currentView.set('home');
     }
-  
+
     function showToastMessage(message, type) {
       toastMessage = message;
       toastType = type;
@@ -178,6 +188,9 @@
     <h3>Create New Project</h3>
     <input type="text" bind:value={newProjectName} placeholder="Project Name" class="input-field" />
     <button class="btn-primary" on:click={createProject}>Create Project</button>
+    {#if projects.length >= 10}
+      <p>You have reached the maximum number of projects.</p>
+    {/if}
   
     {#if showApiKeysModal}
       <div class="modal">
@@ -199,6 +212,9 @@
               </li>
             {/each}
           </ul>
+          {#if apiKeys.length >= 3}
+            <p>You have reached the maximum number of API keys for this project. Delete an existing API key to create a new one.</p>
+          {/if}
           <div class="create-api-key">
             <input type="text" bind:value={newApiKeyName} placeholder="API Key Name" class="input-field" />
             <button class="btn-primary" on:click={createApiKey}>Create New API Key</button>
@@ -348,4 +364,3 @@
       margin-top: 10px;
     }
   </style>
-  

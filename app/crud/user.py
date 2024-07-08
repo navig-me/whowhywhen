@@ -51,6 +51,11 @@ def get_user_projects(db: Session, user_id: int):
     return db.exec(select(UserProject).where(UserProject.user_id == user_id)).all()
 
 def save_user_project(db: Session, user_id: int, project_name: str):
+    # Check if the user has reached the maximum number of projects
+    existing_projects = db.query(UserProject).filter(UserProject.user_id == user_id).count()
+    if existing_projects >= 10:
+        raise HTTPException(status_code=400, detail="Maximum number of projects reached")
+    
     project = UserProject(name=project_name, user_id=user_id)
     db.add(project)
     db.commit()
