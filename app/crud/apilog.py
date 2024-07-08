@@ -9,6 +9,8 @@ import uuid
 import httpx
 
 async def get_geolocation(ip: str):
+    if ip and ',' in ip:
+        ip = ip.split(',')[0]
     async with httpx.AsyncClient() as client:
         response = await client.get(f'https://ipinfo.io/{ip}/json')
         return response.json()
@@ -105,8 +107,8 @@ def get_apilogs_stats(db: Session, user_id: uuid.UUID, project_id: uuid.UUID = N
     stats_query = (
         query.with_entities(
             date_trunc.label('period'),
-            func.count(case((APILog.response_code.between(200, 299), 1), else_=None)).label('success_count'),
-            func.count(case((APILog.response_code < 200, 1), (APILog.response_code >= 300, 1), else_=None)).label('error_count'),
+            func.count(case((APILog.response_code.between(200, 399), 1), else_=None)).label('success_count'),
+            func.count(case((APILog.response_code < 200, 1), (APILog.response_code >= 400, 1), else_=None)).label('error_count'),
             func.coalesce(func.avg(APILog.response_time), 0).label('avg_response_time')
         )
         .group_by(date_trunc)
