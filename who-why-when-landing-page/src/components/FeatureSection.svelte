@@ -7,8 +7,25 @@
             <i class="fas fa-chart-line"></i>
           </div>
           <h3>Real-time Analytics</h3>
-          <p>Access real-time analytics and see how users interact with your APIs, enabling you to make informed decisions quickly.</p>
+          <p>Access real-time analytics and see your APIs are being used enabling you to make informed decisions and optimize your services.</p>
         </div>
+
+        <div class="feature">
+          <div class="icon">
+            <i class="fas fa-tachometer-alt"></i>
+          </div>
+          <h3>Performance Monitoring</h3>
+          <p>Monitor the performance of your APIs and ensure they are meeting your SLAs.</p>
+        </div>
+
+        <div class="feature">
+          <div class="icon">
+            <i class="fas fa-bell"></i>
+          </div>
+          <h3>Alerts and Notifications</h3>
+          <p>Receive alerts and notifications when your APIs are under or over performance baselines.</p>
+        </div>
+
         <div class="feature">
           <div class="icon">
             <i class="fas fa-file-alt"></i>
@@ -22,13 +39,6 @@
           </div>
           <h3>Seamless Integration</h3>
           <p>Integrate WhoWhyWhen effortlessly into your platform with our easy-to-use code snippets and comprehensive documentation.</p>
-        </div>
-        <div class="feature">
-          <div class="icon">
-            <i class="fas fa-envelope"></i>
-          </div>
-          <h3>Email Support</h3>
-          <p>Get instant support and assistance with any questions or issues related to your WhoWhyWhen account.</p>
         </div>
       </div>
     </div>
@@ -50,7 +60,7 @@
     }
   
     .feature {
-      width: 18%;
+      width: 13%;
       background: #fff;
       padding: 30px;
       border-radius: 10px;
