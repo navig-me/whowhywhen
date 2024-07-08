@@ -1,11 +1,55 @@
 version: '3.8'
 
 services:
-  web:
-    build: .
+  fastapi:
+    image: fastapi_image
+    build:
+      context: .
+      dockerfile: Dockerfile.fastapi
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+    networks:
+      - app-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.rule=Host(`api.whowhywhen.com`) || PathPrefix(`/api`, `/auth`, `/docs`, `/openapi.json`)"
+      - "traefik.http.services.api.loadbalancer.server.port=8000"
+
+  svelte:
+    image: svelte_image
+    build:
+      context: .
+      dockerfile: Dockerfile.svelte
+    networks:
+      - app-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`whowhywhen.com`, `www.whowhywhen.com`) || Path(`/`) || Path(`/index.html`) || PathPrefix(`/build`) || PathPrefix(`/favicon.ico`) || PathPrefix(`/www-bg.webp`) || PathPrefix(`/style.css`) || PathPrefix(`/bundle.js`) || PathPrefix(`/bundle.css`) || PathPrefix(`/stores`) || PathPrefix(`/global.css`)"
+      - "traefik.http.services.frontend.loadbalancer.server.port=80"
+
+  traefik:
+    image: traefik:v2.4
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.mytlschallenge.acme.tlschallenge=true"
+      - "--certificatesresolvers.mytlschallenge.acme.email=youremail@example.com"
+      - "--certificatesresolvers.mytlschallenge.acme.storage=/letsencrypt/acme.json"
     ports:
-      - "8000:8000"
+      - "80:80"
+      - "443:443"
     volumes:
-      - .:/app
-    env_file:
-      - .env
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "letsencrypt:/letsencrypt"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+
+volumes:
+  letsencrypt:

@@ -3,6 +3,7 @@ from typing import Optional, List
 from pydantic import EmailStr
 from datetime import datetime
 import enum
+import uuid
 
 class SubscriptionPlan(enum.Enum):
     free = "free"
@@ -10,7 +11,7 @@ class SubscriptionPlan(enum.Enum):
     pro = "pro"
 
 class User(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
+    id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
     name: str = Field(index=True)
     email: EmailStr = Field(index=True, unique=True)
     password_hash: str
@@ -24,13 +25,13 @@ class User(SQLModel, table=True):
     projects: List["UserProject"] = Relationship(back_populates="user")
 
 class UserProject(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
+    id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
     name: str = Field(index=True, unique=True)
     created: datetime = Field(default_factory=datetime.now)
     modified: datetime = Field(default_factory=datetime.now)
     active: bool = Field(default=True)
     is_default: bool = Field(default=False)
-    user_id: int = Field(foreign_key="user.id")
+    user_id: uuid.UUID = Field(foreign_key="user.id")
     user: "User" = Relationship(back_populates="projects")
     api_keys: List["APIKey"] = Relationship(back_populates="user_project")
     api_logs: List["APILog"] = Relationship(back_populates="user_project")

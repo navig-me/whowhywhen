@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
+import uuid
 
 class APILogCreate(BaseModel):
     endpoint: str
@@ -21,7 +22,7 @@ class APILogSearch(BaseModel):
 
 
 class APILogRead(BaseModel):
-    id: int
+    id: uuid.UUID
     request_info: str
     is_bot: bool
     location: Optional[str]

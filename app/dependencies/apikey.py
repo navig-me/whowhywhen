@@ -14,16 +14,19 @@ def get_api_key(api_key_header: str = Security(api_key_header), session: Session
             status_code=403, detail="API key is required"
         )
     api_key = session.exec(select(APIKey).where(APIKey.key == api_key_header)).first()
+    print("API KEY", api_key)
     if api_key is None:
         raise HTTPException(
             status_code=403, detail="Invalid API key"
         )
-    user_project = session.exec(select(UserProject).where(User.id == api_key.user_project_id)).first()
+    user_project = session.exec(select(UserProject).where(UserProject.id == api_key.user_project_id)).first()
+    print("User project", user_project)
     if user_project is None:
         raise HTTPException(
             status_code=403, detail="User project not found"
         )
     user = session.exec(select(User).where(User.id == user_project.user_id)).first()
+    print("User", user)
     if user.monthly_credit_usage_crossed:
         raise HTTPException(status_code=403, detail="Monthly credit limit exceeded")
     return user_project

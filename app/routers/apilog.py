@@ -8,6 +8,7 @@ from app.schemas.apilog import APILogCreate, APILogSearch
 from app.dependencies.apikey import get_api_key
 from app.dependencies.auth import get_current_user
 from app.models.user import UserProject, User
+import uuid
 
 router = APIRouter()
 
@@ -21,7 +22,7 @@ async def save_api_log_bulk(apilogs: List[APILogCreate], current_user_project: U
 
 @router.post("/logs/project/{project_id}")
 def get_api_logs(
-    project_id: int,
+    project_id: uuid.UUID,
     search_params: Optional[APILogSearch] = None,
     page: int = 1,
     limit: int = 10,
@@ -33,7 +34,7 @@ def get_api_logs(
 
 @router.post("/logs/project/stats/{project_id}")
 def get_api_logs_stats(
-    project_id: int,
+    project_id: uuid.UUID,
     search_params: Optional[APILogSearch] = None,
     frequency: str = "hour",
     current_user: User = Depends(get_current_user),

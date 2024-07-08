@@ -20,7 +20,7 @@ app = FastAPI(
     title="WhoWhyWhen API",
     description="API for WhoWhyWhen",
     version="0.1.0",
-    docs_url="/",
+    # docs_url="/",
 )
 
 @asynccontextmanager

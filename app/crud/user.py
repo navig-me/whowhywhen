@@ -5,6 +5,7 @@ from app.schemas.user import UserCreate
 import bcrypt
 from datetime import datetime, timedelta
 import requests
+import uuid
 
 FREE_PLAN_LIMIT = 10000
 STARTER_PLAN_LIMIT = 100000
@@ -43,10 +44,10 @@ def get_user_by_email(db: Session, email: str):
     return db.exec(select(User).where(User.email == email)).first()
 
 
-def get_user_projects(db: Session, user_id: int):
+def get_user_projects(db: Session, user_id: uuid.UUID):
     return db.exec(select(UserProject).where(UserProject.user_id == user_id)).all()
 
-def save_user_project(db: Session, user_id: int, project_name: str):
+def save_user_project(db: Session, user_id: uuid.UUID, project_name: str):
     # Check if the user has reached the maximum number of projects
     existing_projects = db.query(UserProject).filter(UserProject.user_id == user_id).count()
     if existing_projects >= 10:

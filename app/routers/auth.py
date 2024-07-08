@@ -97,6 +97,7 @@ def register(user: UserCreate, session: Session = Depends(get_session)):
 @router.post("/token")
 def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), session: Session = Depends(get_session)):
     user = get_user_by_email(session, form_data.username)
+    print(user)
     if not user or not verify_password(form_data.password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -124,6 +125,9 @@ def read_users_me(current_user: User = Depends(get_current_user), session: Sessi
     user_request_count = 0
     for project in user_projects:
         user_request_count += session.query(APILog).filter(APILog.user_project_id == project.id).filter(APILog.created_at >= current_user.monthly_credit_limit_reset).count()
+    print(user_request_count)
+    print(current_user)
+    
     return {
         "user": current_user,
         "user_request_count": user_request_count

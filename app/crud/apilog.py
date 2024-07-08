@@ -5,6 +5,7 @@ from app.crud.user import User
 from datetime import datetime, timedelta
 from sqlalchemy import select, func, extract, case
 from typing import List
+import uuid
 import httpx
 
 async def get_geolocation(ip: str):
@@ -13,7 +14,7 @@ async def get_geolocation(ip: str):
         return response.json()
 
 
-async def create_apilog(db: Session, user_project_id: int, apilog: APILogCreate):
+async def create_apilog(db: Session, user_project_id: uuid.UUID, apilog: APILogCreate):
     db_apilog = APILog(user_project_id=user_project_id, **apilog.dict())
     db_apilog.created_at = apilog.created_at or datetime.now()
     if apilog.ip_address:
@@ -24,7 +25,7 @@ async def create_apilog(db: Session, user_project_id: int, apilog: APILogCreate)
     db.refresh(db_apilog)
     return db_apilog
 
-async def create_apilog_bulk(db: Session, user_project_id: int, apilogs: List[APILogCreate]):
+async def create_apilog_bulk(db: Session, user_project_id: uuid.UUID, apilogs: List[APILogCreate]):
     db_apilogs = []
     for apilog in apilogs:
         db_apilog = APILog(user_project_id=user_project_id, **apilog.dict())
@@ -37,7 +38,7 @@ async def create_apilog_bulk(db: Session, user_project_id: int, apilogs: List[AP
     db.refresh(db_apilogs)
     return db_apilogs
 
-def get_apilogs(db: Session, user_id: int, page: int = 1, limit: int = 10, project_id: int = None, search_params = None):
+def get_apilogs(db: Session, user_id: uuid.UUID, page: int = 1, limit: int = 10, project_id: uuid.UUID = None, search_params = None):
     offset = (page - 1) * limit
     
     if project_id:
@@ -65,7 +66,7 @@ def get_apilogs(db: Session, user_id: int, page: int = 1, limit: int = 10, proje
     return {"logs": results, "total": total}
 
 
-def get_apilogs_stats(db: Session, user_id: int, project_id: int = None, search_params = None, frequency: str = "hour"):
+def get_apilogs_stats(db: Session, user_id: uuid.UUID, project_id: uuid.UUID = None, search_params = None, frequency: str = "hour"):
     end_date = datetime.now()
 
     if frequency == "minute":

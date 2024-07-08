@@ -1,12 +1,13 @@
 from sqlmodel import SQLModel, Field, Relationship
 from typing import Optional
 from datetime import datetime
+import uuid
 
 class APILog(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    user_project_id: int = Field(foreign_key="userproject.id")
+    id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
+    user_project_id: uuid.UUID = Field(foreign_key="userproject.id")
     endpoint: str    
-    bot_id: Optional[int] = Field(foreign_key="botinfo.id")
+    bot_id: Optional[uuid.UUID] = Field(foreign_key="botinfo.id")
     ip_address: str
     request_info: str
     location: Optional[str] = None    
