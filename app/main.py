@@ -14,8 +14,7 @@ from datetime import datetime, timedelta
 from contextlib import asynccontextmanager
 from fastapi_utils.tasks import repeat_every
 from app.config import STRIPE_PUBLISHABLE_KEY, STRIPE_SECRET_KEY
-from time import time
-
+import time
 
 app = FastAPI(
     title="WhoWhyWhen API",
