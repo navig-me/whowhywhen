@@ -23,51 +23,6 @@ app = FastAPI(
     # docs_url="/",
 )
 
-class WhoWhyWhenMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request: Request, call_next):
-        start_time = time.time()
-        
-        response = await call_next(request)
-        
-        response_time = time.time() - start_time
-        
-        # Only get endpoint without query parameters. Also remove the URL and hostname
-        endpoint = str(request.url).split("?")[0]
-        endpoint = endpoint.split("/")[-1]
-        endpoint = '/' + endpoint
-
-        log_data = {
-            "endpoint": endpoint,
-            "ip_address": request.headers.get("X-Forwarded-For", request.client.host),
-            "request_info": f"{request.headers.get('User-Agent', '')}",
-            "response_code": response.status_code,
-            "response_time": response_time
-        }
-        
-        await self.send_log_to_whowhywhen(log_data)
-        
-        return response
-    
-    async def send_log_to_whowhywhen(self, log_data):
-        whowhywhen_api_url = "https://api.whowhywhen.com/api/log"
-        headers = {"X-Api-Key": "5ab7843a-0154-4aac-b15d-b213589d8687"}
-        
-        async with httpx.AsyncClient() as client:
-            try:
-                await client.post(
-                    whowhywhen_api_url,
-                    headers=headers,
-                    json=log_data,
-                    timeout=10  # Adjust the timeout as needed
-                )
-            except httpx.HTTPStatusError as exc:
-                print(f"Error sending log to WhoWhyWhen: {exc.response.status_code} - {exc.response.text}")
-            except Exception as exc:
-                print(f"Error sending log to WhoWhyWhen: {str(exc)}")
-
-app.add_middleware(WhoWhyWhenMiddleware)
-
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     yield
