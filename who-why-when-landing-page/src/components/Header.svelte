@@ -42,7 +42,9 @@
       monthlyCreditLimit = data.user.monthly_credit_limit;
       monthlyCreditUsageCrossed = data.user.monthly_credit_usage_crossed;
       const nextPlan = getNextPlan(user.subscription_plan);
-      upgradeLink = await fetchUpgradeLink(nextPlan, token);
+      if (nextPlan) {
+        upgradeLink = await fetchUpgradeLink(nextPlan, token);
+      }
     } else if (response.status === 401) {
       clearToken();
       changeView('home');
@@ -52,7 +54,7 @@
   function getNextPlan(currentPlan) {
     if (currentPlan === 'free') return 'starter';
     if (currentPlan === 'starter') return 'pro';
-    return '';
+    return ''; // No next plan for PRO
   }
 
   async function fetchUpgradeLink(planName, token) {
@@ -99,19 +101,25 @@
     <nav>
       {#if loggedIn}
         {#if user}
-          <div class="user-info">
-            <div class="plan-info" style="color: {getPlanColor(user.subscription_plan)}">
-              Plan: {getPlanName(user.subscription_plan)}
-            </div>
-            <div class="request-info">
-              <div class="request-bar-container">
-                <div class="request-bar">
-                  <div class="request-bar-inner {getRequestBarClass(userRequestCount, monthlyCreditLimit)}" style="width: {getRequestBarWidth(userRequestCount, monthlyCreditLimit)}%"></div>
-                </div>
-                <span class="request-count">{userRequestCount}/{monthlyCreditLimit}</span>
+          <div class="plan-section">
+            <div class="user-info">
+              <div class="plan-info" style="color: {getPlanColor(user.subscription_plan)}">
+                Plan: {getPlanName(user.subscription_plan)}
               </div>
+              <div class="request-info">
+                <div class="request-bar-container">
+                  <div class="request-bar">
+                    <div class="request-bar-inner {getRequestBarClass(userRequestCount, monthlyCreditLimit)}" style="width: {getRequestBarWidth(userRequestCount, monthlyCreditLimit)}%"></div>
+                  </div>
+                  <span class="request-count">{userRequestCount}/{monthlyCreditLimit}</span>
+                </div>
+              </div>
+              {#if user.subscription_plan === 'pro'}
+                <a class="upgrade-button" href="mailto:upgrade@whowhywhen.com">Contact to Upgrade</a>
+              {:else}
+                <a class="upgrade-button" href={upgradeLink} target="_blank" rel="noopener noreferrer">Upgrade to {getNextPlan(user.subscription_plan).toUpperCase()}</a>
+              {/if}
             </div>
-            <a class="upgrade-button" href={upgradeLink} target="_blank" rel="noopener noreferrer">Upgrade to {getNextPlan(user.subscription_plan).toUpperCase()}</a>
           </div>
         {/if}
         <a class="btn-primary" href="https://whowhywhen.github.io" target="_blank" rel="noopener noreferrer">Docs</a>
@@ -126,6 +134,7 @@
     </nav>
   </div>
 </header>
+
 
 <style>
   .header {
@@ -191,29 +200,43 @@
     color: #fff;
   }
 
+  .plan-section {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
   .user-info {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    margin-right: 20px;
+    align-items: center;
     position: relative;
     cursor: pointer;
     transition: all 0.3s;
+    width: 250px; /* Ensuring consistent width */
   }
 
-  .plan-info, .request-info {
-    transition: opacity 0.3s;
+  .plan-info {
+    font-weight: bold;
+    text-align: center;
+    width: 100%; /* Ensure the width matches the container */
+  }
+
+  .request-info {
+    width: 100%; /* Ensure the width matches the container */
+    margin-top: 10px;
   }
 
   .request-bar-container {
     position: relative;
-    width: 150px;
+    width: 100%;
     margin-top: 10px;
   }
 
   .request-bar {
     width: 100%;
-    height: 10px;
+    height: 15px; /* Increase height for better visibility */
     background-color: #ddd;
     border-radius: 5px;
     overflow: hidden;
@@ -256,6 +279,8 @@
     font-weight: bold;
     opacity: 0;
     transition: opacity 0.3s;
+    width: 100%; /* Ensure the width matches the container */
+    text-align: center;
   }
 
   .user-info:hover .plan-info,

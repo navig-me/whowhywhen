@@ -80,7 +80,6 @@ def refresh_user_subscription(current_user: User, session: Session = Depends(get
         elif current_user.subscription_plan == SubscriptionPlan.pro:
             current_user.monthly_credit_limit = PAID_PLAN_LIMIT
         current_user.monthly_credit_usage_crossed = False
-        current_user.monthly_credit_limit_reset = datetime.now()
         session.add(current_user)
         session.commit()
         
