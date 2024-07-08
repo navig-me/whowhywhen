@@ -17,38 +17,40 @@
   
   <div class="logs-table">
     <h3>API Logs</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Endpoint</th>
-          <th>IP Address</th>
-          <th>Request Info</th>
-          <th>Response Code</th>
-          <th>Response Time</th>
-          <th>Location</th>
-          <th>Created At</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#if apiLogs.length === 0}
+    <div class="table-container">
+      <table>
+        <thead>
           <tr>
-            <td colspan="7">No logs available</td>
+            <th>Endpoint</th>
+            <th>IP Address</th>
+            <th>Request Info</th>
+            <th>Response Code</th>
+            <th>Response Time</th>
+            <th>Location</th>
+            <th>Created At</th>
           </tr>
-        {:else}
-          {#each apiLogs as log}
+        </thead>
+        <tbody>
+          {#if apiLogs.length === 0}
             <tr>
-              <td on:click={() => handleCellClick('endpoint', log.endpoint)}>{log.endpoint}</td>
-              <td on:click={() => handleCellClick('ip_address', log.ip_address)}>{log.ip_address}</td>
-              <td on:click={() => handleCellClick('request_info', log.request_info)}>{log.request_info}</td>
-              <td on:click={() => handleCellClick('response_code', log.response_code)}>{log.response_code}</td>
-              <td>{log.response_time}</td>
-              <td on:click={() => handleCellClick('location', log.location)}>{log.location}</td>
-              <td>{new Date(log.created_at).toLocaleString()}</td>
+              <td colspan="7">No logs available</td>
             </tr>
-          {/each}
-        {/if}
-      </tbody>
-    </table>
+          {:else}
+            {#each apiLogs as log}
+              <tr>
+                <td on:click={() => handleCellClick('endpoint', log.endpoint)}>{log.endpoint}</td>
+                <td on:click={() => handleCellClick('ip_address', log.ip_address)}>{log.ip_address}</td>
+                <td>{log.request_info}</td>
+                <td on:click={() => handleCellClick('response_code', log.response_code)}>{log.response_code}</td>
+                <td>{log.response_time}</td>
+                <td on:click={() => handleCellClick('location', log.location)}>{log.location}</td>
+                <td>{new Date(log.created_at).toLocaleString()}</td>
+              </tr>
+            {/each}
+          {/if}
+        </tbody>
+      </table>
+    </div>
     <div class="pagination">
       {#if currentPage > 1}
         <button on:click={() => changePage(currentPage - 1)}>Previous</button>
@@ -67,6 +69,12 @@
       padding: 20px;
       border-radius: 10px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      max-width: 100%; /* Ensures the container doesn't exceed the screen width */
+      overflow-x: auto; /* Adds horizontal scroll if content overflows */
+    }
+  
+    .table-container {
+      overflow-x: auto; /* Adds horizontal scroll to the table container */
     }
   
     table {
@@ -112,3 +120,4 @@
       background-color: #7d42a6;
     }
   </style>
+  
