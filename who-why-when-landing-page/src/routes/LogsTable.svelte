@@ -4,7 +4,6 @@
     export let apiLogs = [];
     export let currentPage = 1;
     export let totalPages = 1;
-    let logsEnd = false; // Flag to check if all logs are loaded
     const dispatch = createEventDispatcher();
   
     function handleCellClick(field, value) {
@@ -12,20 +11,25 @@
     }
   
     function changePage(newPage) {
-      dispatch('changePage', { page: newPage });
+      if (newPage > 0 && newPage <= totalPages) {
+        dispatch('changePage', { page: newPage });
+      }
     }
   
     function handleScroll(event) {
       const { scrollTop, scrollHeight, clientHeight } = event.target;
-      if (scrollTop + clientHeight >= scrollHeight && !logsEnd) {
+      if (scrollTop + clientHeight >= scrollHeight && currentPage < totalPages) {
         changePage(currentPage + 1);
       }
     }
   
-    onMount(() => {
-      // Check if all logs are loaded
-      logsEnd = currentPage >= totalPages;
-    });
+    function getPagesArray() {
+      let pages = [];
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+      return pages;
+    }
   </script>
   
   <div class="logs-table">
@@ -63,6 +67,13 @@
           {/if}
         </tbody>
       </table>
+    </div>
+    <div class="pagination">
+      <button on:click={() => changePage(currentPage - 1)} disabled={currentPage === 1}>Previous</button>
+      {#each getPagesArray() as page}
+        <button on:click={() => changePage(page)} class:active={page === currentPage}>{page}</button>
+      {/each}
+      <button on:click={() => changePage(currentPage + 1)} disabled={currentPage === totalPages}>Next</button>
     </div>
   </div>
   
@@ -105,6 +116,33 @@
   
     tr:hover {
       background-color: #f1f1f1;
+    }
+  
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      margin-top: 20px;
+    }
+  
+    .pagination button {
+      padding: 5px 10px;
+      border: 1px solid #663399;
+      background-color: #fff;
+      color: #663399;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+  
+    .pagination button.active {
+      background-color: #663399;
+      color: #fff;
+    }
+  
+    .pagination button:disabled {
+      background-color: #ddd;
+      color: #666;
+      cursor: not-allowed;
     }
   </style>
   

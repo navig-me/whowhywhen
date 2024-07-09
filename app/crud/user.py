@@ -41,7 +41,8 @@ def create_user(session: Session, user: UserCreate) -> User:
 
 
 def get_user_by_email(db: Session, email: str):
-    return db.exec(select(User).where(User.email == email)).first()
+    print("Getting user by email...", email)
+    return db.exec(select(User).where(User.email == email)).first() if email else None
 
 
 def get_user_projects(db: Session, user_id: uuid.UUID):
