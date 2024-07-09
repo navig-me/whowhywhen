@@ -41,11 +41,6 @@ async def create_apilog_bulk(db: Session, user_project_id: uuid.UUID, apilogs: L
     db.refresh(db_apilogs)
     return db_apilogs
 
-from sqlalchemy.orm import Session
-from sqlalchemy import select, or_, func, case
-from typing import Optional
-import uuid
-from datetime import datetime, timedelta
 
 def get_apilogs(db: Session, user_id: uuid.UUID, page: int = 1, limit: int = 10, project_id: uuid.UUID = None, search_params = None, q: Optional[str] = None, sort: Optional[str] = None, sort_direction: Optional[str] = None):
     offset = (page - 1) * limit
@@ -71,7 +66,7 @@ def get_apilogs(db: Session, user_id: uuid.UUID, page: int = 1, limit: int = 10,
         query = query.where(or_(APILog.endpoint.ilike(f'%{q}%'), APILog.request_info.ilike(f'%{q}%'), APILog.ip_address.ilike(f'%{q}%')))
 
     # Total for query
-    total_query = select([func.count()]).select_from(query.subquery())
+    total_query = select(func.count()).select_from(query.subquery())
     total = db.execute(total_query).scalar()
 
     if sort:
