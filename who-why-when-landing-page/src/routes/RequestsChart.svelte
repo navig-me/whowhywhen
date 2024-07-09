@@ -7,6 +7,7 @@
 
   export let chartData = null;
   export let frequency = "hour";
+  export let isChartLoading = false; // New prop for loading state
   const dispatch = createEventDispatcher();
 
   function handleFrequencyChange(event) {
@@ -24,7 +25,9 @@
     </select>
   </div>
   <h3>Requests per {frequency.charAt(0).toUpperCase() + frequency.slice(1)}</h3>
-  {#if chartData}
+  {#if isChartLoading}
+    <p class="loading">Loading...</p>
+  {:else if chartData}
     <Bar
       data={chartData}
       options={{
@@ -100,5 +103,11 @@
   p {
     text-align: center;
     color: #666;
+  }
+
+  .loading {
+    text-align: center;
+    font-size: 1.2em;
+    color: #663399;
   }
 </style>

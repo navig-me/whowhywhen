@@ -21,6 +21,8 @@
   let chartData = null;
   let frequency = "hour";
   let searchParams = {};
+  let isTableLoading = false;
+  let isChartLoading = false;
 
   const dispatch = createEventDispatcher();
 
@@ -29,6 +31,8 @@
   });
 
   async function fetchProjects() {
+    isTableLoading = true;
+    isChartLoading = true;
     const token = localStorage.getItem('token');
     const response = await fetch(`${API_BASE_URL}/auth/users/me/projects`, {
       headers: {
@@ -49,9 +53,12 @@
     } else {
       showToast('Failed to fetch projects', 'error');
     }
+    isTableLoading = false;
+    isChartLoading = false;
   }
 
   async function fetchApiLogs() {
+    isTableLoading = true;
     const token = localStorage.getItem('token');
     const response = await fetch(`${API_BASE_URL}/api/logs/project/${selectedProjectId}?page=${currentPage}&limit=${logsPerPage}`, {
       method: 'POST',
@@ -74,9 +81,11 @@
     } else {
       showToast('Failed to fetch API logs', 'error');
     }
+    isTableLoading = false;
   }
 
   async function fetchHourlyRequestsData() {
+    isChartLoading = true;
     const token = localStorage.getItem('token');
     const response = await fetch(`${API_BASE_URL}/api/logs/project/stats/${selectedProjectId}?frequency=${frequency}`, {
       method: 'POST',
@@ -96,6 +105,7 @@
     } else {
       showToast('Failed to fetch hourly requests data', 'error');
     }
+    isChartLoading = false;
   }
 
   function showToast(message, type) {
@@ -205,9 +215,9 @@
       </ul>
     </div>
     <div class="dashboard-content">
-      <LogsTable {apiLogs} {currentPage} {totalPages} on:changePage={(e) => changePage(e.detail.page)} on:cellClick={handleCellClick} />
+      <LogsTable {apiLogs} {currentPage} {totalPages} {isTableLoading} on:changePage={(e) => changePage(e.detail.page)} on:cellClick={handleCellClick} />
     </div>
-    <RequestsChart {chartData} {frequency} on:frequencyChange={handleFrequencyChange} />
+    <RequestsChart {chartData} {frequency} {isChartLoading} on:frequencyChange={handleFrequencyChange} />
   </div>
 </section>
 

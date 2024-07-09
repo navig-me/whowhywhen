@@ -1,9 +1,10 @@
 <script>
-    import { createEventDispatcher, onMount } from 'svelte';
+    import { createEventDispatcher } from 'svelte';
   
     export let apiLogs = [];
     export let currentPage = 1;
     export let totalPages = 1;
+    export let isTableLoading = false; // New prop for loading state
     const dispatch = createEventDispatcher();
   
     function handleCellClick(field, value) {
@@ -27,38 +28,42 @@
   <div class="logs-table">
     <h3>API Logs</h3>
     <div class="table-container" on:scroll={handleScroll}>
-      <table>
-        <thead>
-          <tr>
-            <th>Endpoint</th>
-            <th>IP Address</th>
-            <th>Request Info</th>
-            <th>Response Code</th>
-            <th>Response Time</th>
-            <th>Location</th>
-            <th>Created At</th>
-          </tr>
-        </thead>
-        <tbody>
-          {#if apiLogs.length === 0}
+      {#if isTableLoading}
+        <div class="loading">Loading...</div>
+      {:else}
+        <table>
+          <thead>
             <tr>
-              <td colspan="7">No logs available</td>
+              <th>Endpoint</th>
+              <th>IP Address</th>
+              <th>Request Info</th>
+              <th>Response Code</th>
+              <th>Response Time</th>
+              <th>Location</th>
+              <th>Created At</th>
             </tr>
-          {:else}
-            {#each apiLogs as log}
+          </thead>
+          <tbody>
+            {#if apiLogs.length === 0}
               <tr>
-                <td on:click={() => handleCellClick('endpoint', log.endpoint)}>{log.endpoint}</td>
-                <td on:click={() => handleCellClick('ip_address', log.ip_address)}>{log.ip_address}</td>
-                <td>{log.request_info}</td>
-                <td on:click={() => handleCellClick('response_code', log.response_code)}>{log.response_code}</td>
-                <td>{log.response_time}</td>
-                <td on:click={() => handleCellClick('location', log.location)}>{log.location}</td>
-                <td>{new Date(log.created_at).toLocaleString()}</td>
+                <td colspan="7">No logs available</td>
               </tr>
-            {/each}
-          {/if}
-        </tbody>
-      </table>
+            {:else}
+              {#each apiLogs as log}
+                <tr>
+                  <td on:click={() => handleCellClick('endpoint', log.endpoint)}>{log.endpoint}</td>
+                  <td on:click={() => handleCellClick('ip_address', log.ip_address)}>{log.ip_address}</td>
+                  <td>{log.request_info}</td>
+                  <td on:click={() => handleCellClick('response_code', log.response_code)}>{log.response_code}</td>
+                  <td>{log.response_time}</td>
+                  <td on:click={() => handleCellClick('location', log.location)}>{log.location}</td>
+                  <td>{new Date(log.created_at).toLocaleString()}</td>
+                </tr>
+              {/each}
+            {/if}
+          </tbody>
+        </table>
+      {/if}
     </div>
     <div class="pagination">
       <button on:click={() => changePage(1)} disabled={currentPage === 1}>First</button>
@@ -135,6 +140,13 @@
       background-color: #ddd;
       color: #666;
       cursor: not-allowed;
+    }
+  
+    .loading {
+      text-align: center;
+      padding: 20px;
+      font-size: 1.2em;
+      color: #663399;
     }
   </style>
   
