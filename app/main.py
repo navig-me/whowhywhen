@@ -1,21 +1,17 @@
 from fastapi import FastAPI, Request
 from app.database import create_db_and_tables
 from app.routers import auth, apikey, apilog, botinfo
-from app.models.user import User, UserProject
-from app.models.apilog import APILog
-from sqlmodel import select, Session
-from app.database import create_db_and_tables, engine
+from app.models.user import User
+from app.models.apilog import APILog, APILogQueryParam
+from app.database import create_db_and_tables
 from app.crud.apilog import get_geolocation
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from app.database import get_session
-import httpx
 from datetime import datetime, timedelta
 from contextlib import asynccontextmanager
 from fastapi_utils.tasks import repeat_every
-from app.config import STRIPE_PUBLISHABLE_KEY, STRIPE_SECRET_KEY
 from app.crud.apilog import get_url_components
-import time
 import uuid
 
 app = FastAPI(
@@ -82,6 +78,7 @@ class APILogMiddleware(BaseHTTPMiddleware):
 
         ip_address = request.client.host
         url = str(request.url)
+        query_params = None
         if url:
             _, path, query_params = await get_url_components(url)
         # User agent as request info
@@ -98,7 +95,6 @@ class APILogMiddleware(BaseHTTPMiddleware):
             user_project_id=project_id,
             url=url,
             path=path,
-            query_params=query_params,
             ip_address=ip_address,
             user_agent=user_agent,
             location=location,
@@ -110,6 +106,10 @@ class APILogMiddleware(BaseHTTPMiddleware):
         session.add(apilog)
         session.commit()
         session.refresh(apilog)
+
+        if query_params:
+            session.add_all(APILogQueryParam(api_log_id=apilog.id, key=key, value=value) for key, value in query_params.items())
+            session.commit()
 
         return response
     

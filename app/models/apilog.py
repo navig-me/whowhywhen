@@ -13,7 +13,6 @@ class APILog(SQLModel, table=True):
     location: Optional[str] = None    
     response_code: Optional[int] = Field(default=None)
     response_time: Optional[float] = Field(default=None)
-    query_params: Optional[dict] = Field(default=None)
     path: Optional[str] = Field(default=None)
     
     created: datetime = Field(default_factory=datetime.now)
@@ -21,3 +20,9 @@ class APILog(SQLModel, table=True):
     user_project: "UserProject" = Relationship(back_populates="api_logs")
     botinfo: "BotInfo" = Relationship(back_populates="api_logs")
     created_at: datetime = Field(default_factory=datetime.now)
+
+class APILogQueryParam(BaseModel, table=True):
+    id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
+    api_log_id: uuid.UUID = Field(foreign_key="apilog.id")
+    key: str
+    value: str

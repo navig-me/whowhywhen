@@ -1,5 +1,5 @@
 from sqlmodel import Session, select
-from app.models.apilog import APILog
+from app.models.apilog import APILog, APILogQueryParam
 from app.schemas.apilog import APILogCreate
 from app.crud.user import User
 from datetime import datetime, timedelta
@@ -37,30 +37,23 @@ async def create_apilog(db: Session, user_project_id: uuid.UUID, apilog: APILogC
     if update_location and apilog.ip_address:
         geolocation = await get_geolocation(apilog.ip_address)
         db_apilog.location = geolocation.get('city', '') + ', ' + geolocation.get('region', '') + ', ' + geolocation.get('country', '')
+    query_params = None
     if apilog.url:
         url, path, query_params = await get_url_components(apilog.url)
         db_apilog.path = path
-        db_apilog.query_params = query_params
     db.add(db_apilog)
     db.commit()
     db.refresh(db_apilog)
+    if query_params:
+        db.add_all(APILogQueryParam(api_log_id=db_apilog.id, key=key, value=value) for key, value in query_params.items())
+        db.commit()
     return db_apilog
 
 async def create_apilog_bulk(db: Session, user_project_id: uuid.UUID, apilogs: List[APILogCreate], update_location: bool = False):
     db_apilogs = []
     for apilog in apilogs:
-        db_apilog = APILog(user_project_id=user_project_id, **apilog.dict())
-        if update_location and apilog.ip_address:
-            geolocation = await get_geolocation(apilog.ip_address)
-            db_apilog.location = geolocation.get('city', '') + ', ' + geolocation.get('region', '') + ', ' + geolocation.get('country', '')
-        if apilog.url:
-            url, path, query_params = await get_url_components(apilog.url)
-            db_apilog.path = path
-            db_apilog.query_params = query_params
-        db_apilogs.append(db_apilog)
-    db.add_all(db_apilogs)
-    db.commit()
-    db.refresh(db_apilogs)
+        if ca := create_apilog(db, user_project_id, apilog, update_location):
+            db_apilogs.append(ca)
     return db_apilogs
 
 
