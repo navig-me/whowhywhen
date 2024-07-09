@@ -42,7 +42,7 @@
         await fetchApiLogs();
         await fetchHourlyRequestsData();
       }
-    }  else if (response.status === 401) {
+    } else if (response.status === 401) {
       // Log out if the user is not authorized
       clearToken();
       currentView.set('login');
@@ -67,7 +67,7 @@
       const data = await response.json();
       apiLogs = data.logs;
       totalPages = Math.ceil(data.total / logsPerPage);
-    }  else if (response.status === 401) {
+    } else if (response.status === 401) {
       // Log out if the user is not authorized
       clearToken();
       currentView.set('login');
@@ -93,8 +93,7 @@
       // Log out if the user is not authorized
       clearToken();
       currentView.set('login');
-    }
-    else {
+    } else {
       showToast('Failed to fetch hourly requests data', 'error');
     }
   }
@@ -108,7 +107,7 @@
     currentPage = newPage;
     fetchApiLogs();
   }
-  
+
   function updateChartData() {
     const labels = hourlyRequestsData.map(data => data.period);
     const successCounts = hourlyRequestsData.map(data => data.success_count);
@@ -179,14 +178,13 @@
     fetchApiLogs();
     fetchHourlyRequestsData();
   }
-  
+
   function formatKey(key) {
     return key
       .split('_')
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
   }
-
 </script>
 
 <section class="dashboard-section">
@@ -313,5 +311,48 @@
     10% { opacity: 1; }
     90% { opacity: 1; }
     100% { opacity: 0; }
+  }
+
+  @media (max-width: 768px) {
+    .container {
+      padding: 20px;
+    }
+
+    .selected-filters ul {
+      padding: 0 10px;
+    }
+
+    .selected-filters li {
+      font-size: 0.8em;
+      padding: 5px 10px;
+    }
+
+    .dashboard-content {
+      gap: 10px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .container {
+      padding: 10px;
+    }
+
+    .selected-filters ul {
+      padding: 0 5px;
+    }
+
+    .selected-filters li {
+      font-size: 0.7em;
+      padding: 5px 8px;
+    }
+
+    .toast {
+      padding: 10px 20px;
+      font-size: 0.9em;
+    }
+
+    .dashboard-content {
+      gap: 5px;
+    }
   }
 </style>

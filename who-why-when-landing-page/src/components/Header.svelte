@@ -10,6 +10,7 @@
   let monthlyCreditLimit = 0;
   let monthlyCreditUsageCrossed = false;
   let upgradeLink = '';
+  let menuOpen = false; // State for menu toggle
 
   isLoggedIn.subscribe(value => {
     loggedIn = value;
@@ -20,6 +21,7 @@
 
   function changeView(view) {
     currentView.set(view);
+    menuOpen = false; // Close the menu when changing views
   }
 
   function logout() {
@@ -99,42 +101,48 @@
   <div class="container">
     <h1 on:click={() => changeView('home')}>WhoWhyWhen</h1>
     <nav>
-      {#if loggedIn}
-        {#if user}
-          <div class="plan-section">
-            <div class="user-info">
-              <div class="plan-info" style="color: {getPlanColor(user.subscription_plan)}">
-                Plan: {getPlanName(user.subscription_plan)}
-              </div>
-              <div class="request-info">
-                <div class="request-bar-container">
-                  <div class="request-bar">
-                    <div class="request-bar-inner {getRequestBarClass(userRequestCount, monthlyCreditLimit)}" style="width: {getRequestBarWidth(userRequestCount, monthlyCreditLimit)}%"></div>
-                  </div>
-                  <span class="request-count">{userRequestCount}/{monthlyCreditLimit}</span>
+      <div class="menu-toggle" on:click={() => menuOpen = !menuOpen}>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+      </div>
+      <div class={`menu ${menuOpen ? 'open' : ''}`}>
+        {#if loggedIn}
+          {#if user}
+            <div class="plan-section">
+              <div class="user-info">
+                <div class="plan-info" style="color: {getPlanColor(user.subscription_plan)}">
+                  Plan: {getPlanName(user.subscription_plan)}
                 </div>
+                <div class="request-info">
+                  <div class="request-bar-container">
+                    <div class="request-bar">
+                      <div class="request-bar-inner {getRequestBarClass(userRequestCount, monthlyCreditLimit)}" style="width: {getRequestBarWidth(userRequestCount, monthlyCreditLimit)}%"></div>
+                    </div>
+                    <span class="request-count">{userRequestCount}/{monthlyCreditLimit}</span>
+                  </div>
+                </div>
+                {#if user.subscription_plan === 'pro'}
+                  <a class="upgrade-button" href="mailto:upgrade@whowhywhen.com">Contact to Upgrade</a>
+                {:else}
+                  <a class="upgrade-button" href={upgradeLink} target="_blank" rel="noopener noreferrer">Upgrade to {getNextPlan(user.subscription_plan).toUpperCase()}</a>
+                {/if}
               </div>
-              {#if user.subscription_plan === 'pro'}
-                <a class="upgrade-button" href="mailto:upgrade@whowhywhen.com">Contact to Upgrade</a>
-              {:else}
-                <a class="upgrade-button" href={upgradeLink} target="_blank" rel="noopener noreferrer">Upgrade to {getNextPlan(user.subscription_plan).toUpperCase()}</a>
-              {/if}
             </div>
-          </div>
+          {/if}
+          <a class="btn-primary" href="https://whowhywhen.github.io" target="_blank" rel="noopener noreferrer">Docs</a>
+          <a class="btn-primary" on:click={() => changeView('dashboard')}>Dashboard</a>
+          <a class="btn-primary" on:click={() => changeView('projects')}>Projects</a>
+          <a class="btn-secondary" on:click={logout}>Logout</a>
+        {:else}
+          <a class="btn-primary" href="https://whowhywhen.github.io" target="_blank" rel="noopener noreferrer">Docs</a>
+          <a class="btn-secondary" on:click={() => changeView('login')}>Login</a>
+          <a class="btn-secondary" on:click={() => changeView('register')}>Register</a>
         {/if}
-        <a class="btn-primary" href="https://whowhywhen.github.io" target="_blank" rel="noopener noreferrer">Docs</a>
-        <a class="btn-primary" on:click={() => changeView('dashboard')}>Dashboard</a>
-        <a class="btn-primary" on:click={() => changeView('projects')}>Projects</a>
-        <a class="btn-secondary" on:click={logout}>Logout</a>
-      {:else}
-        <a class="btn-primary" href="https://whowhywhen.github.io" target="_blank" rel="noopener noreferrer">Docs</a>
-        <a class="btn-secondary" on:click={() => changeView('login')}>Login</a>
-        <a class="btn-secondary" on:click={() => changeView('register')}>Register</a>
-      {/if}
+      </div>
     </nav>
   </div>
 </header>
-
 
 <style>
   .header {
@@ -148,6 +156,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
   }
 
   .header h1 {
@@ -162,6 +171,25 @@
   }
 
   nav {
+    display: flex;
+    align-items: center;
+  }
+
+  .menu-toggle {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+  }
+
+  .menu-toggle .bar {
+    width: 25px;
+    height: 3px;
+    background-color: #333;
+    margin: 4px 0;
+    transition: all 0.3s ease;
+  }
+
+  .menu {
     display: flex;
     gap: 10px;
     align-items: center;
@@ -290,5 +318,51 @@
 
   .user-info:hover .upgrade-button {
     opacity: 1;
+  }
+
+  @media (max-width: 768px) {
+    .menu-toggle {
+      display: flex;
+    }
+
+    .menu {
+      display: none;
+      flex-direction: column;
+      width: 100%;
+      text-align: center;
+      background-color: #fff;
+      position: absolute;
+      top: 60px;
+      left: 0;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      z-index: 1;
+    }
+
+    .menu.open {
+      display: flex;
+    }
+
+    nav a {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .plan-section {
+      width: 100%;
+      padding: 10px;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .user-info {
+      width: 100%;
+    }
+
+    .upgrade-button {
+      position: relative;
+      transform: none;
+      margin-top: 10px;
+      opacity: 1;
+    }
   }
 </style>
