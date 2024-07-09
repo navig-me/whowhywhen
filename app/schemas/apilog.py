@@ -4,9 +4,9 @@ from datetime import datetime
 import uuid
 
 class APILogCreate(BaseModel):
-    endpoint: str
+    url: str
     ip_address: str
-    request_info: str
+    user_agent: str
     location: Optional[str] = None
     response_code: Optional[int] = None
     response_time: Optional[float] = None
@@ -14,16 +14,16 @@ class APILogCreate(BaseModel):
 
 
 class APILogSearch(BaseModel):
-    endpoint: Optional[str] = None
+    path: Optional[str] = None
     ip_address: Optional[str] = None
-    request_info: Optional[str] = None
+    user_agent: Optional[str] = None
     location: Optional[str] = None
     response_code: Optional[int] = None
 
 
 class APILogRead(BaseModel):
     id: uuid.UUID
-    request_info: str
+    user_agent: str
     is_bot: bool
     location: Optional[str]
     response_code: Optional[int] = None

@@ -135,9 +135,9 @@
           'X-API-KEY': apiKey
         },
         body: JSON.stringify({
-          endpoint: '/whowhywhen-test',
+          url: 'www.whowhywhen.com/whowhywhen-test?q=test',
           ip_address: clientIp,
-          request_info: 'WhoWhyWhen Test',
+          user_agent: 'WhoWhyWhen Test',
           response_code: 200
         })
       });

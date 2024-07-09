@@ -8,6 +8,8 @@ from typing import List, Optional
 from sqlmodel import or_
 import uuid
 import httpx
+from urllib.parse import urlparse, parse_qs
+
 
 async def get_geolocation(ip: str):
     if ip and ',' in ip:
@@ -16,25 +18,45 @@ async def get_geolocation(ip: str):
         response = await client.get(f'https://ipinfo.io/{ip}/json?token=352e1fa66d5869')
         return response.json()
 
+async def get_url_components(url):
+    # Returns url, path, query_params
+    # For example for https://abc.xyz/path/123?key1=value1&key2=value2,
+    # url will be https://abc.xyz/path/123, path will be /path/123, query_params will be {'key1': 'value1', 'key2': 'value2'}
+    # Handle invalid URLs, scheme not provided
+    parsed_url = urlparse(url)
+    if not parsed_url.scheme:
+        return None, None, None
+    path = parsed_url.path
+    query_params = parse_qs(parsed_url.query)
+    return parsed_url.scheme + '://' + parsed_url.netloc + path, path, query_params
 
-async def create_apilog(db: Session, user_project_id: uuid.UUID, apilog: APILogCreate):
+
+async def create_apilog(db: Session, user_project_id: uuid.UUID, apilog: APILogCreate, update_location: bool = False):
     db_apilog = APILog(user_project_id=user_project_id, **apilog.dict())
     db_apilog.created_at = apilog.created_at or datetime.now()
-    if apilog.ip_address:
+    if update_location and apilog.ip_address:
         geolocation = await get_geolocation(apilog.ip_address)
         db_apilog.location = geolocation.get('city', '') + ', ' + geolocation.get('region', '') + ', ' + geolocation.get('country', '')
+    if apilog.url:
+        url, path, query_params = await get_url_components(apilog.url)
+        db_apilog.path = path
+        db_apilog.query_params = query_params
     db.add(db_apilog)
     db.commit()
     db.refresh(db_apilog)
     return db_apilog
 
-async def create_apilog_bulk(db: Session, user_project_id: uuid.UUID, apilogs: List[APILogCreate]):
+async def create_apilog_bulk(db: Session, user_project_id: uuid.UUID, apilogs: List[APILogCreate], update_location: bool = False):
     db_apilogs = []
     for apilog in apilogs:
         db_apilog = APILog(user_project_id=user_project_id, **apilog.dict())
-        if apilog.ip_address:
+        if update_location and apilog.ip_address:
             geolocation = await get_geolocation(apilog.ip_address)
             db_apilog.location = geolocation.get('city', '') + ', ' + geolocation.get('region', '') + ', ' + geolocation.get('country', '')
+        if apilog.url:
+            url, path, query_params = await get_url_components(apilog.url)
+            db_apilog.path = path
+            db_apilog.query_params = query_params
         db_apilogs.append(db_apilog)
     db.add_all(db_apilogs)
     db.commit()
@@ -51,12 +73,12 @@ def get_apilogs(db: Session, user_id: uuid.UUID, page: int = 1, limit: int = 10,
         query = select(APILog).where(APILog.user_id == user_id)
 
     if search_params:
-        if search_params.endpoint:
-            query = query.where(APILog.endpoint.ilike(f'{search_params.endpoint}%'))
+        if search_params.path:
+            query = query.where(APILog.path.ilike(f'{search_params.path}%'))
         if search_params.ip_address:
             query = query.where(APILog.ip_address.ilike(f'{search_params.ip_address}%'))
-        if search_params.request_info:
-            query = query.where(APILog.request_info.ilike(f'{search_params.request_info}%'))
+        if search_params.user_agent:
+            query = query.where(APILog.user_agent.ilike(f'{search_params.user_agent}%'))
         if search_params.location:
             query = query.where(APILog.location.ilike(f'{search_params.location}%'))
         if search_params.response_code:
@@ -65,8 +87,8 @@ def get_apilogs(db: Session, user_id: uuid.UUID, page: int = 1, limit: int = 10,
     if q:
         query = query.filter(
             or_(
-                APILog.endpoint.ilike(f'%{q}%'),
-                APILog.request_info.ilike(f'%{q}%'),
+                APILog.path.ilike(f'%{q}%'),
+                APILog.user_agent.ilike(f'%{q}%'),
                 APILog.ip_address.ilike(f'%{q}%'),
             )
         )
@@ -76,10 +98,10 @@ def get_apilogs(db: Session, user_id: uuid.UUID, page: int = 1, limit: int = 10,
     total = db.execute(total_query).scalar()
 
     if sort:
-        if sort == 'endpoint':
-            query = query.order_by(APILog.endpoint.asc() if sort_direction == 'asc' else APILog.endpoint.desc())
-        elif sort == 'request_info':
-            query = query.order_by(APILog.request_info.asc() if sort_direction == 'asc' else APILog.request_info.desc())
+        if sort == 'path':
+            query = query.order_by(APILog.path.asc() if sort_direction == 'asc' else APILog.path.desc())
+        elif sort == 'user_agent':
+            query = query.order_by(APILog.user_agent.asc() if sort_direction == 'asc' else APILog.user_agent.desc())
         elif sort == 'ip_address':
             query = query.order_by(APILog.ip_address.asc() if sort_direction == 'asc' else APILog.ip_address.desc())
         elif sort == 'response_code':
@@ -125,12 +147,12 @@ def get_apilogs_stats(db: Session, user_id: uuid.UUID, project_id: uuid.UUID = N
     query = query.filter(APILog.created_at >= start_date).filter(APILog.created_at <= end_date)
 
     if search_params:
-        if search_params.endpoint:
-            query = query.filter(APILog.endpoint.ilike(f'{search_params.endpoint}%'))
+        if search_params.path:
+            query = query.filter(APILog.path.ilike(f'{search_params.path}%'))
         if search_params.ip_address:
             query = query.filter(APILog.ip_address.ilike(f'{search_params.ip_address}%'))
-        if search_params.request_info:
-            query = query.filter(APILog.request_info.ilike(f'{search_params.request_info}%'))
+        if search_params.user_agent:
+            query = query.filter(APILog.user_agent.ilike(f'{search_params.user_agent}%'))
         if search_params.location:
             query = query.filter(APILog.location.ilike(f'{search_params.location}%'))
         if search_params.response_code:
@@ -139,8 +161,8 @@ def get_apilogs_stats(db: Session, user_id: uuid.UUID, project_id: uuid.UUID = N
     if q:
         query = query.filter(
             or_(
-                APILog.endpoint.ilike(f'%{q}%'),
-                APILog.request_info.ilike(f'%{q}%'),
+                APILog.path.ilike(f'%{q}%'),
+                APILog.user_agent.ilike(f'%{q}%'),
                 APILog.ip_address.ilike(f'%{q}%'),
             )
         )

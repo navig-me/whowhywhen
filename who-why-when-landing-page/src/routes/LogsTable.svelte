@@ -34,8 +34,8 @@
           <thead>
             <tr>
               <th>
-                Endpoint
-                {#if sort === 'endpoint'}
+                Path
+                {#if sort === 'path'}
                   {#if sortDirection === 'asc'}
                     ⬆️
                   {:else}
@@ -104,9 +104,9 @@
             {:else}
               {#each apiLogs as log}
                 <tr>
-                  <td on:click={() => handleCellClick('endpoint', log.endpoint)}>{log.endpoint}</td>
+                  <td on:click={() => handleCellClick('path', log.path)}>{log.path}</td>
                   <td on:click={() => handleCellClick('ip_address', log.ip_address)}>{log.ip_address}</td>
-                  <td>{log.request_info}</td>
+                  <td>{log.user_agent}</td>
                   <td on:click={() => handleCellClick('response_code', log.response_code)}>{log.response_code}</td>
                   <td>{log.response_time}</td>
                   <td on:click={() => handleCellClick('location', log.location)}>{log.location}</td>

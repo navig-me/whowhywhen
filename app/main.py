@@ -14,6 +14,7 @@ from datetime import datetime, timedelta
 from contextlib import asynccontextmanager
 from fastapi_utils.tasks import repeat_every
 from app.config import STRIPE_PUBLISHABLE_KEY, STRIPE_SECRET_KEY
+from app.crud.apilog import get_url_components
 import time
 import uuid
 
@@ -80,9 +81,11 @@ class APILogMiddleware(BaseHTTPMiddleware):
         end_time = datetime.now()
 
         ip_address = request.client.host
-        endpoint = request.url.path
+        url = str(request.url)
+        if url:
+            _, path, query_params = await get_url_components(url)
         # User agent as request info
-        request_info = request.headers.get("User-Agent")
+        user_agent = request.headers.get("User-Agent")
         response_code = response.status_code
         response_time = (end_time - start_time).total_seconds()
         
@@ -93,9 +96,11 @@ class APILogMiddleware(BaseHTTPMiddleware):
 
         apilog = APILog(
             user_project_id=project_id,
-            endpoint=endpoint,
+            url=url,
+            path=path,
+            query_params=query_params,
             ip_address=ip_address,
-            request_info=request_info,
+            user_agent=user_agent,
             location=location,
             response_code=response_code,
             response_time=response_time,
