@@ -28,6 +28,8 @@ async def get_url_components(url):
         return None, None, None
     path = parsed_url.path
     query_params = parse_qs(parsed_url.query)
+    # Keep only non-empty query parameters
+    query_params = {key: value for key, value in query_params.items() if value}
     return parsed_url.scheme + '://' + parsed_url.netloc + path, path, query_params
 
 
