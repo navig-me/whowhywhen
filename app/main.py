@@ -113,7 +113,7 @@ class APILogMiddleware(BaseHTTPMiddleware):
 
         return response
     
-app.add_middleware(APILogMiddleware)
+# app.add_middleware(APILogMiddleware)
 
 @app.on_event("startup")
 def on_startup():
