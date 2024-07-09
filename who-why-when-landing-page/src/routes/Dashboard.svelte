@@ -63,6 +63,16 @@
   async function fetchApiLogs() {
     isTableLoading = true;
     const token = localStorage.getItem('token');
+    let url = `${API_BASE_URL}/api/logs/project/${selectedProjectId}?page=${currentPage}&limit=${logsPerPage}`;
+    if (query) {
+      url += `&query=${query}`;
+    }
+    if (sort) {
+      url += `&sort=${sort}`;
+    }
+    if (sortDirection) {
+      url += `&sort_direction=${sortDirection}`;
+    }
     const response = await fetch(`${API_BASE_URL}/api/logs/project/${selectedProjectId}?page=${currentPage}&limit=${logsPerPage}`, {
       method: 'POST',
       headers: {
@@ -70,10 +80,7 @@
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        ...searchParams,
-        query,
-        sort,
-        sort_direction: sortDirection
+        ...searchParams
       })
     });
     if (response.ok) {
