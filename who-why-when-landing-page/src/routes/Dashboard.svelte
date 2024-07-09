@@ -1,7 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import { currentView } from '../stores/viewStore';
-  import { isLoggedIn, clearToken } from '../stores/userStore';
+  import { selectedProjectIdStore, isLoggedIn, clearToken } from '../stores/userStore';
   import { createEventDispatcher } from 'svelte';
   import Toast from '../components/Toast.svelte';
   import ProjectSelector from './ProjectSelector.svelte';
@@ -29,6 +29,14 @@
 
   const dispatch = createEventDispatcher();
 
+  selectedProjectIdStore.subscribe(async (projectId) => {
+    if (projectId) {
+      selectedProjectId = projectId;
+      await fetchApiLogs();
+      await fetchHourlyRequestsData();
+    }
+  });
+
   onMount(async () => {
     await fetchProjects();
   });
@@ -44,7 +52,7 @@
     });
     if (response.ok) {
       projects = await response.json();
-      if (projects.length > 0) {
+      if (projects.length > 0 && !selectedProjectId) {
         selectedProjectId = projects[0].id;
         await fetchApiLogs();
         await fetchHourlyRequestsData();
