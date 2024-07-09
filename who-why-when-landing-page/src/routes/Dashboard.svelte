@@ -237,7 +237,7 @@
     </div>
     <input type="text" placeholder="Search..." on:input={handleSearchInput} />
     <div class="dashboard-content">
-      <LogsTable {apiLogs} {currentPage} {totalPages} {isTableLoading} on:changePage={(e) => changePage(e.detail.page)} on:cellClick={handleCellClick} on:sort={handleSort} />
+      <LogsTable {apiLogs} {currentPage} {totalPages} {isTableLoading} {sort} {sortDirection} on:changePage={(e) => changePage(e.detail.page)} on:cellClick={handleCellClick} on:sort={handleSort} />
     </div>
     <RequestsChart {chartData} {frequency} {isChartLoading} on:frequencyChange={handleFrequencyChange} />
   </div>

@@ -5,6 +5,8 @@
     export let currentPage = 1;
     export let totalPages = 1;
     export let isTableLoading = false; // New prop for loading state
+    export let sort = null; // Add sort prop
+    export let sortDirection = 'asc'; // Add sort direction prop
     const dispatch = createEventDispatcher();
   
     function handleCellClick(field, value) {
@@ -31,13 +33,67 @@
         <table>
           <thead>
             <tr>
-              <th on:click={() => handleSort('endpoint')}>Endpoint</th>
-              <th on:click={() => handleSort('ip_address')}>IP Address</th>
+              <th on:click={() => handleSort('endpoint')}>
+                Endpoint
+                {#if sort === 'endpoint'}
+                  {#if sortDirection === 'asc'}
+                    ⬆️
+                  {:else}
+                    ⬇️
+                  {/if}
+                {/if}
+              </th>
+              <th on:click={() => handleSort('ip_address')}>
+                IP Address
+                {#if sort === 'ip_address'}
+                  {#if sortDirection === 'asc'}
+                    ⬆️
+                  {:else}
+                    ⬇️
+                  {/if}
+                {/if}
+              </th>
               <th>Request Info</th>
-              <th on:click={() => handleSort('response_code')}>Response Code</th>
-              <th on:click={() => handleSort('response_time')}>Response Time</th>
-              <th on:click={() => handleSort('location')}>Location</th>
-              <th on:click={() => handleSort('created_at')}>Created At</th>
+              <th on:click={() => handleSort('response_code')}>
+                Response Code
+                {#if sort === 'response_code'}
+                  {#if sortDirection === 'asc'}
+                    ⬆️
+                  {:else}
+                    ⬇️
+                  {/if}
+                {/if}
+              </th>
+              <th on:click={() => handleSort('response_time')}>
+                Response Time
+                {#if sort === 'response_time'}
+                  {#if sortDirection === 'asc'}
+                    ⬆️
+                  {:else}
+                    ⬇️
+                  {/if}
+                {/if}
+              </th>
+              <th on:click={() => handleSort('location')}>
+                Location
+                {#if sort === 'location'}
+                  {#if sortDirection === 'asc'}
+                    ⬆️
+                  {:else}
+                    ⬇️
+                  {/if}
+                {/if}
+              </th>
+              <th on:click={() => handleSort('created_at')}>
+                Created At
+                {#if sort === 'created_at'}
+                  {#if sortDirection === 'asc'}
+                    ⬆️
+                  {:else}
+                    ⬇️
+                  {/if}
+                {/if}
+              </th>
             </tr>
           </thead>
           <tbody>
