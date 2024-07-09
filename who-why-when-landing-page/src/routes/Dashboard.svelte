@@ -230,6 +230,7 @@
 
 <section class="dashboard-section">
   <div class="container">
+    <h2>Dashboard</h2>
     <ProjectSelector {projects} bind:selectedProjectId on:reset={resetFilters} on:change={async () => { await fetchApiLogs(); await fetchHourlyRequestsData(); }} />
     <div class="selected-filters">
       <p>Selected Filters:</p>
@@ -262,9 +263,9 @@
 
 <style>
   .dashboard-section {
-    padding: 60px 0;
+    padding: 60px 20px;
     text-align: center;
-    background: #f9f9f9;
+    background: linear-gradient(135deg, #f9f9f9 25%, #fff 75%);
     color: #333;
   }
 
@@ -281,13 +282,15 @@
     margin-bottom: 30px;
     color: #663399;
     font-size: 2.5em;
+    font-weight: bold;
   }
 
   .selected-filters {
     margin-bottom: 30px;
-    padding: 10px;
+    padding: 15px;
     background: #f1f1f1;
     border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   }
 
   .selected-filters ul {
@@ -299,11 +302,12 @@
     display: inline-block;
     background: #663399;
     color: #fff;
-    padding: 5px 15px;
+    padding: 7px 20px;
     border-radius: 20px;
     margin: 5px;
     font-size: 0.9em;
     transition: background 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   }
 
   .selected-filters li button {
@@ -331,6 +335,7 @@
     border-radius: 5px 0 0 5px;
     font-size: 1em;
     flex: 1;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   }
 
   .search-container button {
@@ -342,12 +347,19 @@
     color: #fff;
     cursor: pointer;
     font-size: 1em;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: background 0.3s ease;
+  }
+
+  .search-container button:hover {
+    background-color: #7d42a6;
   }
 
   .dashboard-content {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    margin-top: 20px;
   }
 
   .toast {
