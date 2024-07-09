@@ -165,6 +165,11 @@
         showToast = true;
       }, 0);
     }
+
+    function viewDashboard(projectId) {
+      selectedProjectId = projectId;
+      currentView.set('dashboard');
+    }
   </script>
   
   <div class="projects-container">
@@ -179,7 +184,10 @@
               <span class="default-star">★</span>
             {/if}
           </div>
-          <button class="btn-primary" on:click={() => fetchApiKeys(project.id)}>View API Keys</button>
+          <div class="project-actions">
+            <button class="btn-primary" on:click={() => fetchApiKeys(project.id)}>View API Keys</button>
+            <button class="btn-secondary" on:click={() => viewDashboard(project.id)}>View Dashboard</button>
+          </div>
         </li>
       {/each}
     </ul>
@@ -229,16 +237,18 @@
   
   <style>
     .projects-container {
-      padding: 20px;
-      max-width: 800px;
+      padding: 40px 20px;
+      max-width: 900px;
       margin: 0 auto;
       background-color: #f9f9f9;
       border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+      text-align: center;
     }
   
     h2, h3 {
       color: #663399;
+      margin-bottom: 20px;
     }
   
     .btn-back {
@@ -248,23 +258,35 @@
       border: none;
       border-radius: 5px;
       cursor: pointer;
-      margin-bottom: 20px;
+      margin-bottom: 30px;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn-back:hover {
+      background-color: #e63900;
     }
   
     .project-list, .api-keys-list {
       list-style: none;
       padding: 0;
+      margin-bottom: 30px;
     }
   
     .project-item, .api-key-item {
       background-color: #fff;
-      padding: 15px;
-      border-radius: 5px;
-      margin-bottom: 10px;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 15px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+  
+    .project-item:hover, .api-key-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
     }
   
     .project-details {
@@ -279,19 +301,40 @@
   
     .default-star {
       color: #ff4000;
+      font-size: 1.2rem;
+    }
+
+    .project-actions {
+      display: flex;
+      gap: 10px;
     }
   
     .btn-primary, .btn-secondary {
-      background-color: #663399;
-      color: #fff;
       padding: 10px 20px;
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+  
+    .btn-primary {
+      background-color: #663399;
+      color: #fff;
+    }
+  
+    .btn-primary:hover {
+      background-color: #7d42a6;
+      transform: translateY(-2px);
     }
   
     .btn-secondary {
       background-color: #ff4000;
+      color: #fff;
+    }
+  
+    .btn-secondary:hover {
+      background-color: #e63900;
+      transform: translateY(-2px);
     }
   
     .input-field {
@@ -299,7 +342,7 @@
       padding: 10px;
       border: 1px solid #ddd;
       border-radius: 5px;
-      margin-bottom: 10px;
+      margin-bottom: 20px;
     }
   
     .modal {
@@ -311,22 +354,26 @@
       width: 100%;
       height: 100%;
       overflow: auto;
-      background-color: rgba(0, 0, 0, 0.4);
+      background-color: rgba(0, 0, 0, 0.5);
     }
   
     .modal-content {
       background-color: #fff;
-      margin: 15% auto;
-      padding: 20px;
+      margin: 10% auto;
+      padding: 30px;
       border: 1px solid #888;
       width: 80%;
+      max-width: 600px;
       border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+      position: relative;
     }
   
     .close {
       color: #aaa;
-      float: right;
+      position: absolute;
+      top: 15px;
+      right: 20px;
       font-size: 28px;
       font-weight: bold;
       cursor: pointer;
@@ -352,6 +399,7 @@
   
     .api-key-name {
       margin-right: 10px;
+      font-weight: bold;
     }
   
     .api-key-actions {
@@ -360,6 +408,6 @@
     }
   
     .create-api-key {
-      margin-top: 10px;
+      margin-top: 20px;
     }
   </style>
