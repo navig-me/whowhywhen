@@ -53,7 +53,7 @@
                   {/if}
                 {/if}
               </th>
-              <th>Request Info</th>
+              <th>User Agent</th>
               <th>
                 Response Code
                 {#if sort === 'response_code'}
@@ -106,7 +106,7 @@
                 <tr>
                   <td on:click={() => handleCellClick('path', log.path)}>{log.path}</td>
                   <td on:click={() => handleCellClick('ip_address', log.ip_address)}>{log.ip_address}</td>
-                  <td>{log.user_agent}</td>
+                  <td on:click={() => handleCellClick('user_agent', log.user_agent)}>{log.user_agent}</td>
                   <td on:click={() => handleCellClick('response_code', log.response_code)}>{log.response_code}</td>
                   <td>{log.response_time}</td>
                   <td on:click={() => handleCellClick('location', log.location)}>{log.location}</td>

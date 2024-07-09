@@ -19,18 +19,25 @@ async def get_geolocation(ip: str):
         return response.json()
 
 async def get_url_components(url):
-    # Returns url, path, query_params
-    # For example for https://abc.xyz/path/123?key1=value1&key2=value2,
-    # url will be https://abc.xyz/path/123, path will be /path/123, query_params will be {'key1': 'value1', 'key2': 'value2'}
-    # Handle invalid URLs, scheme not provided
+    # Parse the URL
     parsed_url = urlparse(url)
+    
+    # If no scheme is provided, assume 'https'
     if not parsed_url.scheme:
-        return None, None, None
+        url = 'https://' + url
+        parsed_url = urlparse(url)
+
+    # Extract the path
     path = parsed_url.path
-    query_params = parse_qs(parsed_url.query)
-    # Keep only non-empty query parameters
-    query_params = {key: value for key, value in query_params.items() if value}
-    return parsed_url.scheme + '://' + parsed_url.netloc + path, path, query_params
+    
+    # Parse query parameters and keep only those with values
+    raw_query_params = parse_qs(parsed_url.query, keep_blank_values=True)
+    query_params = {key: value[0] for key, value in raw_query_params.items() if value[0]}
+    
+    # Reconstruct the URL without query parameters
+    full_url = f"{parsed_url.scheme}://{parsed_url.netloc}{path}"
+    
+    return full_url, path, query_params
 
 
 async def create_apilog(db: Session, user_project_id: uuid.UUID, apilog: APILogCreate, update_location: bool = False):
