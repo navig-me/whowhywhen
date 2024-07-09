@@ -64,6 +64,9 @@ def get_apilogs(db: Session, user_id: uuid.UUID, page: int = 1, limit: int = 10,
     if q:
         query = query.where(or_(APILog.endpoint.ilike(f'%{q}%'), APILog.request_info.ilike(f'%{q}%'), APILog.ip_address.ilike(f'%{q}%')))
 
+    # Total for query
+    total = query.count()
+
     if sort:
         if sort == 'endpoint':
             if sort_direction == 'asc':
@@ -98,10 +101,7 @@ def get_apilogs(db: Session, user_id: uuid.UUID, page: int = 1, limit: int = 10,
         else:
             query = query.order_by(APILog.created_at.desc())
     else:
-        query = query.order_by(APILog.created_at.desc())
-
-    # Total for query
-    total = query.count()
+        query = query.order_by(APILog.created_at.desc())    
 
     query = query.offset(offset).limit(limit)
 
