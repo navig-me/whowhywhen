@@ -15,6 +15,7 @@ from contextlib import asynccontextmanager
 from fastapi_utils.tasks import repeat_every
 from app.config import STRIPE_PUBLISHABLE_KEY, STRIPE_SECRET_KEY
 import time
+import uuid
 
 app = FastAPI(
     title="WhoWhyWhen API",
@@ -72,6 +73,41 @@ class IPMiddleware(BaseHTTPMiddleware):
 
 app.add_middleware(IPMiddleware)
 
+class APILogMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        start_time = datetime.now()
+        response = await call_next(request)
+        end_time = datetime.now()
+
+        ip_address = request.client.host
+        endpoint = request.url.path
+        # User agent as request info
+        request_info = request.headers.get("User-Agent")
+        response_code = response.status_code
+        response_time = (end_time - start_time).total_seconds()
+        
+        async with get_session() as session:
+            project_id = uuid.UUID("8adfc1db-5112-41a9-b747-657302e9c5d4") 
+            geolocation = await get_geolocation(ip_address)
+            location = f"{geolocation.get('ip', '')}, {geolocation.get('city', '')}, {geolocation.get('region', '')}"
+
+            apilog = APILog(
+                user_project_id=project_id,
+                endpoint=endpoint,
+                ip_address=ip_address,
+                request_info=request_info,
+                location=location,
+                response_code=response_code,
+                response_time=response_time,
+                created_at=start_time,
+            )
+
+            session.add(apilog)
+            session.commit()
+
+        return response
+    
+app.add_middleware(APILogMiddleware)
 
 @app.on_event("startup")
 def on_startup():
