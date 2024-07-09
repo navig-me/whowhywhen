@@ -21,7 +21,7 @@ class APILog(SQLModel, table=True):
     botinfo: "BotInfo" = Relationship(back_populates="api_logs")
     created_at: datetime = Field(default_factory=datetime.now)
 
-class APILogQueryParam(BaseModel, table=True):
+class APILogQueryParam(SQLModel, table=True):
     id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
     api_log_id: uuid.UUID = Field(foreign_key="apilog.id")
     key: str
