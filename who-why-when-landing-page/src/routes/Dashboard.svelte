@@ -211,6 +211,9 @@
 
   function handleSearchInput(event) {
     query = event.target.value;
+  }
+
+  function triggerSearch() {
     fetchApiLogs();
   }
 
@@ -242,7 +245,10 @@
         {/if}
       </ul>
     </div>
-    <input type="text" placeholder="Search..." on:input={handleSearchInput} />
+    <div class="search-container">
+      <input type="text" placeholder="Search..." on:input={handleSearchInput} />
+      <button on:click={triggerSearch}>Search</button>
+    </div>
     <div class="dashboard-content">
       <LogsTable {apiLogs} {currentPage} {totalPages} {isTableLoading} {sort} {sortDirection} on:changePage={(e) => changePage(e.detail.page)} on:cellClick={handleCellClick} on:sort={handleSort} />
     </div>
@@ -311,6 +317,31 @@
 
   .selected-filters li:hover {
     background: #7d42a6;
+  }
+
+  .search-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+
+  .search-container input {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px 0 0 5px;
+    font-size: 1em;
+    flex: 1;
+  }
+
+  .search-container button {
+    padding: 10px 20px;
+    border: 1px solid #ddd;
+    border-left: none;
+    border-radius: 0 5px 5px 0;
+    background-color: #663399;
+    color: #fff;
+    cursor: pointer;
+    font-size: 1em;
   }
 
   .dashboard-content {

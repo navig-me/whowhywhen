@@ -63,7 +63,13 @@ def get_apilogs(db: Session, user_id: uuid.UUID, page: int = 1, limit: int = 10,
             query = query.where(APILog.response_code == search_params.response_code)
 
     if q:
-        query = query.where(or_(*[APILog.endpoint.ilike(f'%{q}%'), APILog.request_info.ilike(f'%{q}%'), APILog.ip_address.ilike(f'%{q}%')]))
+        query = query.filter(
+            or_(
+                APILog.endpoint.ilike(f'%{q}%'),
+                APILog.request_info.ilike(f'%{q}%'),
+                APILog.ip_address.ilike(f'%{q}%'),
+            )
+        )
 
     # Total for query
     total_query = select(func.count()).select_from(query.subquery())
@@ -131,7 +137,13 @@ def get_apilogs_stats(db: Session, user_id: uuid.UUID, project_id: uuid.UUID = N
             query = query.filter(APILog.response_code == search_params.response_code)
 
     if q:
-        query = query.where(or_(*[APILog.endpoint.ilike(f'%{q}%'), APILog.request_info.ilike(f'%{q}%'), APILog.ip_address.ilike(f'%{q}%')]))
+        query = query.filter(
+            or_(
+                APILog.endpoint.ilike(f'%{q}%'),
+                APILog.request_info.ilike(f'%{q}%'),
+                APILog.ip_address.ilike(f'%{q}%'),
+            )
+        )
 
     stats_query = (
         query.with_entities(
