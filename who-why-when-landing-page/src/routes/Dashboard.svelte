@@ -73,7 +73,7 @@
     if (sortDirection) {
       url += `&sort_direction=${sortDirection}`;
     }
-    const response = await fetch(`${API_BASE_URL}/api/logs/project/${selectedProjectId}?page=${currentPage}&limit=${logsPerPage}`, {
+    const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
