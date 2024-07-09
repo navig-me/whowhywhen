@@ -22,16 +22,6 @@
         changePage(currentPage + 1);
       }
     }
-  
-    function getPagesArray() {
-      let startPage = Math.max(1, currentPage - 2);
-      let endPage = Math.min(totalPages, currentPage + 2);
-      let pages = [];
-      for (let i = startPage; i <= endPage; i++) {
-        pages.push(i);
-      }
-      return pages;
-    }
   </script>
   
   <div class="logs-table">
@@ -71,11 +61,11 @@
       </table>
     </div>
     <div class="pagination">
+      <button on:click={() => changePage(1)} disabled={currentPage === 1}>First</button>
       <button on:click={() => changePage(currentPage - 1)} disabled={currentPage === 1}>Previous</button>
-      {#each getPagesArray() as page}
-        <button on:click={() => changePage(page)} class:active={page === currentPage}>{page}</button>
-      {/each}
+      <button disabled>{currentPage}</button>
       <button on:click={() => changePage(currentPage + 1)} disabled={currentPage === totalPages}>Next</button>
+      <button on:click={() => changePage(totalPages)} disabled={currentPage === totalPages}>Last</button>
     </div>
   </div>
   
