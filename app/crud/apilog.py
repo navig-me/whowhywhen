@@ -5,7 +5,7 @@ from app.crud.user import User
 from datetime import datetime, timedelta
 from sqlalchemy import select, func, extract, case
 from typing import List, Optional
-from sqlalchemy.sql.operators import or_
+from sqlmodel import or_
 import uuid
 import httpx
 

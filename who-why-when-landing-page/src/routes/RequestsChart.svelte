@@ -37,28 +37,83 @@
             beginAtZero: true,
             title: {
               display: true,
-              text: 'Request Count'
-            }
+              text: 'Request Count',
+              color: '#666',
+              font: {
+                size: 14,
+                weight: 'bold',
+              }
+            },
+            grid: {
+              color: 'rgba(200, 200, 200, 0.2)',
+            },
           },
           y1: {
             beginAtZero: true,
             position: 'right',
             grid: {
-              drawOnChartArea: false
+              drawOnChartArea: false,
+              color: 'rgba(200, 200, 200, 0.2)',
             },
             title: {
               display: true,
-              text: 'Average Response Time (s)'
+              text: 'Average Response Time (s)',
+              color: '#666',
+              font: {
+                size: 14,
+                weight: 'bold',
+              }
             }
-          }
+          },
+          x: {
+            grid: {
+              color: 'rgba(200, 200, 200, 0.2)',
+            },
+          },
         },
         plugins: {
           legend: {
             position: 'top',
+            labels: {
+              color: '#666',
+              font: {
+                size: 12,
+                weight: 'bold',
+              }
+            }
           },
           title: {
             display: true,
-            text: `Requests per ${frequency.charAt(0).toUpperCase() + frequency.slice(1)}`
+            text: `Requests per ${frequency.charAt(0).toUpperCase() + frequency.slice(1)}`,
+            color: '#333',
+            font: {
+              size: 16,
+              weight: 'bold',
+            }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            titleFont: {
+              size: 14,
+              weight: 'bold',
+            },
+            bodyFont: {
+              size: 12,
+            },
+            bodySpacing: 4,
+            padding: 10,
+            cornerRadius: 4,
+            caretSize: 6,
+          },
+        },
+        elements: {
+          line: {
+            tension: 0.4, // Smoothens the line
+          },
+          point: {
+            radius: 4,
+            backgroundColor: '#fff',
+            borderWidth: 2,
           }
         }
       }}
@@ -98,6 +153,7 @@
   h3 {
     margin-bottom: 20px;
     color: #663399;
+    font-weight: bold;
   }
 
   p {
