@@ -21,6 +21,9 @@
   let chartData = null;
   let frequency = "hour";
   let searchParams = {};
+  let query = ''; // Add query state
+  let sort = null; // Add sort state
+  let sortDirection = 'asc'; // Add sort direction state
   let isTableLoading = false;
   let isChartLoading = false;
 
@@ -67,7 +70,10 @@
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        ...searchParams
+        ...searchParams,
+        query,
+        sort,
+        sort_direction: sortDirection
       })
     });
     if (response.ok) {
@@ -195,6 +201,21 @@
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
   }
+
+  function handleSearchInput(event) {
+    query = event.target.value;
+    fetchApiLogs();
+  }
+
+  function handleSort(field) {
+    if (sort === field) {
+      sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      sort = field;
+      sortDirection = 'asc';
+    }
+    fetchApiLogs();
+  }
 </script>
 
 <section class="dashboard-section">
@@ -214,8 +235,9 @@
         {/if}
       </ul>
     </div>
+    <input type="text" placeholder="Search..." on:input={handleSearchInput} />
     <div class="dashboard-content">
-      <LogsTable {apiLogs} {currentPage} {totalPages} {isTableLoading} on:changePage={(e) => changePage(e.detail.page)} on:cellClick={handleCellClick} />
+      <LogsTable {apiLogs} {currentPage} {totalPages} {isTableLoading} on:changePage={(e) => changePage(e.detail.page)} on:cellClick={handleCellClick} on:sort={handleSort} />
     </div>
     <RequestsChart {chartData} {frequency} {isChartLoading} on:frequencyChange={handleFrequencyChange} />
   </div>

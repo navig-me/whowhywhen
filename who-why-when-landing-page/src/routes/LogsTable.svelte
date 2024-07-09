@@ -17,6 +17,9 @@
       }
     }
   
+    function handleSort(field) {
+      dispatch('sort', field);
+    }
   </script>
   
   <div class="logs-table">
@@ -28,13 +31,13 @@
         <table>
           <thead>
             <tr>
-              <th>Endpoint</th>
-              <th>IP Address</th>
+              <th on:click={() => handleSort('endpoint')}>Endpoint</th>
+              <th on:click={() => handleSort('ip_address')}>IP Address</th>
               <th>Request Info</th>
-              <th>Response Code</th>
-              <th>Response Time</th>
-              <th>Location</th>
-              <th>Created At</th>
+              <th on:click={() => handleSort('response_code')}>Response Code</th>
+              <th on:click={() => handleSort('response_time')}>Response Time</th>
+              <th on:click={() => handleSort('location')}>Location</th>
+              <th on:click={() => handleSort('created_at')}>Created At</th>
             </tr>
           </thead>
           <tbody>
