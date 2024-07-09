@@ -1,5 +1,5 @@
 <section class="feature-section">
-	<div class="parallax" style="background-image: url('/background1.png');"></div>
+	<!-- <div class="parallax" style="background-image: url('/background1.png');"></div> -->
 	<div class="container">
 	  <h2>Powerful Features</h2>
 	  <p>Our platform offers a comprehensive set of tools to help you manage and optimize your APIs effectively.</p>
@@ -41,7 +41,7 @@
 		</div>
 	  </div>
 	</div>
-	<div class="parallax" style="background-image: url('/background2.png');"></div>
+	<div class="parallax" style="background-image: url('/background1.png');"></div>
   </section>
   
   <style>
@@ -58,12 +58,24 @@
 	  background-position: center;
 	  background-repeat: no-repeat;
 	  background-size: cover;
+	  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black overlay */
+	  background-blend-mode: overlay;
+	}
+  
+	.overlay {
+	  position: absolute;
+	  top: 0;
+	  left: 0;
+	  right: 0;
+	  bottom: 0;
+	  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black overlay */
+	  background-blend-mode: overlay;
 	}
   
 	.container {
 	  position: relative;
 	  z-index: 2;
-	  padding: 100px 20px;
+	  padding: 50px 20px;
 	  text-align: center;
 	  background: linear-gradient(135deg, #f9f9f9, #e0e0e0);
 	}

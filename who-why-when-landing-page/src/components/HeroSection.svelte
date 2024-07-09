@@ -24,6 +24,11 @@
 	padding: 150px 0;
 	text-align: center;
 	overflow: hidden;
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-blend-mode: overlay;
 }
 
 .overlay {
@@ -32,7 +37,7 @@
 	left: 0;
 	right: 0;
 	bottom: 0;
-	background: rgba(0, 0, 0, 0.7); /* Darker overlay for better text visibility */
+	background: rgba(0, 0, 0, 0.2); /* Darker overlay for better text visibility */
 	display: flex;
 	align-items: center;
 	justify-content: center;
