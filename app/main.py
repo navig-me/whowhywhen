@@ -86,24 +86,25 @@ class APILogMiddleware(BaseHTTPMiddleware):
         response_code = response.status_code
         response_time = (end_time - start_time).total_seconds()
         
-        async with get_session() as session:
-            project_id = uuid.UUID("8adfc1db-5112-41a9-b747-657302e9c5d4") 
-            geolocation = await get_geolocation(ip_address)
-            location = f"{geolocation.get('ip', '')}, {geolocation.get('city', '')}, {geolocation.get('region', '')}"
+        session = next(get_session())
+        project_id = uuid.UUID("8adfc1db-5112-41a9-b747-657302e9c5d4") 
+        geolocation = await get_geolocation(ip_address)
+        location = f"{geolocation.get('ip', '')}, {geolocation.get('city', '')}, {geolocation.get('region', '')}"
 
-            apilog = APILog(
-                user_project_id=project_id,
-                endpoint=endpoint,
-                ip_address=ip_address,
-                request_info=request_info,
-                location=location,
-                response_code=response_code,
-                response_time=response_time,
-                created_at=start_time,
-            )
+        apilog = APILog(
+            user_project_id=project_id,
+            endpoint=endpoint,
+            ip_address=ip_address,
+            request_info=request_info,
+            location=location,
+            response_code=response_code,
+            response_time=response_time,
+            created_at=start_time,
+        )
 
-            session.add(apilog)
-            session.commit()
+        session.add(apilog)
+        session.commit()
+        session.refresh(apilog)
 
         return response
     
