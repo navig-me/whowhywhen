@@ -121,6 +121,9 @@ def get_apilogs(db: Session, user_id: uuid.UUID, page: int = 1, limit: int = 10,
 
     results = db.execute(query).scalars().all()
     
+    for log in results:
+        log.query_params = db.query(APILogQueryParam).filter(APILogQueryParam.api_log_id == log.id).all()
+
     return {"logs": results, "total": total}
 
 

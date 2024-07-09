@@ -2,6 +2,7 @@ from sqlmodel import SQLModel, Field, Relationship
 from typing import Optional
 from datetime import datetime
 import uuid
+from typing import List
 
 class APILog(SQLModel, table=True):
     id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
@@ -20,9 +21,11 @@ class APILog(SQLModel, table=True):
     user_project: "UserProject" = Relationship(back_populates="api_logs")
     botinfo: "BotInfo" = Relationship(back_populates="api_logs")
     created_at: datetime = Field(default_factory=datetime.now)
+    query_params: List["APILogQueryParam"] = Relationship(back_populates="api_log")
 
 class APILogQueryParam(SQLModel, table=True):
     id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
     api_log_id: uuid.UUID = Field(foreign_key="apilog.id")
     key: str
     value: str
+    api_log: "APILog" = Relationship(back_populates="query_params")
