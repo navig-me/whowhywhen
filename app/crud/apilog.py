@@ -65,43 +65,25 @@ def get_apilogs(db: Session, user_id: uuid.UUID, page: int = 1, limit: int = 10,
         query = query.where(or_(APILog.endpoint.ilike(f'%{q}%'), APILog.request_info.ilike(f'%{q}%'), APILog.ip_address.ilike(f'%{q}%')))
 
     # Total for query
-    total = query.count()
+    total = db.execute(select([func.count()]).select_from(query.subquery())).scalar()
 
     if sort:
         if sort == 'endpoint':
-            if sort_direction == 'asc':
-                query = query.order_by(APILog.endpoint)
-            else:
-                query = query.order_by(APILog.endpoint.desc())  
+            query = query.order_by(APILog.endpoint.asc() if sort_direction == 'asc' else APILog.endpoint.desc())
         elif sort == 'request_info':
-            if sort_direction == 'asc':
-                query = query.order_by(APILog.request_info)
-            else:
-                query = query.order_by(APILog.request_info.desc())  
+            query = query.order_by(APILog.request_info.asc() if sort_direction == 'asc' else APILog.request_info.desc())
         elif sort == 'ip_address':
-            if sort_direction == 'asc':
-                query = query.order_by(APILog.ip_address)
-            else:
-                query = query.order_by(APILog.ip_address.desc())  
+            query = query.order_by(APILog.ip_address.asc() if sort_direction == 'asc' else APILog.ip_address.desc())
         elif sort == 'response_code':
-            if sort_direction == 'asc':
-                query = query.order_by(APILog.response_code)
-            else:
-                query = query.order_by(APILog.response_code.desc())  
+            query = query.order_by(APILog.response_code.asc() if sort_direction == 'asc' else APILog.response_code.desc())
         elif sort == 'response_time':
-            if sort_direction == 'asc':
-                query = query.order_by(APILog.response_time)
-            else:
-                query = query.order_by(APILog.response_time.desc())  
+            query = query.order_by(APILog.response_time.asc() if sort_direction == 'asc' else APILog.response_time.desc())
         elif sort == 'created_at':
-            if sort_direction == 'asc':
-                query = query.order_by(APILog.created_at)
-            else:
-                query = query.order_by(APILog.created_at.desc())
+            query = query.order_by(APILog.created_at.asc() if sort_direction == 'asc' else APILog.created_at.desc())
         else:
             query = query.order_by(APILog.created_at.desc())
     else:
-        query = query.order_by(APILog.created_at.desc())    
+        query = query.order_by(APILog.created_at.desc())
 
     query = query.offset(offset).limit(limit)
 
