@@ -28,13 +28,13 @@
 		isLoggedIn.set(false);
 	  }
 	});
-  </script>
+</script>
   
-  <style>
+<style>
 	@import './styles/global.css';
-  </style>
+</style>
   
-  <Header />
+<Header />
   
 {#if view === 'home'}
 	<HeroSection />
@@ -42,13 +42,12 @@
 	<PricingSection />
 	<SnippetSection />
 	<Footer />
-  {:else if view === 'login'}
+{:else if view === 'login'}
 	<LoginComponent />
-  {:else if view === 'register'}
+{:else if view === 'register'}
 	<RegisterComponent />
-  {:else if view === 'dashboard'}
+{:else if view === 'dashboard'}
 	<Dashboard />
-  {:else if view === 'projects'}
+{:else if view === 'projects'}
 	<Projects />
-  {/if}
-  
+{/if}

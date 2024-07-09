@@ -130,7 +130,6 @@
   <style>
     .logs-table {
       flex: 1;
-      margin-right: 20px;
       background: #fff;
       padding: 20px;
       border-radius: 10px;
