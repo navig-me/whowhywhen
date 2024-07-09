@@ -45,7 +45,7 @@ async def create_apilog(db: Session, user_project_id: uuid.UUID, apilog: APILogC
     db.commit()
     db.refresh(db_apilog)
     if query_params:
-        db.add_all(APILogQueryParam(api_log_id=db_apilog.id, key=key, value=value) for key, value in query_params.items())
+        db.add_all(APILogQueryParam(api_log_id=db_apilog.id, key=key, value=value) for key, value in query_params.items() if key and value)
         db.commit()
     return db_apilog
 

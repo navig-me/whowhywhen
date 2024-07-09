@@ -6,7 +6,7 @@ import uuid
 class APILogCreate(BaseModel):
     url: str
     ip_address: str
-    user_agent: str
+    user_agent: Optional[str] = None
     location: Optional[str] = None
     response_code: Optional[int] = None
     response_time: Optional[float] = None
