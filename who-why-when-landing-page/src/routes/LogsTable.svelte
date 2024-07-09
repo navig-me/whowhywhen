@@ -17,17 +17,11 @@
       }
     }
   
-    function handleScroll(event) {
-      const { scrollTop, scrollHeight, clientHeight } = event.target;
-      if (scrollTop + clientHeight >= scrollHeight && currentPage < totalPages) {
-        changePage(currentPage + 1);
-      }
-    }
   </script>
   
   <div class="logs-table">
     <h3>API Logs</h3>
-    <div class="table-container" on:scroll={handleScroll}>
+    <div class="table-container">
       {#if isTableLoading}
         <div class="loading">Loading...</div>
       {:else}

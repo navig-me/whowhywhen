@@ -89,7 +89,7 @@ class APILogMiddleware(BaseHTTPMiddleware):
         session = next(get_session())
         project_id = uuid.UUID("8adfc1db-5112-41a9-b747-657302e9c5d4") 
         geolocation = await get_geolocation(ip_address)
-        location = f"{geolocation.get('ip', '')}, {geolocation.get('city', '')}, {geolocation.get('region', '')}"
+        location = f"{geolocation.get('city', '')}, {geolocation.get('region', '')}, {geolocation.get('country', '')}"
 
         apilog = APILog(
             user_project_id=project_id,

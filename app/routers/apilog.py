@@ -26,10 +26,13 @@ def get_api_logs(
     search_params: Optional[APILogSearch] = None,
     page: int = 1,
     limit: int = 10,
+    query: Optional[str] = None,
+    sort: Optional[str] = None,
+    sort_direction: Optional[str] = None,
     current_user: User = Depends(get_current_user),
     session: Session = Depends(get_session)
 ):
-    return get_apilogs(session, current_user.id, page, limit, project_id, search_params)
+    return get_apilogs(session, current_user.id, page, limit, project_id, search_params, query, sort, sort_direction)
 
 
 @router.post("/logs/project/stats/{project_id}")
@@ -37,7 +40,8 @@ def get_api_logs_stats(
     project_id: uuid.UUID,
     search_params: Optional[APILogSearch] = None,
     frequency: str = "hour",
+    query: Optional[str] = None,
     current_user: User = Depends(get_current_user),
     session: Session = Depends(get_session)
 ):
-    return get_apilogs_stats(session, current_user.id, project_id, search_params, frequency)
+    return get_apilogs_stats(session, current_user.id, project_id, search_params, frequency, query)

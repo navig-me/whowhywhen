@@ -4,7 +4,8 @@ from app.schemas.apilog import APILogCreate
 from app.crud.user import User
 from datetime import datetime, timedelta
 from sqlalchemy import select, func, extract, case
-from typing import List
+from typing import List, Optional
+from sqlalchemy.sql.operators import or_
 import uuid
 import httpx
 
@@ -12,7 +13,7 @@ async def get_geolocation(ip: str):
     if ip and ',' in ip:
         ip = ip.split(',')[0]
     async with httpx.AsyncClient() as client:
-        response = await client.get(f'https://ipinfo.io/{ip}/json')
+        response = await client.get(f'https://ipinfo.io/{ip}/json?token=352e1fa66d5869')
         return response.json()
 
 
@@ -21,7 +22,7 @@ async def create_apilog(db: Session, user_project_id: uuid.UUID, apilog: APILogC
     db_apilog.created_at = apilog.created_at or datetime.now()
     if apilog.ip_address:
         geolocation = await get_geolocation(apilog.ip_address)
-        db_apilog.location = geolocation.get('ip', '') + ', ' + geolocation.get('city', '') + ', ' + geolocation.get('region', '')
+        db_apilog.location = geolocation.get('city', '') + ', ' + geolocation.get('region', '') + ', ' + geolocation.get('country', '')
     db.add(db_apilog)
     db.commit()
     db.refresh(db_apilog)
@@ -33,14 +34,14 @@ async def create_apilog_bulk(db: Session, user_project_id: uuid.UUID, apilogs: L
         db_apilog = APILog(user_project_id=user_project_id, **apilog.dict())
         if apilog.ip_address:
             geolocation = await get_geolocation(apilog.ip_address)
-            db_apilog.location = geolocation.get('ip', '') + ', ' + geolocation.get('city', '') + ', ' + geolocation.get('region', '')
+            db_apilog.location = geolocation.get('city', '') + ', ' + geolocation.get('region', '') + ', ' + geolocation.get('country', '')
         db_apilogs.append(db_apilog)
     db.add_all(db_apilogs)
     db.commit()
     db.refresh(db_apilogs)
     return db_apilogs
 
-def get_apilogs(db: Session, user_id: uuid.UUID, page: int = 1, limit: int = 10, project_id: uuid.UUID = None, search_params = None):
+def get_apilogs(db: Session, user_id: uuid.UUID, page: int = 1, limit: int = 10, project_id: uuid.UUID = None, search_params = None, q: Optional[str] = None, sort: Optional[str] = None, sort_direction: Optional[str] = None):
     offset = (page - 1) * limit
     
     if project_id:
@@ -59,16 +60,57 @@ def get_apilogs(db: Session, user_id: uuid.UUID, page: int = 1, limit: int = 10,
             query = query.where(APILog.location.ilike(f'{search_params.location}%'))
         if search_params.response_code:
             query = query.where(APILog.response_code == search_params.response_code)
-    
-    query = query.offset(offset).limit(limit).order_by(APILog.created_at.desc())
-    
+
+    if q:
+        query = query.where(or_(APILog.endpoint.ilike(f'%{q}%'), APILog.request_info.ilike(f'%{q}%'), APILog.ip_address.ilike(f'%{q}%')))
+
+    if sort:
+        if sort == 'endpoint':
+            if sort_direction == 'asc':
+                query = query.order_by(APILog.endpoint)
+            else:
+                query = query.order_by(APILog.endpoint.desc())  
+        elif sort == 'request_info':
+            if sort_direction == 'asc':
+                query = query.order_by(APILog.request_info)
+            else:
+                query = query.order_by(APILog.request_info.desc())  
+        elif sort == 'ip_address':
+            if sort_direction == 'asc':
+                query = query.order_by(APILog.ip_address)
+            else:
+                query = query.order_by(APILog.ip_address.desc())  
+        elif sort == 'response_code':
+            if sort_direction == 'asc':
+                query = query.order_by(APILog.response_code)
+            else:
+                query = query.order_by(APILog.response_code.desc())  
+        elif sort == 'response_time':
+            if sort_direction == 'asc':
+                query = query.order_by(APILog.response_time)
+            else:
+                query = query.order_by(APILog.response_time.desc())  
+        elif sort == 'created_at':
+            if sort_direction == 'asc':
+                query = query.order_by(APILog.created_at)
+            else:
+                query = query.order_by(APILog.created_at.desc())
+        else:
+            query = query.order_by(APILog.created_at.desc())
+    else:
+        query = query.order_by(APILog.created_at.desc())
+
+    # Total for query
+    total = query.count()
+
+    query = query.offset(offset).limit(limit)
+
     results = db.execute(query).scalars().all()
-    total = db.query(APILog).filter(APILog.user_project_id == project_id if project_id else APILog.user_id == user_id).count()
     
     return {"logs": results, "total": total}
 
 
-def get_apilogs_stats(db: Session, user_id: uuid.UUID, project_id: uuid.UUID = None, search_params = None, frequency: str = "hour"):
+def get_apilogs_stats(db: Session, user_id: uuid.UUID, project_id: uuid.UUID = None, search_params = None, frequency: str = "hour", q: Optional[str] = None):
     end_date = datetime.now()
 
     if frequency == "minute":
@@ -103,6 +145,9 @@ def get_apilogs_stats(db: Session, user_id: uuid.UUID, project_id: uuid.UUID = N
             query = query.filter(APILog.location.ilike(f'{search_params.location}%'))
         if search_params.response_code:
             query = query.filter(APILog.response_code == search_params.response_code)
+
+    if q:
+        query = query.where(or_(APILog.endpoint.ilike(f'%{q}%'), APILog.request_info.ilike(f'%{q}%'), APILog.ip_address.ilike(f'%{q}%')))
 
     stats_query = (
         query.with_entities(
