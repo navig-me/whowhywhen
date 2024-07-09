@@ -9,7 +9,7 @@
 <section class="hero-section">
 	<div class="overlay">
 		<div class="container">
-			<h1>Supercharge Your API Insights</h1>
+			<h2>Supercharge Your API Insights</h2>
 			<p>Unlock detailed insights, enhance performance, and drive your business forward with our state-of-the-art analytics platform.</p>
 			<button class="btn-primary" on:click={() => changeView('register')}>Get Started</button>
 		</div>

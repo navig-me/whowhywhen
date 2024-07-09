@@ -73,10 +73,10 @@
   }
 
   function getPlanColor(planName) {
-    if (planName === 'free') return '#0000FF'; // FREE
-    if (planName === 'starter') return '#ff4000'; // STARTER
-    if (planName === 'pro') return '#663399'; // PRO
-    return '#0000FF'; // Default to black if no plan found
+    if (planName === 'free') return '#1E90FF'; // FREE
+    if (planName === 'starter') return '#ff4500'; // STARTER
+    if (planName === 'pro') return '#8A2BE2'; // PRO
+    return '#1E90FF'; // Default to blue if no plan found
   }
 
   function getPlanName(planName) {
@@ -205,34 +205,35 @@
   }
 
   .btn-primary {
-    background-color: #fff;
-    color: #663399;
-    border: 1px solid #fff;
+    background-color: #8A2BE2;
+    color: #fff;
+    border: 1px solid #8A2BE2;
     text-decoration: none;
   }
 
   .btn-primary:hover {
-    background-color: #663399;
+    background-color: #ff4500;
     color: #fff;
   }
 
   .btn-secondary {
     background-color: #fff;
-    color: #ff4000;
-    border: 1px solid #fff;
+    color: #ff4500;
+    border: 1px solid #ff4500;
     text-decoration: none;
   }
 
   .btn-secondary:hover {
-    background-color: #ff4000;
+    background-color: #ff4500;
     color: #fff;
   }
 
   .plan-section {
     background-color: #f9f9f9;
-    padding: 15px;
+    padding: 10px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 220px; /* Smaller and more sleek */
   }
 
   .user-info {
@@ -242,29 +243,29 @@
     position: relative;
     cursor: pointer;
     transition: all 0.3s;
-    width: 250px; /* Ensuring consistent width */
   }
 
   .plan-info {
     font-weight: bold;
     text-align: center;
+    font-size: 0.9rem; /* Smaller text for sleeker design */
     width: 100%; /* Ensure the width matches the container */
   }
 
   .request-info {
     width: 100%; /* Ensure the width matches the container */
-    margin-top: 10px;
+    margin-top: 5px; /* Smaller margin for more compact design */
   }
 
   .request-bar-container {
     position: relative;
     width: 100%;
-    margin-top: 10px;
+    margin-top: 5px; /* Smaller margin for more compact design */
   }
 
   .request-bar {
     width: 100%;
-    height: 15px; /* Increase height for better visibility */
+    height: 10px; /* Reduced height for a sleek look */
     background-color: #ddd;
     border-radius: 5px;
     overflow: hidden;
@@ -288,7 +289,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 0.75rem;
+    font-size: 0.7rem; /* Smaller font size */
     color: #fff;
     font-weight: bold;
   }
@@ -298,12 +299,12 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: #ff4000;
+    background-color: #ff4500;
     color: #fff;
     padding: 5px 10px;
     border-radius: 5px;
     text-decoration: none;
-    font-size: 0.75rem;
+    font-size: 0.7rem; /* Smaller font size */
     font-weight: bold;
     opacity: 0;
     transition: opacity 0.3s;
