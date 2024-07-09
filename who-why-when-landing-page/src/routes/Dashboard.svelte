@@ -16,7 +16,7 @@
   let toastType = '';
   let currentPage = 1;
   let totalPages = 1;
-  let logsPerPage = 10;
+  let logsPerPage = 20;
   let hourlyRequestsData = [];
   let chartData = null;
   let frequency = "hour";
