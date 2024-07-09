@@ -33,7 +33,7 @@
         <table>
           <thead>
             <tr>
-              <th on:click={() => handleSort('endpoint')}>
+              <th>
                 Endpoint
                 {#if sort === 'endpoint'}
                   {#if sortDirection === 'asc'}
@@ -43,7 +43,7 @@
                   {/if}
                 {/if}
               </th>
-              <th on:click={() => handleSort('ip_address')}>
+              <th>
                 IP Address
                 {#if sort === 'ip_address'}
                   {#if sortDirection === 'asc'}
@@ -54,7 +54,7 @@
                 {/if}
               </th>
               <th>Request Info</th>
-              <th on:click={() => handleSort('response_code')}>
+              <th>
                 Response Code
                 {#if sort === 'response_code'}
                   {#if sortDirection === 'asc'}
@@ -64,7 +64,7 @@
                   {/if}
                 {/if}
               </th>
-              <th on:click={() => handleSort('response_time')}>
+              <th>
                 Response Time
                 {#if sort === 'response_time'}
                   {#if sortDirection === 'asc'}
@@ -74,7 +74,7 @@
                   {/if}
                 {/if}
               </th>
-              <th on:click={() => handleSort('location')}>
+              <th>
                 Location
                 {#if sort === 'location'}
                   {#if sortDirection === 'asc'}
@@ -84,7 +84,7 @@
                   {/if}
                 {/if}
               </th>
-              <th on:click={() => handleSort('created_at')}>
+              <th>
                 Created At
                 {#if sort === 'created_at'}
                   {#if sortDirection === 'asc'}
