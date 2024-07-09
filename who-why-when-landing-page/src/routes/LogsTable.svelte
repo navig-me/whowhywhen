@@ -1,9 +1,10 @@
 <script>
-    import { createEventDispatcher } from 'svelte';
+    import { createEventDispatcher, onMount } from 'svelte';
   
     export let apiLogs = [];
     export let currentPage = 1;
     export let totalPages = 1;
+    let logsEnd = false; // Flag to check if all logs are loaded
     const dispatch = createEventDispatcher();
   
     function handleCellClick(field, value) {
@@ -13,11 +14,23 @@
     function changePage(newPage) {
       dispatch('changePage', { page: newPage });
     }
+  
+    function handleScroll(event) {
+      const { scrollTop, scrollHeight, clientHeight } = event.target;
+      if (scrollTop + clientHeight >= scrollHeight && !logsEnd) {
+        changePage(currentPage + 1);
+      }
+    }
+  
+    onMount(() => {
+      // Check if all logs are loaded
+      logsEnd = currentPage >= totalPages;
+    });
   </script>
   
   <div class="logs-table">
     <h3>API Logs</h3>
-    <div class="table-container">
+    <div class="table-container" on:scroll={handleScroll}>
       <table>
         <thead>
           <tr>
@@ -51,14 +64,6 @@
         </tbody>
       </table>
     </div>
-    <div class="pagination">
-      {#if currentPage > 1}
-        <button on:click={() => changePage(currentPage - 1)}>Previous</button>
-      {/if}
-      {#if currentPage < totalPages}
-        <button on:click={() => changePage(currentPage + 1)}>Next</button>
-      {/if}
-    </div>
   </div>
   
   <style>
@@ -69,24 +74,26 @@
       padding: 20px;
       border-radius: 10px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-      max-width: 100%; /* Ensures the container doesn't exceed the screen width */
-      overflow-x: auto; /* Adds horizontal scroll if content overflows */
+      max-width: 100%;
+      overflow-x: auto;
     }
   
     .table-container {
-      overflow-x: auto; /* Adds horizontal scroll to the table container */
+      height: 400px; /* Adjust height for scrolling */
+      overflow-y: auto;
     }
   
     table {
       width: 100%;
       border-collapse: collapse;
+      font-size: 0.8em; /* Smaller font size */
       cursor: pointer;
       margin-bottom: 10px;
     }
   
     th, td {
       border: 1px solid #ddd;
-      padding: 12px;
+      padding: 8px;
       text-align: left;
     }
   
@@ -98,26 +105,6 @@
   
     tr:hover {
       background-color: #f1f1f1;
-    }
-  
-    .pagination {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-    }
-  
-    .pagination button {
-      padding: 10px 15px;
-      background-color: #663399;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-  
-    .pagination button:hover {
-      background-color: #7d42a6;
     }
   </style>
   

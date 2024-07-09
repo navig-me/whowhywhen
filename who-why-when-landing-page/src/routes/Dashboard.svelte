@@ -65,7 +65,7 @@
     });
     if (response.ok) {
       const data = await response.json();
-      apiLogs = data.logs;
+      apiLogs = [...apiLogs, ...data.logs]; // Append new logs to the existing array
       totalPages = Math.ceil(data.total / logsPerPage);
     } else if (response.status === 401) {
       // Log out if the user is not authorized
@@ -155,6 +155,7 @@
     const { field, value } = event.detail;
     searchParams = { ...searchParams, [field]: value };
     currentPage = 1; // Reset to first page when filters are applied
+    apiLogs = []; // Reset logs
     fetchApiLogs();
     fetchHourlyRequestsData();
   }
@@ -168,6 +169,7 @@
     const { [key]: _, ...rest } = searchParams; // Destructure to remove the key
     searchParams = rest;
     currentPage = 1; // Reset to first page when filters are removed
+    apiLogs = []; // Reset logs
     fetchApiLogs();
     fetchHourlyRequestsData();
   }
@@ -175,6 +177,7 @@
   function resetFilters() {
     searchParams = {};
     currentPage = 1; // Reset to first page when filters are reset
+    apiLogs = []; // Reset logs
     fetchApiLogs();
     fetchHourlyRequestsData();
   }

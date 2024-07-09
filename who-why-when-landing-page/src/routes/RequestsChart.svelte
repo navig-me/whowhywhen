@@ -45,7 +45,7 @@
             },
             title: {
               display: true,
-              text: 'Average Response Time (ms)'
+              text: 'Average Response Time (s)'
             }
           }
         },
