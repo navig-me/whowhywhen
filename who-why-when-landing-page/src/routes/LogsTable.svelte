@@ -8,6 +8,7 @@
     const dispatch = createEventDispatcher();
     let showModal = false;
     let modalContent = [];
+    let modalTitle = "";
   
     function handleCellClick(field, value) {
       dispatch('cellClick', { field, value });
@@ -19,14 +20,16 @@
       }
     }
   
-    function showQueryParams(params) {
-      modalContent = params;
+    function showModalContent(title, content) {
+      modalTitle = title;
+      modalContent = content;
       showModal = true;
     }
   
     function closeModal() {
       showModal = false;
       modalContent = [];
+      modalTitle = "";
     }
   </script>
   
@@ -58,15 +61,37 @@
               {#each apiLogs as log}
                 <tr>
                   <td on:click={() => handleCellClick('path', log.path)}>{log.path}</td>
-                  <td on:click={() => handleCellClick('ip_address', log.ip_address)}>{log.ip_address}</td>
-                  <td on:click={() => handleCellClick('user_agent', log.user_agent)}>{log.user_agent}</td>
-                  <td on:click={() => handleCellClick('response_code', log.response_code)}>{log.response_code}</td>
+                  <td>
+                    {log.ip_address}
+                    <i class="fa fa-info-circle info-icon" aria-hidden="true" on:click={() => showModalContent("Location", log.location)}></i>
+                  </td>
+                  <td>
+                    {log.user_agent}
+                    <i class="fa fa-info-circle info-icon" aria-hidden="true" on:click={() => showModalContent("User Agent Details", [
+                      { key: "Browser Family", value: log.user_agent_browser_family },
+                      { key: "Browser Version", value: log.user_agent_browser_version },
+                      { key: "OS Family", value: log.user_agent_os_family },
+                      { key: "OS Version", value: log.user_agent_os_version },
+                      { key: "Device Family", value: log.user_agent_device_family },
+                      { key: "Device Brand", value: log.user_agent_device_brand },
+                      { key: "Device Model", value: log.user_agent_device_model },
+                      { key: "Is Mobile", value: log.is_mobile },
+                      { key: "Is Tablet", value: log.is_tablet },
+                      { key: "Is PC", value: log.is_pc },
+                      { key: "Is Touch Capable", value: log.is_touch_capable },
+                      { key: "Is Bot", value: log.is_bot },
+                    ])}></i>
+                  </td>
+                  <td>
+                    {log.response_code}
+                    <i class="fa fa-info-circle info-icon" aria-hidden="true" on:click={() => showModalContent("Response Code", log.response_code_text)}></i>
+                  </td>
                   <td>{log.response_time}</td>
                   <td on:click={() => handleCellClick('location', log.location)}>{log.location}</td>
                   <td>{new Date(log.created_at).toLocaleString()}</td>
                   <td>
                     {log.query_params.length}
-                    <i class="fa fa-info-circle info-icon" aria-hidden="true" on:click={() => showQueryParams(log.query_params)}></i>
+                    <i class="fa fa-info-circle info-icon" aria-hidden="true" on:click={() => showModalContent("Query Parameters", log.query_params)}></i>
                   </td>
                 </tr>
               {/each}
@@ -88,26 +113,47 @@
     <div class="modal">
       <div class="modal-content">
         <span class="close" on:click={closeModal}>&times;</span>
-        <h3>Query Parameters</h3>
-        {#if modalContent.length === 0}
-          <p>No query parameters available</p>
-        {:else}
+        <h3>{modalTitle}</h3>
+        {#if modalTitle === "Query Parameters"}
+          {#if modalContent.length === 0}
+            <p>No query parameters available</p>
+          {:else}
+            <table>
+              <thead>
+                <tr>
+                  <th>Key</th>
+                  <th>Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                {#each modalContent as param}
+                  <tr>
+                    <td>{param.key}</td>
+                    <td>{param.value}</td>
+                  </tr>
+                {/each}
+              </tbody>
+            </table>
+          {/if}
+        {:else if modalTitle === "User Agent Details"}
           <table>
             <thead>
               <tr>
-                <th>Key</th>
+                <th>Field</th>
                 <th>Value</th>
               </tr>
             </thead>
             <tbody>
-              {#each modalContent as param}
+              {#each modalContent as detail}
                 <tr>
-                  <td>{param.key}</td>
-                  <td>{param.value}</td>
+                  <td>{detail.key}</td>
+                  <td>{detail.value}</td>
                 </tr>
               {/each}
             </tbody>
           </table>
+        {:else}
+          <p>{modalContent}</p>
         {/if}
       </div>
     </div>
@@ -214,39 +260,36 @@
       cursor: pointer;
     }
   
-    .query-params {
-      margin-top: 10px;
-    }
-  
-    .param {
-      margin-bottom: 5px;
-    }
-  
-    .query-params table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.9em;
-    }
-  
-    .query-params th, .query-params td {
-      border: 1px solid #ddd;
-      padding: 8px;
-      text-align: left;
-    }
-  
-    .query-params th {
-      background-color: #663399;
-      color: white;
-    }
-  
-    .query-params tr:hover {
-      background-color: #f1f1f1;
-    }
-  
     .info-icon {
       margin-left: 5px;
       cursor: pointer;
       color: #663399;
     }
+  
+    .query-params table,
+    .user-agent-details table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9em;
+    }
+  
+    .query-params th, .query-params td,
+    .user-agent-details th, .user-agent-details td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+  
+    .query-params th, .user-agent-details th {
+      background-color: #663399;
+      color: white;
+    }
+  
+    .query-params tr:hover, .user-agent-details tr:hover {
+      background-color: #f1f1f1;
+    }
   </style>
+  
+  <!-- Font Awesome CDN for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   
