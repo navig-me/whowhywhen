@@ -238,7 +238,6 @@
 
 <section class="dashboard-section">
   <div class="container">
-    <h2>Dashboard</h2>
     <ProjectSelector {projects} bind:selectedProjectId on:reset={resetFilters} on:change={async () => { await fetchApiLogs(); await fetchHourlyRequestsData(); }} />
     <div class="selected-filters">
       <p>Selected Filters:</p>

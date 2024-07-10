@@ -64,7 +64,10 @@
                   <td>{log.response_time}</td>
                   <td on:click={() => handleCellClick('location', log.location)}>{log.location}</td>
                   <td>{new Date(log.created_at).toLocaleString()}</td>
-                  <td on:click={() => showQueryParams(log.query_params)}>{log.query_params.length}</td>
+                  <td>
+                    {log.query_params.length}
+                    <i class="fa fa-info-circle info-icon" aria-hidden="true" on:click={() => showQueryParams(log.query_params)}></i>
+                  </td>
                 </tr>
               {/each}
             {/if}
@@ -238,6 +241,12 @@
   
     .query-params tr:hover {
       background-color: #f1f1f1;
+    }
+  
+    .info-icon {
+      margin-left: 5px;
+      cursor: pointer;
+      color: #663399;
     }
   </style>
   
