@@ -37,7 +37,7 @@
       return;
     }
 
-    const response = await fetch(`${DASH_API_BASE_URL}/auth/register`, {
+    const response = await fetch(`${DASH_API_BASE_URL}/dashauth/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

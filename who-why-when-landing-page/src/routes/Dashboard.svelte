@@ -45,7 +45,7 @@
     isTableLoading = true;
     isChartLoading = true;
     const token = localStorage.getItem('token');
-    const response = await fetch(`${DASH_API_BASE_URL}/auth/users/me/projects`, {
+    const response = await fetch(`${DASH_API_BASE_URL}/dashauth/users/me/projects`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }

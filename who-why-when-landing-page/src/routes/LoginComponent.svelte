@@ -13,7 +13,7 @@
   const dispatch = createEventDispatcher();
 
   async function handleSubmit() {
-    const response = await fetch(`${DASH_API_BASE_URL}/auth/token`, {
+    const response = await fetch(`${DASH_API_BASE_URL}/dashauth/token`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'

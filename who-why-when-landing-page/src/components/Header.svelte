@@ -32,7 +32,7 @@
 
   async function fetchUserDetails() {
     const token = localStorage.getItem('token');
-    const response = await fetch(`${DASH_API_BASE_URL}/auth/users/me`, {
+    const response = await fetch(`${DASH_API_BASE_URL}/dashauth/users/me`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -61,7 +61,7 @@
 
   async function fetchUpgradeLink(planName, token) {
     if (!planName) return '';
-    const response = await fetch(`${API_BASE_URL}/auth/stripe/payment-link/${planName}`, {
+    const response = await fetch(`${API_BASE_URL}/dashauth/stripe/payment-link/${planName}`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
