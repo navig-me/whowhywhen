@@ -1,11 +1,10 @@
 <script>
     import { createEventDispatcher } from 'svelte';
-    import { onMount } from 'svelte';
   
     export let apiLogs = [];
     export let currentPage = 1;
     export let totalPages = 1;
-    export let isTableLoading = false; // New prop for loading state
+    export let isTableLoading = false;
     const dispatch = createEventDispatcher();
     let showModal = false;
     let modalContent = [];
@@ -87,13 +86,26 @@
       <div class="modal-content">
         <span class="close" on:click={closeModal}>&times;</span>
         <h3>Query Parameters</h3>
-        <div class="query-params">
-          {#each modalContent as param}
-            <div class="param">
-              <strong>{param.key}</strong>: {param.value}
-            </div>
-          {/each}
-        </div>
+        {#if modalContent.length === 0}
+          <p>No query parameters available</p>
+        {:else}
+          <table>
+            <thead>
+              <tr>
+                <th>Key</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              {#each modalContent as param}
+                <tr>
+                  <td>{param.key}</td>
+                  <td>{param.value}</td>
+                </tr>
+              {/each}
+            </tbody>
+          </table>
+        {/if}
       </div>
     </div>
   {/if}
@@ -110,14 +122,14 @@
     }
   
     .table-container {
-      height: 400px; /* Adjust height for scrolling */
+      height: 400px;
       overflow-y: auto;
     }
   
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.8em; /* Smaller font size */
+      font-size: 0.8em;
       cursor: pointer;
       margin-bottom: 10px;
     }
@@ -205,6 +217,27 @@
   
     .param {
       margin-bottom: 5px;
+    }
+  
+    .query-params table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9em;
+    }
+  
+    .query-params th, .query-params td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+  
+    .query-params th {
+      background-color: #663399;
+      color: white;
+    }
+  
+    .query-params tr:hover {
+      background-color: #f1f1f1;
     }
   </style>
   
