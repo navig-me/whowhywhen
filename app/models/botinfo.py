@@ -20,4 +20,4 @@ class BotInfo(SQLModel, table=True):
     bot_details: Optional[str]
     created: datetime = Field(default_factory=datetime.now)
     modified: datetime = Field(default_factory=datetime.now)
-    # api_logs: List["APILog"] = Relationship(back_populates="botinfo")
+    api_logs: List["APILog"] = Relationship(back_populates="botinfo")
