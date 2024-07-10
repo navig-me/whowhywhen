@@ -13,6 +13,7 @@ from urllib.parse import urlparse, parse_qs
 from http.client import responses
 from user_agents import parse
 from sqlalchemy.sql import case
+from sqlalchemy import func, or_
 
 async def get_geolocation(ip: str):
     if ip and ',' in ip:
@@ -104,6 +105,7 @@ async def create_apilog_bulk(db: Session, user_project_id: uuid.UUID, apilogs: L
     return db_apilogs
 
 
+
 def get_counts_data(
     db: Session, 
     user_id: uuid.UUID, 
@@ -126,21 +128,25 @@ def get_counts_data(
         if search_params.response_code:
             query = query.filter(APILog.response_code == search_params.response_code)
     
+    # Helper function to replace null or empty values with "Other"
+    def coalesce_to_other(column):
+        return func.coalesce(func.nullif(column, ''), 'Other')
+
     browser_family_counts = (
         query.with_entities(
-            APILog.user_agent_browser_family,
+            coalesce_to_other(APILog.user_agent_browser_family).label('browser_family'),
             func.count(APILog.user_agent_browser_family)
         )
-        .group_by(APILog.user_agent_browser_family)
+        .group_by('browser_family')
         .all()
     )
     
     os_family_counts = (
         query.with_entities(
-            APILog.user_agent_os_family,
+            coalesce_to_other(APILog.user_agent_os_family).label('os_family'),
             func.count(APILog.user_agent_os_family)
         )
-        .group_by(APILog.user_agent_os_family)
+        .group_by('os_family')
         .all()
     )
 
@@ -151,9 +157,13 @@ def get_counts_data(
     other_count = query.filter(
         or_(
             APILog.is_mobile == False,
+            APILog.is_mobile == None,
             APILog.is_tablet == False,
+            APILog.is_tablet == None,
             APILog.is_pc == False,
-            APILog.is_bot == False
+            APILog.is_pc == None,
+            APILog.is_bot == False,
+            APILog.is_bot == None
         )
     ).count()
 
@@ -170,7 +180,6 @@ def get_counts_data(
         "os_family_counts": dict(os_family_counts),
         "device_type_counts": device_type_counts
     }
-
 
 
 def get_apilogs(
