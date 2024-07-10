@@ -14,10 +14,10 @@ services:
       - app-network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.api.rule=Host(`dashapi.whowhywhen.com`)"
-      - "traefik.http.services.api.loadbalancer.server.port=8000"
+      - "traefik.http.routers.dash.rule=Host(`dashapi.whowhywhen.com`)"
+      - "traefik.http.services.dash.loadbalancer.server.port=8000"
       - "traefik.http.middlewares.real-ip.headers.customrequestheaders.X-Forwarded-For=X-Real-IP,X-Forwarded-For,X-Forwarded-Proto,X-Forwarded-Host,X-Forwarded-Port"
-      - "traefik.http.routers.api.middlewares=real-ip"
+      - "traefik.http.routers.dash.middlewares=real-ip"
 
   api:
     image: backend_api
