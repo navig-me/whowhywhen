@@ -101,6 +101,8 @@ async def create_apilog_bulk(db: Session, user_project_id: uuid.UUID, apilogs: L
             db_apilogs.append(ca)
     return db_apilogs
 
+from sqlalchemy.sql import case
+
 def get_counts_data(
     db: Session, 
     user_id: uuid.UUID, 
@@ -147,12 +149,10 @@ def get_counts_data(
     device_type_counts = (
         query.with_entities(
             case(
-                [
-                    (APILog.is_mobile == True, 'Phone'),
-                    (APILog.is_tablet == True, 'Tablet'),
-                    (APILog.is_pc == True, 'PC'),
-                    (APILog.is_bot == True, 'Bot')
-                ],
+                (APILog.is_mobile == True, 'Phone'),
+                (APILog.is_tablet == True, 'Tablet'),
+                (APILog.is_pc == True, 'PC'),
+                (APILog.is_bot == True, 'Bot'),
                 else_='Other'
             ).label('device_type'),
             func.count('*')
@@ -166,6 +166,7 @@ def get_counts_data(
         "os_family_counts": os_family_counts,
         "device_type_counts": device_type_counts
     }
+
 
 def get_apilogs(
     db: Session,
