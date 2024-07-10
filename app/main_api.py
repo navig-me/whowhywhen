@@ -112,8 +112,8 @@ async def add_background_tasks(request: Request, call_next):
     response.background = request.state.background_tasks
     return response
 
-@app.on_event("startup")
-def on_startup():
-    create_db_and_tables()
+# @app.on_event("startup")
+# def on_startup():
+#     create_db_and_tables()
 
 app.include_router(apilog.router_api, prefix="/api", tags=["apilog"])
