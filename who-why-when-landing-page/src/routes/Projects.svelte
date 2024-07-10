@@ -128,6 +128,7 @@
     }
   
     async function testApiKey(apiKey) {
+      const userAgent = navigator.userAgent;
       const response = await fetch(`${API_BASE_URL}/api/log`, {
         method: 'POST',
         headers: {
@@ -137,7 +138,7 @@
         body: JSON.stringify({
           url: 'www.whowhywhen.com/whowhywhen-test?q=test',
           ip_address: clientIp,
-          user_agent: 'WhoWhyWhen Test',
+          user_agent: userAgent,
           response_code: 200
         })
       });
