@@ -34,6 +34,17 @@
       modalContent = [];
       modalTitle = "";
     }
+  
+    function getDeviceIcon(log) {
+      if (log.is_bot) {
+        return "fa-robot";
+      } else if (log.is_mobile || log.is_tablet) {
+        return "fa-mobile";
+      } else if (log.is_pc) {
+        return "fa-desktop";
+      }
+      return "";
+    }
   </script>
   
   <div class="logs-table">
@@ -68,6 +79,7 @@
                     <i class="fa fa-info-circle info-icon" aria-hidden="true" on:click={() => showModalContent("Location", log.location)}></i>
                   </td>
                   <td>
+                    <i class={`fa ${getDeviceIcon(log)} device-icon`} aria-hidden="true"></i>
                     {log.user_agent}
                     <i class="fa fa-info-circle info-icon" aria-hidden="true" on:click={() => showModalContent("User Agent Details", [
                       { key: "Browser Family", value: log.user_agent_browser_family },
@@ -265,6 +277,10 @@
       margin-left: 5px;
       cursor: pointer;
       color: #663399;
+    }
+  
+    .device-icon {
+      margin-right: 5px;
     }
   
     .query-params table,
