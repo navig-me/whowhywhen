@@ -8,6 +8,7 @@ from typing import List, Optional
 from sqlmodel import or_
 import uuid
 import httpx
+import traceback
 from urllib.parse import urlparse, parse_qs
 from http.client import responses
 from user_agents import parse
@@ -41,13 +42,16 @@ async def get_url_components(url):
     return full_url, path, query_params
 
 def get_response_code_text(code: int):
+    print("Getting response code text for", code)
     if code:
         return responses.get(code, None)
     return None
 
 def parse_user_agent(apilog: APILog):
+    print("Parsing user agent", apilog.user_agent)
     try:
         if parsed_user_agent := parse(apilog.user_agent):
+            print(apilog.user_agent, parsed_user_agent)
             apilog.browser_name = parsed_user_agent.browser.family
             apilog.browser_version = parsed_user_agent.browser.version_string
             apilog.os_name = parsed_user_agent.os.family
@@ -59,7 +63,7 @@ def parse_user_agent(apilog: APILog):
             apilog.device_is_tablet = parsed_user_agent.is_tablet
             apilog.device_is_pc = parsed_user_agent.is_pc
     except Exception as e:
-        print(e)
+        traceback.print_exc()
     return apilog
 
 async def create_apilog(db: Session, user_project_id: uuid.UUID, apilog: APILogCreate, update_location: bool = False):
