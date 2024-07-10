@@ -26,9 +26,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dash
-      environment:
+    environment:
       - DATABASE_URL=postgresql://postgres:secrect@142.93.220.56:5432/wwwdb
-      deploy:
+    deploy:
       replicas: 1
       restart_policy:
         condition: on-failure
