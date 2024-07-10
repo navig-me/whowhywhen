@@ -61,7 +61,7 @@
 
 .hero-section p {
 	margin: 0 0 30px;
-	font-size: 1.5rem;
+	font-size: 1rem;
 	animation: fadeInUp 1s ease-in-out;
 }
 
