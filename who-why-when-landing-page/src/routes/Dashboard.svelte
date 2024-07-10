@@ -252,6 +252,7 @@
     currentPage = 1;
     fetchApiLogs();
     fetchHourlyRequestsData();
+    fetchCountsData();
   }
 
   function handleFrequencyChange(event) {
@@ -340,10 +341,12 @@
     <div class="dashboard-content">
       <LogsTable {apiLogs} {currentPage} {totalPages} {isTableLoading} on:changePage={(e) => changePage(e.detail.page)} on:cellClick={handleCellClick} on:addFilter={handleAddFilter} />
       <div class="charts-container">
-        <RequestsChart {chartData} {frequency} {isChartLoading} on:frequencyChange={handleFrequencyChange} />
-        <PieChart {chartData} {browserFamilyData} {isChartLoading} {isPieChartLoading} />
-        <PieChart {chartData} {osFamilyData} {isChartLoading} {isPieChartLoading} />
-        <PieChart {chartData} {deviceTypeData} {isChartLoading} {isPieChartLoading} />
+        <RequestsChart {chartData} {frequency} {isChartLoading} on:frequencyChange={handleFrequencyChange} class="full-width-chart"/>
+      </div>
+      <div class="pie-charts-container">
+        <PieChart {chartData}={browserFamilyData} {isChartLoading}={isPieChartLoading} />
+        <PieChart {chartData}={osFamilyData} {isChartLoading}={isPieChartLoading} />
+        <PieChart {chartData}={deviceTypeData} {isChartLoading}={isPieChartLoading} />
       </div>
     </div>
   </div>
@@ -466,7 +469,16 @@
 
   .charts-container {
     display: flex;
-    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+
+  .full-width-chart {
+    width: 100%;
+  }
+
+  .pie-charts-container {
+    display: flex;
     justify-content: space-between;
     margin-top: 20px;
   }
@@ -533,6 +545,10 @@
     .charts-container {
       flex-direction: column;
     }
+
+    .pie-charts-container {
+      flex-direction: column;
+    }
   }
 
   @media (max-width: 480px) {
@@ -559,6 +575,10 @@
     }
 
     .charts-container {
+      flex-direction: column;
+    }
+
+    .pie-charts-container {
       flex-direction: column;
     }
   }
