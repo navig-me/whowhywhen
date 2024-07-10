@@ -234,6 +234,13 @@
     }
     fetchApiLogs();
   }
+
+  function handleAddFilter(event) {
+    const { field, value } = event.detail;
+    searchParams = { ...searchParams, [field]: value };
+    fetchApiLogs();
+    fetchHourlyRequestsData();
+  }
 </script>
 
 <section class="dashboard-section">
@@ -258,7 +265,7 @@
       <button on:click={triggerSearch}>Search</button>
     </div>
     <div class="dashboard-content">
-      <LogsTable {apiLogs} {currentPage} {totalPages} {isTableLoading} {sort} {sortDirection} on:changePage={(e) => changePage(e.detail.page)} on:cellClick={handleCellClick} on:sort={handleSort} />
+      <LogsTable {apiLogs} {currentPage} {totalPages} {isTableLoading} on:changePage={(e) => changePage(e.detail.page)} on:cellClick={handleCellClick} on:addFilter={handleAddFilter} />
     </div>
     <RequestsChart {chartData} {frequency} {isChartLoading} on:frequencyChange={handleFrequencyChange} />
   </div>
