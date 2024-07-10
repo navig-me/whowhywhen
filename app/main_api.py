@@ -1,14 +1,11 @@
 from fastapi import FastAPI, Request, BackgroundTasks
 from app.database import create_db_and_tables, get_session
-from app.routers import auth, apikey, apilog, botinfo
-from app.models.user import User
+from app.routers import apilog
 from app.models.apilog import APILog, APILogQueryParam
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
-from datetime import datetime, timedelta
-from contextlib import asynccontextmanager
-from fastapi_utils.tasks import repeat_every
-from app.crud.apilog import get_geolocation, get_url_components
+from datetime import datetime
+from app.crud.apilog import get_url_components
 import uuid
 import logging
 

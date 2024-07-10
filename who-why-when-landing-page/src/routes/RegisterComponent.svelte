@@ -1,7 +1,7 @@
 <script>
   import { createEventDispatcher, onMount } from 'svelte';
   import Toast from '../components/Toast.svelte';
-  import { API_BASE_URL } from '../config'; 
+  import { DASH_API_BASE_URL, API_BASE_URL } from '../config'; 
   import { currentView } from '../stores/viewStore';
 
   let name = '';
@@ -37,7 +37,7 @@
       return;
     }
 
-    const response = await fetch(`${API_BASE_URL}/auth/register`, {
+    const response = await fetch(`${DASH_API_BASE_URL}/auth/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

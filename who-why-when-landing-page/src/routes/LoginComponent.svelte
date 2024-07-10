@@ -4,7 +4,7 @@
   import { currentView } from '../stores/viewStore';
   import { isLoggedIn, setToken } from '../stores/userStore';
   import Toast from '../components/Toast.svelte';
-  import { API_BASE_URL } from '../config'; // Import the base URL
+  import { DASH_API_BASE_URL, API_BASE_URL } from '../config'; // Import the base URL
 
   let username = '';
   let password = '';
@@ -13,7 +13,7 @@
   const dispatch = createEventDispatcher();
 
   async function handleSubmit() {
-    const response = await fetch(`${API_BASE_URL}/auth/token`, {
+    const response = await fetch(`${DASH_API_BASE_URL}/auth/token`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'

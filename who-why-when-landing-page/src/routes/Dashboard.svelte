@@ -7,7 +7,7 @@
   import ProjectSelector from './ProjectSelector.svelte';
   import LogsTable from './LogsTable.svelte';
   import RequestsChart from './RequestsChart.svelte';
-  import { API_BASE_URL } from '../config'; // Import the base URL
+  import { API_BASE_URL, DASH_API_BASE_URL } from '../config'; // Import the base URL
 
   let projects = [];
   let selectedProjectId = null;
@@ -45,7 +45,7 @@
     isTableLoading = true;
     isChartLoading = true;
     const token = localStorage.getItem('token');
-    const response = await fetch(`${API_BASE_URL}/auth/users/me/projects`, {
+    const response = await fetch(`${DASH_API_BASE_URL}/auth/users/me/projects`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }

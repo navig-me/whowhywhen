@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { currentView } from '../stores/viewStore';
   import { clearToken, isLoggedIn } from '../stores/userStore';
-  import { API_BASE_URL } from '../config'; // Import the base URL
+  import { DASH_API_BASE_URL } from '../config'; // Import the base URL
 
   let loggedIn;
   let user = null;
@@ -32,7 +32,7 @@
 
   async function fetchUserDetails() {
     const token = localStorage.getItem('token');
-    const response = await fetch(`${API_BASE_URL}/auth/users/me`, {
+    const response = await fetch(`${DASH_API_BASE_URL}/auth/users/me`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
