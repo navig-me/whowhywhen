@@ -344,9 +344,9 @@
         <RequestsChart {chartData} {frequency} {isChartLoading} on:frequencyChange={handleFrequencyChange} class="full-width-chart"/>
       </div>
       <div class="pie-charts-container">
-        <PieChart {chartData}={browserFamilyData} {isChartLoading}={isPieChartLoading} />
-        <PieChart {chartData}={osFamilyData} {isChartLoading}={isPieChartLoading} />
-        <PieChart {chartData}={deviceTypeData} {isChartLoading}={isPieChartLoading} />
+        <PieChart {chartData} {browserFamilyData} {isChartLoading} {isPieChartLoading} />
+        <PieChart {chartData} {osFamilyData} {isChartLoading} {isPieChartLoading} />
+        <PieChart {chartData} {deviceTypeData} {isChartLoading} {isPieChartLoading} />
       </div>
     </div>
   </div>
