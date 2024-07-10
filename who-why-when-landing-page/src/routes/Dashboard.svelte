@@ -341,9 +341,9 @@
       <LogsTable {apiLogs} {currentPage} {totalPages} {isTableLoading} on:changePage={(e) => changePage(e.detail.page)} on:cellClick={handleCellClick} on:addFilter={handleAddFilter} />
       <div class="charts-container">
         <RequestsChart {chartData} {frequency} {isChartLoading} on:frequencyChange={handleFrequencyChange} />
-        <PieChart {chartData}={browserFamilyData} {isChartLoading}={isPieChartLoading} />
-        <PieChart {chartData}={osFamilyData} {isChartLoading}={isPieChartLoading} />
-        <PieChart {chartData}={deviceTypeData} {isChartLoading}={isPieChartLoading} />
+        <PieChart {chartData} {browserFamilyData} {isChartLoading} {isPieChartLoading} />
+        <PieChart {chartData} {osFamilyData} {isChartLoading} {isPieChartLoading} />
+        <PieChart {chartData} {deviceTypeData} {isChartLoading} {isPieChartLoading} />
       </div>
     </div>
   </div>
