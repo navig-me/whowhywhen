@@ -9,7 +9,7 @@
 <section class="hero-section">
 	<div class="overlay">
 		<div class="container">
-			<h2>Supercharge Your API Insights</h2>
+			<h2><span class="supercharge">Supercharge</span> Your API Insights</h2>
 			<p>Unlock detailed insights, enhance performance, and drive your project forward with our state-of-the-art analytics platform.</p>
 			<button class="btn-primary" on:click={() => changeView('register')}>Get Started</button>
 		</div>
@@ -24,11 +24,11 @@
 	padding: 150px 0;
 	text-align: center;
 	overflow: hidden;
-  background-attachment: fixed;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-blend-mode: overlay;
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-blend-mode: overlay;
 }
 
 .overlay {
@@ -51,7 +51,7 @@
 	animation: fadeIn 1.5s ease-in-out;
 }
 
-.hero-section h1 {
+.hero-section h2 {
 	margin: 0 0 20px;
 	font-size: 4rem;
 	font-weight: bold;
@@ -112,6 +112,26 @@
 	}
 	100% {
 		opacity: 1;
+	}
+}
+
+.supercharge {
+	background: linear-gradient(90deg, #ff4000, #ff7300, #ffd700, #73ff00, #00ffd0, #0073ff, #ff00d0);
+	background-size: 600%;
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	animation: gradient 5s ease infinite;
+}
+
+@keyframes gradient {
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
 	}
 }
 </style>
