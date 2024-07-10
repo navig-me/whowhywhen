@@ -1,13 +1,14 @@
 <script>
     import { createEventDispatcher } from 'svelte';
+    import { onMount } from 'svelte';
   
     export let apiLogs = [];
     export let currentPage = 1;
     export let totalPages = 1;
     export let isTableLoading = false; // New prop for loading state
-    export let sort = null; // Add sort prop
-    export let sortDirection = 'asc'; // Add sort direction prop
     const dispatch = createEventDispatcher();
+    let showModal = false;
+    let modalContent = [];
   
     function handleCellClick(field, value) {
       dispatch('cellClick', { field, value });
@@ -19,8 +20,14 @@
       }
     }
   
-    function handleSort(field) {
-      dispatch('sort', field);
+    function showQueryParams(params) {
+      modalContent = params;
+      showModal = true;
+    }
+  
+    function closeModal() {
+      showModal = false;
+      modalContent = [];
     }
   </script>
   
@@ -33,73 +40,20 @@
         <table>
           <thead>
             <tr>
-              <th>
-                Path
-                {#if sort === 'path'}
-                  {#if sortDirection === 'asc'}
-                    ⬆️
-                  {:else}
-                    ⬇️
-                  {/if}
-                {/if}
-              </th>
-              <th>
-                IP Address
-                {#if sort === 'ip_address'}
-                  {#if sortDirection === 'asc'}
-                    ⬆️
-                  {:else}
-                    ⬇️
-                  {/if}
-                {/if}
-              </th>
+              <th>Path</th>
+              <th>IP Address</th>
               <th>User Agent</th>
-              <th>
-                Response Code
-                {#if sort === 'response_code'}
-                  {#if sortDirection === 'asc'}
-                    ⬆️
-                  {:else}
-                    ⬇️
-                  {/if}
-                {/if}
-              </th>
-              <th>
-                Response Time
-                {#if sort === 'response_time'}
-                  {#if sortDirection === 'asc'}
-                    ⬆️
-                  {:else}
-                    ⬇️
-                  {/if}
-                {/if}
-              </th>
-              <th>
-                Location
-                {#if sort === 'location'}
-                  {#if sortDirection === 'asc'}
-                    ⬆️
-                  {:else}
-                    ⬇️
-                  {/if}
-                {/if}
-              </th>
-              <th>
-                Created At
-                {#if sort === 'created_at'}
-                  {#if sortDirection === 'asc'}
-                    ⬆️
-                  {:else}
-                    ⬇️
-                  {/if}
-                {/if}
-              </th>
+              <th>Response Code</th>
+              <th>Response Time</th>
+              <th>Location</th>
+              <th>Created At</th>
+              <th>Query Parameters</th>
             </tr>
           </thead>
           <tbody>
             {#if apiLogs.length === 0}
               <tr>
-                <td colspan="7">No logs available</td>
+                <td colspan="8">No logs available</td>
               </tr>
             {:else}
               {#each apiLogs as log}
@@ -111,6 +65,7 @@
                   <td>{log.response_time}</td>
                   <td on:click={() => handleCellClick('location', log.location)}>{log.location}</td>
                   <td>{new Date(log.created_at).toLocaleString()}</td>
+                  <td on:click={() => showQueryParams(log.query_params)}>{log.query_params.length}</td>
                 </tr>
               {/each}
             {/if}
@@ -126,6 +81,22 @@
       <button on:click={() => changePage(totalPages)} disabled={currentPage === totalPages}>Last</button>
     </div>
   </div>
+  
+  {#if showModal}
+    <div class="modal">
+      <div class="modal-content">
+        <span class="close" on:click={closeModal}>&times;</span>
+        <h3>Query Parameters</h3>
+        <div class="query-params">
+          {#each modalContent as param}
+            <div class="param">
+              <strong>{param.key}</strong>: {param.value}
+            </div>
+          {/each}
+        </div>
+      </div>
+    </div>
+  {/if}
   
   <style>
     .logs-table {
@@ -199,6 +170,41 @@
       padding: 20px;
       font-size: 1.2em;
       color: #663399;
+    }
+  
+    .modal {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+  
+    .modal-content {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      width: 50%;
+      max-height: 80%;
+      overflow-y: auto;
+    }
+  
+    .close {
+      float: right;
+      font-size: 1.5em;
+      cursor: pointer;
+    }
+  
+    .query-params {
+      margin-top: 10px;
+    }
+  
+    .param {
+      margin-bottom: 5px;
     }
   </style>
   
