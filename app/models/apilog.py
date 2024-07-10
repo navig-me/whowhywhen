@@ -9,8 +9,8 @@ class APILog(SQLModel, table=True):
     user_project_id: uuid.UUID = Field(foreign_key="userproject.id")
     url: str
     bot_id: Optional[uuid.UUID] = Field(foreign_key="botinfo.id")
-    ip_address: str
-    user_agent: str
+    ip_address: str = Field(default="")
+    user_agent: str = Field(default="")
     location: Optional[str] = None    
     response_code: Optional[int] = Field(default=None)
     response_time: Optional[float] = Field(default=None)
