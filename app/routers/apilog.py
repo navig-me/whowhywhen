@@ -48,12 +48,14 @@ def get_api_logs_stats(
     return get_apilogs_stats(session, current_user.id, project_id, search_params, frequency, query)
 
 
-@router_dash.post("/logs/project/stats/{project_id}/counts")
+@router_dash.post("/logs/project/device-stats/{project_id}")
 def get_counts(
     project_id: uuid.UUID,
     search_params: Optional[APILogSearch] = None,
     current_user: User = Depends(get_current_user),
     session: Session = Depends(get_session)
 ):
-    return get_counts_data(session, current_user.id, project_id, search_params)
+    counts_data = get_counts_data(session, current_user.id, project_id, search_params)
+    print("Counts data", counts_data)
+    return {"counts": counts_data}
 

@@ -138,7 +138,7 @@
   async function fetchCountsData() {
     isPieChartLoading = true;
     const token = localStorage.getItem('token');
-    const response = await fetch(`${DASH_API_BASE_URL}/dashapi/logs/project/stats/${selectedProjectId}/counts`, {
+    const response = await fetch(`${DASH_API_BASE_URL}/dashapi/logs/project/device-stats/${selectedProjectId}`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -203,10 +203,10 @@
 
   function updatePieChartData(data) {
     browserFamilyData = {
-      labels: data.browser_family_counts.map(d => d[0]),
+      labels: Object.keys(data.browser_family_counts),
       datasets: [
         {
-          data: data.browser_family_counts.map(d => d[1]),
+          data: Object.values(data.browser_family_counts),
           backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'],
         }
       ],
@@ -214,10 +214,10 @@
     };
 
     osFamilyData = {
-      labels: data.os_family_counts.map(d => d[0]),
+      labels: Object.keys(data.os_family_counts),
       datasets: [
         {
-          data: data.os_family_counts.map(d => d[1]),
+          data: Object.values(data.os_family_counts),
           backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'],
         }
       ],
@@ -225,10 +225,10 @@
     };
 
     deviceTypeData = {
-      labels: data.device_type_counts.map(d => d[0]),
+      labels: Object.keys(data.device_type_counts),
       datasets: [
         {
-          data: data.device_type_counts.map(d => d[1]),
+          data: Object.values(data.device_type_counts),
           backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'],
         }
       ],

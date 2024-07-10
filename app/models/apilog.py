@@ -6,7 +6,7 @@ from typing import List
 
 class APILog(SQLModel, table=True):
     id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
-    user_project_id: uuid.UUID = Field(foreign_key="userproject.id")
+    user_project_id: Optional[uuid.UUID] = Field(foreign_key="userproject.id")
     url: str
     bot_id: Optional[uuid.UUID] = Field(foreign_key="botinfo.id")
     ip_address: str = Field(default="")

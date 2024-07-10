@@ -12,6 +12,7 @@ import traceback
 from urllib.parse import urlparse, parse_qs
 from http.client import responses
 from user_agents import parse
+from sqlalchemy.sql import case
 
 async def get_geolocation(ip: str):
     if ip and ',' in ip:
@@ -69,7 +70,8 @@ def parse_user_agent(apilog: APILog):
     return apilog
 
 async def create_apilog(db: Session, user_project_id: uuid.UUID, apilog: APILogCreate, update_location: bool = False):
-    db_apilog = APILog(user_project_id=user_project_id, **apilog.dict())
+    db_apilog = APILog( **apilog.dict())
+    db_apilog.user_project_id = user_project_id
     db_apilog.created_at = apilog.created_at or datetime.now()
     if update_location and apilog.ip_address:
         geolocation = await get_geolocation(apilog.ip_address)
@@ -97,11 +99,10 @@ async def create_apilog(db: Session, user_project_id: uuid.UUID, apilog: APILogC
 async def create_apilog_bulk(db: Session, user_project_id: uuid.UUID, apilogs: List[APILogCreate], update_location: bool = False):
     db_apilogs = []
     for apilog in apilogs:
-        if ca := create_apilog(db, user_project_id, apilog, update_location):
+        if ca := await create_apilog(db, user_project_id, apilog, update_location):
             db_apilogs.append(ca)
     return db_apilogs
 
-from sqlalchemy.sql import case
 
 def get_counts_data(
     db: Session, 
@@ -111,10 +112,7 @@ def get_counts_data(
 ):
     query = db.query(APILog)
     
-    if project_id:
-        query = query.filter(APILog.user_project_id == project_id)
-    else:
-        query = query.filter(APILog.user_id == user_id)
+    query = query.filter(APILog.user_project_id == project_id)
     
     if search_params:
         if search_params.path:
@@ -146,26 +144,33 @@ def get_counts_data(
         .all()
     )
 
-    device_type_counts = (
-        query.with_entities(
-            case(
-                (APILog.is_mobile == True, 'Phone'),
-                (APILog.is_tablet == True, 'Tablet'),
-                (APILog.is_pc == True, 'PC'),
-                (APILog.is_bot == True, 'Bot'),
-                else_='Other'
-            ).label('device_type'),
-            func.count('*')
+    phone_count = query.filter(APILog.is_mobile == True).count()
+    tablet_count = query.filter(APILog.is_tablet == True).count()
+    pc_count = query.filter(APILog.is_pc == True).count()
+    bot_count = query.filter(APILog.is_bot == True).count()
+    other_count = query.filter(
+        or_(
+            APILog.is_mobile == False,
+            APILog.is_tablet == False,
+            APILog.is_pc == False,
+            APILog.is_bot == False
         )
-        .group_by('device_type')
-        .all()
-    )
+    ).count()
+
+    device_type_counts = {
+        "Phone": phone_count,
+        "Tablet": tablet_count,
+        "PC": pc_count,
+        "Bot": bot_count,
+        "Other": other_count
+    }
 
     return {
-        "browser_family_counts": browser_family_counts,
-        "os_family_counts": os_family_counts,
+        "browser_family_counts": dict(browser_family_counts),
+        "os_family_counts": dict(os_family_counts),
         "device_type_counts": device_type_counts
     }
+
 
 
 def get_apilogs(

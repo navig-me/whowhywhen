@@ -81,7 +81,7 @@ class APILogMiddleware(BaseHTTPMiddleware):
             response_time=response_time,
         )
 
-        create_apilog(session, project_id, apilog)
+        await create_apilog(session, project_id, apilog)
 
 
 app.add_middleware(APILogMiddleware)
