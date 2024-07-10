@@ -11,3 +11,4 @@ psycopg2
 httpx
 fastapi-utils
 typing_inspect
+user-agents

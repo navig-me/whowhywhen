@@ -9,7 +9,8 @@ from sqlmodel import or_
 import uuid
 import httpx
 from urllib.parse import urlparse, parse_qs
-
+from http.client import responses
+from user_agents import parse
 
 async def get_geolocation(ip: str):
     if ip and ',' in ip:
@@ -39,6 +40,27 @@ async def get_url_components(url):
     
     return full_url, path, query_params
 
+def get_response_code_text(code: int):
+    if code:
+        return responses.get(code, None)
+    return None
+
+def parse_user_agent(apilog: APILog):
+    try:
+        if parsed_user_agent := parse(apilog.user_agent):
+            apilog.browser_name = parsed_user_agent.browser.family
+            apilog.browser_version = parsed_user_agent.browser.version_string
+            apilog.os_name = parsed_user_agent.os.family
+            apilog.os_version = parsed_user_agent.os.version_string
+            apilog.device_type = parsed_user_agent.device.family
+            apilog.device_brand = parsed_user_agent.device.brand
+            apilog.device_model = parsed_user_agent.device.model
+            apilog.device_is_mobile = parsed_user_agent.is_mobile
+            apilog.device_is_tablet = parsed_user_agent.is_tablet
+            apilog.device_is_pc = parsed_user_agent.is_pc
+    except Exception as e:
+        print(e)
+    return apilog
 
 async def create_apilog(db: Session, user_project_id: uuid.UUID, apilog: APILogCreate, update_location: bool = False):
     db_apilog = APILog(user_project_id=user_project_id, **apilog.dict())
@@ -46,10 +68,18 @@ async def create_apilog(db: Session, user_project_id: uuid.UUID, apilog: APILogC
     if update_location and apilog.ip_address:
         geolocation = await get_geolocation(apilog.ip_address)
         db_apilog.location = geolocation.get('city', '') + ', ' + geolocation.get('region', '') + ', ' + geolocation.get('country', '')
+    
+    if code := apilog.response_code:
+        db_apilog.response_code_text = get_response_code_text(code)
+    
     query_params = None
     if apilog.url:
         url, path, query_params = await get_url_components(apilog.url)
         db_apilog.path = path
+    
+    if apilog.user_agent:
+        db_apilog = parse_user_agent(db_apilog)
+    
     db.add(db_apilog)
     db.commit()
     db.refresh(db_apilog)
