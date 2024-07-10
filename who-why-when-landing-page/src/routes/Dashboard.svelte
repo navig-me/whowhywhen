@@ -147,7 +147,8 @@
       body: JSON.stringify(searchParams)
     });
     if (response.ok) {
-      const data = await response.json();
+      let data = await response.json();
+      data = data.counts;
       updatePieChartData(data);
     } else if (response.status === 401) {
       clearToken();
