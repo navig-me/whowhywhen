@@ -52,16 +52,18 @@ def parse_user_agent(apilog: APILog):
     try:
         if parsed_user_agent := parse(apilog.user_agent):
             print(apilog.user_agent, parsed_user_agent)
-            apilog.browser_name = parsed_user_agent.browser.family
-            apilog.browser_version = parsed_user_agent.browser.version_string
-            apilog.os_name = parsed_user_agent.os.family
-            apilog.os_version = parsed_user_agent.os.version_string
-            apilog.device_type = parsed_user_agent.device.family
-            apilog.device_brand = parsed_user_agent.device.brand
-            apilog.device_model = parsed_user_agent.device.model
-            apilog.device_is_mobile = parsed_user_agent.is_mobile
-            apilog.device_is_tablet = parsed_user_agent.is_tablet
-            apilog.device_is_pc = parsed_user_agent.is_pc
+            apilog.user_agent_browser_family = parsed_user_agent.browser.family
+            apilog.user_agent_browser_version = parsed_user_agent.browser.version_string
+            apilog.user_agent_os_family = parsed_user_agent.os.family
+            apilog.user_agent_os_version = parsed_user_agent.os.version_string
+            apilog.user_agent_device_family = parsed_user_agent.device.family
+            apilog.user_agent_device_brand = parsed_user_agent.device.brand
+            apilog.user_agent_device_model = parsed_user_agent.device.model
+            apilog.is_mobile = parsed_user_agent.is_mobile
+            apilog.is_tablet = parsed_user_agent.is_tablet
+            apilog.is_pc = parsed_user_agent.is_pc
+            apilog.is_touch_capable = parsed_user_agent.is_touch_capable
+            apilog.is_bot = parsed_user_agent.is_bot
     except Exception as e:
         traceback.print_exc()
     return apilog
