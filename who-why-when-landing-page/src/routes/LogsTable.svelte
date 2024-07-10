@@ -22,6 +22,9 @@
   
     function showModalContent(title, content) {
       modalTitle = title;
+      if (!content) {
+        content = "No data available";
+      }
       modalContent = content;
       showModal = true;
     }
@@ -47,7 +50,6 @@
               <th>User Agent</th>
               <th>Response Code</th>
               <th>Response Time</th>
-              <th>Location</th>
               <th>Created At</th>
               <th>Query Parameters</th>
             </tr>
@@ -87,7 +89,6 @@
                     <i class="fa fa-info-circle info-icon" aria-hidden="true" on:click={() => showModalContent("Response Code", log.response_code_text)}></i>
                   </td>
                   <td>{log.response_time}</td>
-                  <td on:click={() => handleCellClick('location', log.location)}>{log.location}</td>
                   <td>{new Date(log.created_at).toLocaleString()}</td>
                   <td>
                     {log.query_params.length}

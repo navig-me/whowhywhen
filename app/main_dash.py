@@ -8,7 +8,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from datetime import datetime, timedelta
 from contextlib import asynccontextmanager
 from fastapi_utils.tasks import repeat_every
-from app.crud.apilog import get_geolocation, get_url_components
+from app.crud.apilog import get_geolocation, get_url_components, create_apilog
 import uuid
 import logging
 
@@ -71,21 +71,14 @@ class APILogMiddleware(BaseHTTPMiddleware):
         response_code = response.status_code
         response_time = (end_time - start_time).total_seconds()
         
-        query_params = None
-        if url:
-            _, path, query_params = await get_url_components(url)
-
         background_tasks = request.state.background_tasks
         background_tasks.add_task(
             self.log_to_db,
             ip_address,
             url,
-            path,
             user_agent,
             response_code,
             response_time,
-            start_time,
-            query_params,
         )
 
         return response
@@ -94,40 +87,25 @@ class APILogMiddleware(BaseHTTPMiddleware):
         self,
         ip_address,
         url,
-        path,
         user_agent,
         response_code,
         response_time,
-        start_time,
-        query_params,
     ):
         session = next(get_session())
         project_id = uuid.UUID("6863eb74-b5e8-4253-b7b0-2275e46c678f")
-        # geolocation = await get_geolocation(ip_address)
-        # location = f"{geolocation.get('city', '')}, {geolocation.get('region', '')}, {geolocation.get('country', '')}"
 
         apilog = APILog(
             user_project_id=project_id,
             url=url,
-            path=path,
             ip_address=ip_address,
             user_agent=user_agent,
-            location=None,
             response_code=response_code,
             response_time=response_time,
-            created_at=start_time,
         )
 
-        session.add(apilog)
-        session.commit()
-        session.refresh(apilog)
+        create_apilog(session, project_id, apilog)
 
-        if query_params:
-            session.add_all(
-                APILogQueryParam(api_log_id=apilog.id, key=key, value=value)
-                for key, value in query_params.items() if key and value
-            )
-            session.commit()
+
 
 app.add_middleware(APILogMiddleware)
 
