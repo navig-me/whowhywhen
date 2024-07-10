@@ -66,7 +66,17 @@ async def create_apilog_bulk(db: Session, user_project_id: uuid.UUID, apilogs: L
     return db_apilogs
 
 
-def get_apilogs(db: Session, user_id: uuid.UUID, page: int = 1, limit: int = 10, project_id: uuid.UUID = None, search_params = None, q: Optional[str] = None, sort: Optional[str] = None, sort_direction: Optional[str] = None):
+def get_apilogs(
+    db: Session,
+    user_id: uuid.UUID,
+    page: int = 1,
+    limit: int = 10,
+    project_id: uuid.UUID = None,
+    search_params: Optional[APILogSearch] = None,
+    q: Optional[str] = None,
+    sort: Optional[str] = None,
+    sort_direction: Optional[str] = None
+):
     offset = (page - 1) * limit
     
     if project_id:
@@ -121,10 +131,27 @@ def get_apilogs(db: Session, user_id: uuid.UUID, page: int = 1, limit: int = 10,
 
     results = db.execute(query).scalars().all()
     
-    for log in results:
-        log.query_params = db.query(APILogQueryParam).filter(APILogQueryParam.api_log_id == log.id).all()
+    # Fetch query params for each log
+    log_ids = [log.id for log in results]
+    query_params = db.execute(
+        select(APILogQueryParam).where(APILogQueryParam.api_log_id.in_(log_ids))
+    ).scalars().all()
+    
+    # Group query params by log_id
+    params_by_log_id = {}
+    for param in query_params:
+        if param.api_log_id not in params_by_log_id:
+            params_by_log_id[param.api_log_id] = []
+        params_by_log_id[param.api_log_id].append(param)
 
-    return {"logs": results, "total": total}
+    # Attach query params to logs
+    logs_with_params = []
+    for log in results:
+        log_dict = log.dict()
+        log_dict["query_params"] = params_by_log_id.get(log.id, [])
+        logs_with_params.append(log_dict)
+    
+    return {"logs": logs_with_params, "total": total}
 
 
 def get_apilogs_stats(db: Session, user_id: uuid.UUID, project_id: uuid.UUID = None, search_params = None, frequency: str = "hour", q: Optional[str] = None):
