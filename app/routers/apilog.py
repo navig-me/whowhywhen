@@ -3,7 +3,7 @@ from typing import Optional, List
 from typing import Optional
 from sqlmodel import Session
 from app.database import get_session
-from app.crud.apilog import create_apilog, get_apilogs, get_apilogs_stats, create_apilog_bulk
+from app.crud.apilog import create_apilog, get_apilogs, get_apilogs_stats, create_apilog_bulk, get_counts_data
 from app.schemas.apilog import APILogCreate, APILogSearch
 from app.dependencies.apikey import get_api_key
 from app.dependencies.auth import get_current_user
@@ -46,3 +46,14 @@ def get_api_logs_stats(
     session: Session = Depends(get_session)
 ):
     return get_apilogs_stats(session, current_user.id, project_id, search_params, frequency, query)
+
+
+@router_dash.post("/logs/project/stats/{project_id}/counts")
+def get_counts(
+    project_id: uuid.UUID,
+    search_params: Optional[APILogSearch] = None,
+    current_user: User = Depends(get_current_user),
+    session: Session = Depends(get_session)
+):
+    return get_counts_data(session, current_user.id, project_id, search_params)
+

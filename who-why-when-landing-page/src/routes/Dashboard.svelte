@@ -7,6 +7,7 @@
   import ProjectSelector from './ProjectSelector.svelte';
   import LogsTable from './LogsTable.svelte';
   import RequestsChart from './RequestsChart.svelte';
+  import PieChart from './PieChart.svelte';
   import { API_BASE_URL, DASH_API_BASE_URL } from '../config';
 
   let projects = [];
@@ -18,6 +19,9 @@
   let totalPages = 1;
   let logsPerPage = 20;
   let hourlyRequestsData = [];
+  let browserFamilyData = null;
+  let osFamilyData = null;
+  let deviceTypeData = null;
   let chartData = null;
   let frequency = "hour";
   let searchParams = {};
@@ -26,6 +30,7 @@
   let sortDirection = 'asc';
   let isTableLoading = false;
   let isChartLoading = false;
+  let isPieChartLoading = true;
 
   const dispatch = createEventDispatcher();
 
@@ -34,6 +39,7 @@
       selectedProjectId = projectId;
       await fetchApiLogs();
       await fetchHourlyRequestsData();
+      await fetchCountsData();
     }
   });
 
@@ -44,6 +50,7 @@
   async function fetchProjects() {
     isTableLoading = true;
     isChartLoading = true;
+    isPieChartLoading = true;
     const token = localStorage.getItem('token');
     const response = await fetch(`${DASH_API_BASE_URL}/dashauth/users/me/projects`, {
       headers: {
@@ -56,6 +63,7 @@
         selectedProjectId = projects[0].id;
         await fetchApiLogs();
         await fetchHourlyRequestsData();
+        await fetchCountsData();
       }
     } else if (response.status === 401) {
       clearToken();
@@ -65,6 +73,7 @@
     }
     isTableLoading = false;
     isChartLoading = false;
+    isPieChartLoading = false;
   }
 
   async function fetchApiLogs() {
@@ -126,14 +135,27 @@
     isChartLoading = false;
   }
 
-  function showToast(message, type) {
-    toastMessage = message;
-    toastType = type;
-  }
-
-  function changePage(newPage) {
-    currentPage = newPage;
-    fetchApiLogs();
+  async function fetchCountsData() {
+    isPieChartLoading = true;
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${DASH_API_BASE_URL}/dashapi/logs/project/stats/${selectedProjectId}/counts`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(searchParams)
+    });
+    if (response.ok) {
+      const data = await response.json();
+      updatePieChartData(data);
+    } else if (response.status === 401) {
+      clearToken();
+      currentView.set('login');
+    } else {
+      showToast('Failed to fetch counts data', 'error');
+    }
+    isPieChartLoading = false;
   }
 
   function updateChartData() {
@@ -179,6 +201,51 @@
     chartData = data;
   }
 
+  function updatePieChartData(data) {
+    browserFamilyData = {
+      labels: data.browser_family_counts.map(d => d[0]),
+      datasets: [
+        {
+          data: data.browser_family_counts.map(d => d[1]),
+          backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'],
+        }
+      ],
+      title: 'Browser Family'
+    };
+
+    osFamilyData = {
+      labels: data.os_family_counts.map(d => d[0]),
+      datasets: [
+        {
+          data: data.os_family_counts.map(d => d[1]),
+          backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'],
+        }
+      ],
+      title: 'OS Family'
+    };
+
+    deviceTypeData = {
+      labels: data.device_type_counts.map(d => d[0]),
+      datasets: [
+        {
+          data: data.device_type_counts.map(d => d[1]),
+          backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'],
+        }
+      ],
+      title: 'Device Type'
+    };
+  }
+
+  function showToast(message, type) {
+    toastMessage = message;
+    toastType = type;
+  }
+
+  function changePage(newPage) {
+    currentPage = newPage;
+    fetchApiLogs();
+  }
+
   function handleCellClick(event) {
     const { field, value } = event.detail;
     searchParams = { ...searchParams, [field]: value };
@@ -198,6 +265,7 @@
     currentPage = 1;
     fetchApiLogs();
     fetchHourlyRequestsData();
+    fetchCountsData();
   }
 
   function resetFilters() {
@@ -205,6 +273,7 @@
     currentPage = 1;
     fetchApiLogs();
     fetchHourlyRequestsData();
+    fetchCountsData();
   }
 
   function formatKey(key) {
@@ -237,6 +306,7 @@
     searchParams = { ...searchParams, [field]: value };
     fetchApiLogs();
     fetchHourlyRequestsData();
+    fetchCountsData();
   }
 </script>
 
@@ -244,7 +314,7 @@
   <div class="container">
     <div class="dashboard-header">
       <div class="left-column">
-        <ProjectSelector {projects} bind:selectedProjectId on:reset={resetFilters} on:change={async () => { await fetchApiLogs(); await fetchHourlyRequestsData(); }} />
+        <ProjectSelector {projects} bind:selectedProjectId on:reset={resetFilters} on:change={async () => { await fetchApiLogs(); await fetchHourlyRequestsData(); await fetchCountsData(); }} />
       </div>
       <div class="right-column">
         <div class="selected-filters">
@@ -269,8 +339,13 @@
     </div>
     <div class="dashboard-content">
       <LogsTable {apiLogs} {currentPage} {totalPages} {isTableLoading} on:changePage={(e) => changePage(e.detail.page)} on:cellClick={handleCellClick} on:addFilter={handleAddFilter} />
+      <div class="charts-container">
+        <RequestsChart {chartData} {frequency} {isChartLoading} on:frequencyChange={handleFrequencyChange} />
+        <PieChart {chartData}={browserFamilyData} {isChartLoading}={isPieChartLoading} />
+        <PieChart {chartData}={osFamilyData} {isChartLoading}={isPieChartLoading} />
+        <PieChart {chartData}={deviceTypeData} {isChartLoading}={isPieChartLoading} />
+      </div>
     </div>
-    <RequestsChart {chartData} {frequency} {isChartLoading} on:frequencyChange={handleFrequencyChange} />
   </div>
 </section>
 
@@ -389,6 +464,13 @@
     margin-top: 20px;
   }
 
+  .charts-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+
   .toast {
     position: fixed;
     bottom: 20px;
@@ -447,6 +529,10 @@
     .dashboard-content {
       gap: 10px;
     }
+
+    .charts-container {
+      flex-direction: column;
+    }
   }
 
   @media (max-width: 480px) {
@@ -470,6 +556,10 @@
 
     .dashboard-content {
       gap: 5px;
+    }
+
+    .charts-container {
+      flex-direction: column;
     }
   }
 </style>

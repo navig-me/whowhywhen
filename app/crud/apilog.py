@@ -101,6 +101,71 @@ async def create_apilog_bulk(db: Session, user_project_id: uuid.UUID, apilogs: L
             db_apilogs.append(ca)
     return db_apilogs
 
+def get_counts_data(
+    db: Session, 
+    user_id: uuid.UUID, 
+    project_id: uuid.UUID = None, 
+    search_params = None
+):
+    query = db.query(APILog)
+    
+    if project_id:
+        query = query.filter(APILog.user_project_id == project_id)
+    else:
+        query = query.filter(APILog.user_id == user_id)
+    
+    if search_params:
+        if search_params.path:
+            query = query.filter(APILog.path.ilike(f'{search_params.path}%'))
+        if search_params.ip_address:
+            query = query.filter(APILog.ip_address.ilike(f'{search_params.ip_address}%'))
+        if search_params.user_agent:
+            query = query.filter(APILog.user_agent.ilike(f'{search_params.user_agent}%'))
+        if search_params.location:
+            query = query.filter(APILog.location.ilike(f'{search_params.location}%'))
+        if search_params.response_code:
+            query = query.filter(APILog.response_code == search_params.response_code)
+    
+    browser_family_counts = (
+        query.with_entities(
+            APILog.user_agent_browser_family,
+            func.count(APILog.user_agent_browser_family)
+        )
+        .group_by(APILog.user_agent_browser_family)
+        .all()
+    )
+    
+    os_family_counts = (
+        query.with_entities(
+            APILog.user_agent_os_family,
+            func.count(APILog.user_agent_os_family)
+        )
+        .group_by(APILog.user_agent_os_family)
+        .all()
+    )
+
+    device_type_counts = (
+        query.with_entities(
+            case(
+                [
+                    (APILog.is_mobile == True, 'Phone'),
+                    (APILog.is_tablet == True, 'Tablet'),
+                    (APILog.is_pc == True, 'PC'),
+                    (APILog.is_bot == True, 'Bot')
+                ],
+                else_='Other'
+            ).label('device_type'),
+            func.count('*')
+        )
+        .group_by('device_type')
+        .all()
+    )
+
+    return {
+        "browser_family_counts": browser_family_counts,
+        "os_family_counts": os_family_counts,
+        "device_type_counts": device_type_counts
+    }
 
 def get_apilogs(
     db: Session,
