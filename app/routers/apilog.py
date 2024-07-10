@@ -10,17 +10,18 @@ from app.dependencies.auth import get_current_user
 from app.models.user import UserProject, User
 import uuid
 
-router = APIRouter()
+router_api = APIRouter()
+router_dash = APIRouter()
 
-@router.post("/log")
+@router_api.post("/log")
 async def save_api_log(apilog: APILogCreate, current_user_project: UserProject = Depends(get_api_key), session: Session = Depends(get_session)):
     return await create_apilog(session, current_user_project.id, apilog)
 
-@router.post("/log/bulk")
+@router_api.post("/log/bulk")
 async def save_api_log_bulk(apilogs: List[APILogCreate], current_user_project: UserProject = Depends(get_api_key), session: Session = Depends(get_session)):
     return await create_apilog_bulk(session, current_user_project.id, apilogs)
 
-@router.post("/logs/project/{project_id}")
+@router_dash.post("/logs/project/{project_id}")
 def get_api_logs(
     project_id: uuid.UUID,
     search_params: Optional[APILogSearch] = None,
@@ -35,7 +36,7 @@ def get_api_logs(
     return get_apilogs(session, current_user.id, page, limit, project_id, search_params, query, sort, sort_direction)
 
 
-@router.post("/logs/project/stats/{project_id}")
+@router_dash.post("/logs/project/stats/{project_id}")
 def get_api_logs_stats(
     project_id: uuid.UUID,
     search_params: Optional[APILogSearch] = None,

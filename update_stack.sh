@@ -1,7 +1,8 @@
 git pull
 docker-compose build
 
-docker service rm www_stack_fastapi
+docker service rm www_stack_dash
+docker service rm www_stack_api
 docker service rm www_stack_svelte
 docker service rm www_stack_traefik
 

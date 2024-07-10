@@ -2,7 +2,6 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import Session
 from datetime import timedelta, datetime
-import bcrypt
 from typing import Optional
 from jose import jwt
 from app.config import ACCESS_TOKEN_EXPIRE_MINUTES, SECRET_KEY, ALGORITHM
@@ -10,10 +9,10 @@ from app.database import get_session
 from app.crud.user import create_user, get_user_by_email, User, save_user_project, get_user_projects, verify_turnstile_token
 from app.schemas.user import UserCreate, UserRead, UserStatusRead
 from app.dependencies.auth import get_current_user
-from app.models.user import User, UserProject, SubscriptionPlan
+from app.models.user import User, SubscriptionPlan
 from app.models.apilog import APILog
 from app.dependencies.auth import verify_password
-from app.config import TURNSTILE_SECRET_KEY, STRIPE_PUBLISHABLE_KEY, STRIPE_SECRET_KEY
+from app.config import TURNSTILE_SECRET_KEY, STRIPE_SECRET_KEY
 import stripe
 from app.crud.user import FREE_PLAN_LIMIT, STARTER_PLAN_LIMIT, PAID_PLAN_LIMIT
 

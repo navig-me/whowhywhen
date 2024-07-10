@@ -71,7 +71,7 @@
   async function fetchApiLogs() {
     isTableLoading = true;
     const token = localStorage.getItem('token');
-    let url = `${API_BASE_URL}/api/logs/project/${selectedProjectId}?page=${currentPage}&limit=${logsPerPage}`;
+    let url = `${API_BASE_URL}/dashapi/logs/project/${selectedProjectId}?page=${currentPage}&limit=${logsPerPage}`;
     if (query) {
       url += `&query=${query}`;
     }
@@ -108,7 +108,7 @@
   async function fetchHourlyRequestsData() {
     isChartLoading = true;
     const token = localStorage.getItem('token');
-    const response = await fetch(`${API_BASE_URL}/api/logs/project/stats/${selectedProjectId}?frequency=${frequency}`, {
+    const response = await fetch(`${API_BASE_URL}/dashapi/logs/project/stats/${selectedProjectId}?frequency=${frequency}`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,

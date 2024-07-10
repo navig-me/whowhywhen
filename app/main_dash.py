@@ -15,8 +15,8 @@ import logging
 logger = logging.getLogger(__name__)
 
 app = FastAPI(
-    title="WhoWhyWhen API",
-    description="API for WhoWhyWhen",
+    title="WhoWhyWhen Dashboard",
+    description="Dashboard for WhoWhyWhen",
     version="0.1.0",
 )
 
@@ -103,8 +103,8 @@ class APILogMiddleware(BaseHTTPMiddleware):
     ):
         session = next(get_session())
         project_id = uuid.UUID("6863eb74-b5e8-4253-b7b0-2275e46c678f")
-        geolocation = await get_geolocation(ip_address)
-        location = f"{geolocation.get('city', '')}, {geolocation.get('region', '')}, {geolocation.get('country', '')}"
+        # geolocation = await get_geolocation(ip_address)
+        # location = f"{geolocation.get('city', '')}, {geolocation.get('region', '')}, {geolocation.get('country', '')}"
 
         apilog = APILog(
             user_project_id=project_id,
@@ -112,7 +112,7 @@ class APILogMiddleware(BaseHTTPMiddleware):
             path=path,
             ip_address=ip_address,
             user_agent=user_agent,
-            location=location,
+            location=None,
             response_code=response_code,
             response_time=response_time,
             created_at=start_time,
@@ -142,12 +142,12 @@ async def add_background_tasks(request: Request, call_next):
 def on_startup():
     create_db_and_tables()
 
-@app.get("/api/ip-location")
+@app.get("/dashapi/ip-location")
 async def get_ip_location(request: Request):
     ip = request.state.ip
     return {"ip": ip}
 
-app.include_router(auth.router, prefix="/auth", tags=["auth"])
-app.include_router(apikey.router, prefix="/api", tags=["apikey"])
-app.include_router(apilog.router, prefix="/api", tags=["apilog"])
-app.include_router(botinfo.router, prefix="/api", tags=["botinfo"])
+app.include_router(auth.router, prefix="/dashauth", tags=["auth"])
+app.include_router(apikey.router, prefix="/dashapi", tags=["apikey"])
+app.include_router(apilog.router_dash, prefix="/dashapi", tags=["apilog"])
+app.include_router(botinfo.router, prefix="/dashapi", tags=["botinfo"])

@@ -4,7 +4,7 @@
     import { selectedProjectIdStore, isLoggedIn, clearToken } from '../stores/userStore'; 
     import { createEventDispatcher } from 'svelte';
     import Toast from '../components/Toast.svelte';
-    import { API_BASE_URL } from '../config'; // Import the base URL
+    import { API_BASE_URL, DASH_API_BASE_URL } from '../config'; // Import the base URL
   
     let projects = [];
     let apiKeys = [];
@@ -27,7 +27,7 @@
   
     async function fetchProjects() {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/auth/users/me/projects`, {
+      const response = await fetch(`${DASH_API_BASE_URL}/auth/users/me/projects`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -40,7 +40,7 @@
     }
   
     async function fetchIpLocation() {
-      const response = await fetch(`${API_BASE_URL}/api/ip-location`);
+      const response = await fetch(`${DASH_API_BASE_URL}/dashapi/ip-location`);
       if (response.ok) {
         const data = await response.json();
         clientIp = data.ip;
@@ -55,7 +55,7 @@
         return;
       }
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/auth/users/me/projects?project_name=${newProjectName}`, {
+      const response = await fetch(`${DASH_API_BASE_URL}/auth/users/me/projects?project_name=${newProjectName}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -75,7 +75,7 @@
     async function fetchApiKeys(projectId) {
       selectedProjectId = projectId;
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/api/apikeys?user_project_id=${projectId}`, {
+      const response = await fetch(`${DASH_API_BASE_URL}/dashapi/apikeys?user_project_id=${projectId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -94,7 +94,7 @@
         return;
       }
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/api/apikeys?user_project_id=${selectedProjectId}&name=${newApiKeyName}`, {
+      const response = await fetch(`${DASH_API_BASE_URL}/dashapi/apikeys?user_project_id=${selectedProjectId}&name=${newApiKeyName}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -113,7 +113,7 @@
   
     async function deleteApiKey(keyId) {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/api/apikeys/${keyId}`, {
+      const response = await fetch(`${DASH_API_BASE_URL}/dashapi/apikeys/${keyId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
