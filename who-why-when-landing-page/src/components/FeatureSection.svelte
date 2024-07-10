@@ -34,10 +34,10 @@
 		</div>
 		<div class="feature">
 		  <div class="icon">
-			<i class="fas fa-cogs"></i>
+			<i class="fas fa-user-friends"></i>
 		  </div>
-		  <h3>Seamless Integration</h3>
-		  <p>Integrate WhoWhyWhen effortlessly into your platform with our easy-to-use code snippets and comprehensive documentation.</p>
+		  <h3>Understand your Users</h3>
+		  <p>Gain insights into your users' behavior and preferences, enabling you to personalize your services and improve user experience.</p>
 		</div>
 	  </div>
 	</div>

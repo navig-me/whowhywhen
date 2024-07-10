@@ -7,7 +7,7 @@
   import ProjectSelector from './ProjectSelector.svelte';
   import LogsTable from './LogsTable.svelte';
   import RequestsChart from './RequestsChart.svelte';
-  import { API_BASE_URL, DASH_API_BASE_URL } from '../config'; // Import the base URL
+  import { API_BASE_URL, DASH_API_BASE_URL } from '../config';
 
   let projects = [];
   let selectedProjectId = null;
@@ -21,9 +21,9 @@
   let chartData = null;
   let frequency = "hour";
   let searchParams = {};
-  let query = ''; // Add query state
-  let sort = null; // Add sort state
-  let sortDirection = 'asc'; // Add sort direction state
+  let query = '';
+  let sort = null;
+  let sortDirection = 'asc';
   let isTableLoading = false;
   let isChartLoading = false;
 
@@ -58,7 +58,6 @@
         await fetchHourlyRequestsData();
       }
     } else if (response.status === 401) {
-      // Log out if the user is not authorized
       clearToken();
       currentView.set('login');
     } else {
@@ -93,10 +92,9 @@
     });
     if (response.ok) {
       const data = await response.json();
-      apiLogs = data.logs; // Replace the current logs with the new logs
+      apiLogs = data.logs;
       totalPages = Math.ceil(data.total / logsPerPage);
     } else if (response.status === 401) {
-      // Log out if the user is not authorized
       clearToken();
       currentView.set('login');
     } else {
@@ -120,7 +118,6 @@
       hourlyRequestsData = await response.json();
       updateChartData();
     } else if (response.status === 401) {
-      // Log out if the user is not authorized
       clearToken();
       currentView.set('login');
     } else {
@@ -185,7 +182,7 @@
   function handleCellClick(event) {
     const { field, value } = event.detail;
     searchParams = { ...searchParams, [field]: value };
-    currentPage = 1; // Reset to first page when filters are applied
+    currentPage = 1;
     fetchApiLogs();
     fetchHourlyRequestsData();
   }
@@ -196,16 +193,16 @@
   }
 
   function removeFilter(key) {
-    const { [key]: _, ...rest } = searchParams; // Destructure to remove the key
+    const { [key]: _, ...rest } = searchParams;
     searchParams = rest;
-    currentPage = 1; // Reset to first page when filters are removed
+    currentPage = 1;
     fetchApiLogs();
     fetchHourlyRequestsData();
   }
 
   function resetFilters() {
     searchParams = {};
-    currentPage = 1; // Reset to first page when filters are reset
+    currentPage = 1;
     fetchApiLogs();
     fetchHourlyRequestsData();
   }
@@ -245,24 +242,30 @@
 
 <section class="dashboard-section">
   <div class="container">
-    <ProjectSelector {projects} bind:selectedProjectId on:reset={resetFilters} on:change={async () => { await fetchApiLogs(); await fetchHourlyRequestsData(); }} />
-    <div class="selected-filters">
-      <p>Selected Filters:</p>
-      <ul>
-        {#if Object.keys(searchParams).length === 0}
-          <li>Select values in the table to filter</li>
-        {:else}
-          {#each Object.entries(searchParams) as [key, value]}
-            <li>
-              {formatKey(key)}: {value} <button on:click={() => removeFilter(key)}>✖</button>
-            </li>
-          {/each}
-        {/if}
-      </ul>
-    </div>
-    <div class="search-container">
-      <input type="text" placeholder="Search..." on:input={handleSearchInput} />
-      <button on:click={triggerSearch}>Search</button>
+    <div class="dashboard-header">
+      <div class="left-column">
+        <ProjectSelector {projects} bind:selectedProjectId on:reset={resetFilters} on:change={async () => { await fetchApiLogs(); await fetchHourlyRequestsData(); }} />
+      </div>
+      <div class="right-column">
+        <div class="selected-filters">
+          <p>Selected Filters:</p>
+          <ul>
+            {#if Object.keys(searchParams).length === 0}
+              <li>Select values in the table to filter</li>
+            {:else}
+              {#each Object.entries(searchParams) as [key, value]}
+                <li>
+                  {formatKey(key)}: {value} <button on:click={() => removeFilter(key)}>✖</button>
+                </li>
+              {/each}
+            {/if}
+          </ul>
+        </div>
+        <div class="search-container">
+          <input type="text" placeholder="Search..." on:input={handleSearchInput} />
+          <button on:click={triggerSearch}>Search</button>
+        </div>
+      </div>
     </div>
     <div class="dashboard-content">
       <LogsTable {apiLogs} {currentPage} {totalPages} {isTableLoading} on:changePage={(e) => changePage(e.detail.page)} on:cellClick={handleCellClick} on:addFilter={handleAddFilter} />
@@ -277,7 +280,7 @@
 
 <style>
   .dashboard-section {
-    padding: 60px 20px;
+    padding: 40px 20px;
     text-align: center;
     background: linear-gradient(135deg, #f9f9f9 25%, #fff 75%);
     color: #333;
@@ -287,21 +290,32 @@
     max-width: 1200px;
     margin: 0 auto;
     background: #fff;
-    padding: 40px;
+    padding: 20px;
     border-radius: 15px;
     box-shadow: 0 6px 30px rgba(0, 0, 0, 0.1);
   }
 
-  h2 {
-    margin-bottom: 30px;
-    color: #663399;
-    font-size: 2.5em;
-    font-weight: bold;
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+  }
+
+  .left-column {
+    flex: 1;
+    margin-right: 20px;
+  }
+
+  .right-column {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
   }
 
   .selected-filters {
-    margin-bottom: 30px;
-    padding: 15px;
+    margin-bottom: 10px;
+    padding: 10px;
     background: #f1f1f1;
     border-radius: 10px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -316,10 +330,10 @@
     display: inline-block;
     background: #663399;
     color: #fff;
-    padding: 7px 20px;
-    border-radius: 20px;
+    padding: 5px 10px;
+    border-radius: 15px;
     margin: 5px;
-    font-size: 0.9em;
+    font-size: 0.8em;
     transition: background 0.3s ease;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   }
@@ -330,7 +344,7 @@
     color: #fff;
     margin-left: 10px;
     cursor: pointer;
-    font-size: 1.2em;
+    font-size: 1em;
   }
 
   .selected-filters li:hover {
@@ -339,8 +353,7 @@
 
   .search-container {
     display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
+    justify-content: flex-start;
   }
 
   .search-container input {
@@ -412,6 +425,14 @@
   @media (max-width: 768px) {
     .container {
       padding: 20px;
+    }
+
+    .dashboard-header {
+      flex-direction: column;
+    }
+
+    .right-column {
+      margin-top: 20px;
     }
 
     .selected-filters ul {
