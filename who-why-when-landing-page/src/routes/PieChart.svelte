@@ -4,15 +4,17 @@
 
   Chart.register(...registerables);
 
-  export let chartData = null;
-  export let isChartLoading = false;
+  export let pieChartData = null;
+  export let isPieChartLoading = false;
+
+  $: console.log('Chart Data:', pieChartData);
 </script>
 
 <div class="pie-chart">
-  {#if isChartLoading}
+  {#if isPieChartLoading}
     <p class="loading">Loading...</p>
-  {:else if chartData}
-    <Pie data={chartData} options={{
+  {:else if pieChartData && pieChartData.labels && pieChartData.datasets}
+    <Pie data={pieChartData} options={{
       responsive: true,
       plugins: {
         legend: {
@@ -27,7 +29,7 @@
         },
         title: {
           display: true,
-          text: chartData.title,
+          text: pieChartData.title,
           color: '#333',
           font: {
             size: 16,

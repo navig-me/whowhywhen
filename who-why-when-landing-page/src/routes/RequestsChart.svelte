@@ -5,9 +5,9 @@
 
   Chart.register(...registerables);
 
-  export let chartData = null;
+  export let barChartData = null;
   export let frequency = "hour";
-  export let isChartLoading = false; // New prop for loading state
+  export let isChartLoading = false;
   const dispatch = createEventDispatcher();
 
   function handleFrequencyChange(event) {
@@ -27,97 +27,100 @@
   <h3>Requests per {frequency.charAt(0).toUpperCase() + frequency.slice(1)}</h3>
   {#if isChartLoading}
     <p class="loading">Loading...</p>
-  {:else if chartData}
-    <Bar
-      data={chartData}
-      options={{
-        responsive: true,
-        scales: {
-          y: {
-            beginAtZero: true,
+  {:else if barChartData}
+    <div class="chart-container">
+      <Bar
+        data={barChartData}
+        options={{
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: 'Request Count',
+                color: '#666',
+                font: {
+                  size: 14,
+                  weight: 'bold',
+                }
+              },
+              grid: {
+                color: 'rgba(200, 200, 200, 0.2)',
+              },
+            },
+            y1: {
+              beginAtZero: true,
+              position: 'right',
+              grid: {
+                drawOnChartArea: false,
+                color: 'rgba(200, 200, 200, 0.2)',
+              },
+              title: {
+                display: true,
+                text: 'Average Response Time (s)',
+                color: '#666',
+                font: {
+                  size: 14,
+                  weight: 'bold',
+                }
+              }
+            },
+            x: {
+              grid: {
+                color: 'rgba(200, 200, 200, 0.2)',
+              },
+            },
+          },
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: {
+                color: '#666',
+                font: {
+                  size: 12,
+                  weight: 'bold',
+                }
+              }
+            },
             title: {
               display: true,
-              text: 'Request Count',
-              color: '#666',
+              text: `Requests per ${frequency.charAt(0).toUpperCase() + frequency.slice(1)}`,
+              color: '#333',
               font: {
-                size: 14,
+                size: 16,
                 weight: 'bold',
               }
             },
-            grid: {
-              color: 'rgba(200, 200, 200, 0.2)',
-            },
-          },
-          y1: {
-            beginAtZero: true,
-            position: 'right',
-            grid: {
-              drawOnChartArea: false,
-              color: 'rgba(200, 200, 200, 0.2)',
-            },
-            title: {
-              display: true,
-              text: 'Average Response Time (s)',
-              color: '#666',
-              font: {
+            tooltip: {
+              backgroundColor: 'rgba(0, 0, 0, 0.7)',
+              titleFont: {
                 size: 14,
                 weight: 'bold',
-              }
-            }
-          },
-          x: {
-            grid: {
-              color: 'rgba(200, 200, 200, 0.2)',
-            },
-          },
-        },
-        plugins: {
-          legend: {
-            position: 'top',
-            labels: {
-              color: '#666',
-              font: {
+              },
+              bodyFont: {
                 size: 12,
-                weight: 'bold',
-              }
-            }
-          },
-          title: {
-            display: true,
-            text: `Requests per ${frequency.charAt(0).toUpperCase() + frequency.slice(1)}`,
-            color: '#333',
-            font: {
-              size: 16,
-              weight: 'bold',
-            }
-          },
-          tooltip: {
-            backgroundColor: 'rgba(0, 0, 0, 0.7)',
-            titleFont: {
-              size: 14,
-              weight: 'bold',
+              },
+              bodySpacing: 4,
+              padding: 10,
+              cornerRadius: 4,
+              caretSize: 6,
             },
-            bodyFont: {
-              size: 12,
+          },
+          elements: {
+            line: {
+              tension: 0.4,
             },
-            bodySpacing: 4,
-            padding: 10,
-            cornerRadius: 4,
-            caretSize: 6,
-          },
-        },
-        elements: {
-          line: {
-            tension: 0.4, // Smoothens the line
-          },
-          point: {
-            radius: 4,
-            backgroundColor: '#fff',
-            borderWidth: 2,
+            point: {
+              radius: 4,
+              backgroundColor: '#fff',
+              borderWidth: 2,
+            }
           }
-        }
-      }}
-    />
+        }}
+      />
+    </div>
   {:else}
     <p>No data available</p>
   {/if}
@@ -165,5 +168,33 @@
     text-align: center;
     font-size: 1.2em;
     color: #663399;
+  }
+
+  .chart-container {
+    position: relative;
+    width: 100%;
+    height: 400px; /* Ensure the chart has a minimum height */
+  }
+
+  @media (max-width: 768px) {
+    .chart-controls {
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .chart-container {
+      height: 300px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .chart-controls {
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .chart-container {
+      height: 250px;
+    }
   }
 </style>

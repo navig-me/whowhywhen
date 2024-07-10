@@ -22,7 +22,7 @@
   let browserFamilyData = null;
   let osFamilyData = null;
   let deviceTypeData = null;
-  let chartData = null;
+  let barChartData = null;
   let frequency = "hour";
   let searchParams = {};
   let query = '';
@@ -199,7 +199,7 @@
         }
       ]
     };
-    chartData = data;
+    barChartData = data;
   }
 
   function updatePieChartData(data) {
@@ -208,7 +208,6 @@
       datasets: [
         {
           data: Object.values(data.browser_family_counts),
-          backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'],
         }
       ],
       title: 'Browser Family'
@@ -219,7 +218,6 @@
       datasets: [
         {
           data: Object.values(data.os_family_counts),
-          backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'],
         }
       ],
       title: 'OS Family'
@@ -230,7 +228,6 @@
       datasets: [
         {
           data: Object.values(data.device_type_counts),
-          backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'],
         }
       ],
       title: 'Device Type'
@@ -342,12 +339,12 @@
     <div class="dashboard-content">
       <LogsTable {apiLogs} {currentPage} {totalPages} {isTableLoading} on:changePage={(e) => changePage(e.detail.page)} on:cellClick={handleCellClick} on:addFilter={handleAddFilter} />
       <div class="charts-container">
-        <RequestsChart {chartData} {frequency} {isChartLoading} on:frequencyChange={handleFrequencyChange} class="full-width-chart"/>
+        <RequestsChart {barChartData} {frequency} {isChartLoading} on:frequencyChange={handleFrequencyChange} class="full-width-chart"/>
       </div>
       <div class="pie-charts-container">
-        <PieChart {chartData} {browserFamilyData} {isChartLoading} {isPieChartLoading} />
-        <PieChart {chartData} {osFamilyData} {isChartLoading} {isPieChartLoading} />
-        <PieChart {chartData} {deviceTypeData} {isChartLoading} {isPieChartLoading} />
+        <PieChart pieChartData={browserFamilyData} {isPieChartLoading} />
+        <PieChart pieChartData={osFamilyData} {isPieChartLoading} />
+        <PieChart pieChartData={deviceTypeData} {isPieChartLoading} />
       </div>
     </div>
   </div>
@@ -472,16 +469,28 @@
     display: flex;
     justify-content: space-between;
     margin-top: 20px;
+    flex-wrap: wrap;
   }
 
   .full-width-chart {
     width: 100%;
+    min-height: 300px; /* Ensure the chart has a minimum height */
   }
 
   .pie-charts-container {
     display: flex;
     justify-content: space-between;
     margin-top: 20px;
+    flex-wrap: wrap;
+  }
+
+  .pie-chart {
+    flex: 1;
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    margin: 20px;
   }
 
   .toast {
@@ -498,17 +507,6 @@
     animation: fadeInOut 6s ease-in-out;
   }
 
-  .toast.info {
-    background-color: #663399;
-  }
-
-  .toast.success {
-    background-color: #28a745;
-  }
-
-  .toast.error {
-    background-color: #dc3545;
-  }
 
   @keyframes fadeInOut {
     0% { opacity: 0; }
