@@ -1,12 +1,34 @@
 version: '3.8'
 
 services:
+  api:
+    image: backend_api
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    environment:
+      - DATABASE_URL=postgresql://postgres:secrect@142.93.220.56:5432/wwwdb
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    networks:
+      - app-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.rule=Host(`api.whowhywhen.com`)"
+      - "traefik.http.services.api.loadbalancer.server.port=8001"
+      - "traefik.http.middlewares.real-ip.headers.customrequestheaders.X-Forwarded-For=X-Real-IP,X-Forwarded-For,X-Forwarded-Proto,X-Forwarded-Host,X-Forwarded-Port"
+      - "traefik.http.routers.api.middlewares=real-ip"
+
   dash:
     image: backend_dash
     build:
       context: .
       dockerfile: Dockerfile.dash
-    deploy:
+      environment:
+      - DATABASE_URL=postgresql://postgres:secrect@142.93.220.56:5432/wwwdb
+      deploy:
       replicas: 1
       restart_policy:
         condition: on-failure
@@ -18,24 +40,6 @@ services:
       - "traefik.http.services.dash.loadbalancer.server.port=8000"
       - "traefik.http.middlewares.real-ip.headers.customrequestheaders.X-Forwarded-For=X-Real-IP,X-Forwarded-For,X-Forwarded-Proto,X-Forwarded-Host,X-Forwarded-Port"
       - "traefik.http.routers.dash.middlewares=real-ip"
-
-  api:
-    image: backend_api
-    build:
-      context: .
-      dockerfile: Dockerfile.api
-    deploy:
-      replicas: 2
-      restart_policy:
-        condition: on-failure
-    networks:
-      - app-network
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.api.rule=Host(`api.whowhywhen.com`)"
-      - "traefik.http.services.api.loadbalancer.server.port=8001"
-      - "traefik.http.middlewares.real-ip.headers.customrequestheaders.X-Forwarded-For=X-Real-IP,X-Forwarded-For,X-Forwarded-Proto,X-Forwarded-Host,X-Forwarded-Port"
-      - "traefik.http.routers.api.middlewares=real-ip"
 
   svelte:
     image: svelte_image
