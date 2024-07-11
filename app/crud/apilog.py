@@ -128,9 +128,9 @@ def get_counts_data(
         if search_params.response_code:
             query = query.filter(APILog.response_code == search_params.response_code)
     
-    # Helper function to replace null or empty values with "Other"
+    # Helper function to replace null values with "Other"
     def coalesce_to_other(column):
-        return func.coalesce(func.nullif(column, ''), 'Other')
+        return func.coalesce(column, 'Other')
 
     browser_family_counts = (
         query.with_entities(
@@ -152,7 +152,7 @@ def get_counts_data(
 
     response_code_counts = (
         query.with_entities(
-            coalesce_to_other(APILog.response_code).label('response_code'),
+            APILog.response_code.label('response_code'),
             func.count(APILog.response_code)
         )
         .group_by('response_code')
@@ -163,7 +163,6 @@ def get_counts_data(
     # Change keys to add the text description
     for key, value in response_code_counts.items():
         response_code_counts_keyed[f"{key} ({get_response_code_text(key)})"] = value
-        
 
     phone_count = query.filter(APILog.is_mobile == True).count()
     tablet_count = query.filter(APILog.is_tablet == True).count()
