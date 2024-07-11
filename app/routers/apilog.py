@@ -13,12 +13,36 @@ import uuid
 router_api = APIRouter()
 router_dash = APIRouter()
 
-@router_api.post("/log")
-async def save_api_log(apilog: APILogCreate, current_user_project: UserProject = Depends(get_api_key), session: Session = Depends(get_session)):
+@router_api.post("/log", summary="Save a single API log", description="Save a single API log entry.")
+async def save_api_log(
+    apilog: APILogCreate, 
+    current_user_project: UserProject = Depends(get_api_key), 
+    session: Session = Depends(get_session)
+):
+    """
+    Save a single API log entry.
+
+    - **url**: URL of the API request.
+    - **ip_address**: IP address of the request.
+    - **user_agent**: User agent of the request (optional).
+    - **location**: Location of the request (optional).
+    - **response_code**: HTTP response code (optional).
+    - **response_time**: Response time in seconds (optional).
+    """
     return await create_apilog(session, current_user_project.id, apilog)
 
-@router_api.post("/log/bulk")
-async def save_api_log_bulk(apilogs: List[APILogCreate], current_user_project: UserProject = Depends(get_api_key), session: Session = Depends(get_session)):
+
+@router_api.post("/log/bulk", summary="Save multiple API logs", description="Save multiple API log entries in bulk.")
+async def save_api_log_bulk(
+    apilogs: List[APILogCreate], 
+    current_user_project: UserProject = Depends(get_api_key), 
+    session: Session = Depends(get_session)
+):
+    """
+    Save multiple API log entries in bulk.
+
+    - **apilogs**: List of API log entries.
+    """
     return await create_apilog_bulk(session, current_user_project.id, apilogs)
 
 @router_dash.post("/logs/project/{project_id}")
@@ -56,6 +80,5 @@ def get_counts(
     session: Session = Depends(get_session)
 ):
     counts_data = get_counts_data(session, current_user.id, project_id, search_params)
-    print("Counts data", counts_data)
     return {"counts": counts_data}
 

@@ -22,6 +22,7 @@
   let browserFamilyData = null;
   let osFamilyData = null;
   let deviceTypeData = null;
+  let responseCodeData = null;
   let barChartData = null;
   let frequency = "hour";
   let searchParams = {};
@@ -232,6 +233,16 @@
       ],
       title: 'Device Type'
     };
+
+    responseCodeData = {
+      labels: Object.keys(data.response_code_counts),
+      datasets: [
+        {
+          data: Object.values(data.response_code_counts),
+        }
+      ],
+      title: 'Response Code'
+    };
   }
 
   function showToast(message, type) {
@@ -345,6 +356,7 @@
         <PieChart pieChartData={browserFamilyData} {isPieChartLoading} />
         <PieChart pieChartData={osFamilyData} {isPieChartLoading} />
         <PieChart pieChartData={deviceTypeData} {isPieChartLoading} />
+        <PieChart pieChartData={responseCodeData} {isPieChartLoading} />
       </div>
     </div>
   </div>

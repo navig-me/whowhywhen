@@ -150,6 +150,21 @@ def get_counts_data(
         .all()
     )
 
+    response_code_counts = (
+        query.with_entities(
+            coalesce_to_other(APILog.response_code).label('response_code'),
+            func.count(APILog.response_code)
+        )
+        .group_by('response_code')
+        .all()
+    )
+    response_code_counts = dict(response_code_counts)
+    response_code_counts_keyed = dict()
+    # Change keys to add the text description
+    for key, value in response_code_counts.items():
+        response_code_counts_keyed[f"{key} ({get_response_code_text(key)})"] = value
+        
+
     phone_count = query.filter(APILog.is_mobile == True).count()
     tablet_count = query.filter(APILog.is_tablet == True).count()
     pc_count = query.filter(APILog.is_pc == True).count()
@@ -178,7 +193,8 @@ def get_counts_data(
     return {
         "browser_family_counts": dict(browser_family_counts),
         "os_family_counts": dict(os_family_counts),
-        "device_type_counts": device_type_counts
+        "device_type_counts": device_type_counts,
+        "response_code_counts": response_code_counts_keyed
     }
 
 

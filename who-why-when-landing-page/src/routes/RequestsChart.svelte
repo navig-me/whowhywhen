@@ -24,7 +24,6 @@
       <option value="day">Day</option>
     </select>
   </div>
-  <h3>Requests per {frequency.charAt(0).toUpperCase() + frequency.slice(1)}</h3>
   {#if isChartLoading}
     <p class="loading">Loading...</p>
   {:else if barChartData}
