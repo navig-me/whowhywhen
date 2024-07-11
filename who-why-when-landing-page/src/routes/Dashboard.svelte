@@ -23,6 +23,7 @@
   let osFamilyData = null;
   let deviceTypeData = null;
   let responseCodeData = null;
+  let botBrowserFamilyData = null;
   let barChartData = null;
   let frequency = "hour";
   let searchParams = {};
@@ -226,7 +227,7 @@
           data: Object.values(data.browser_family_counts),
         }
       ],
-      title: 'Browser Family'
+      title: 'Browser'
     };
 
     osFamilyData = {
@@ -236,7 +237,7 @@
           data: Object.values(data.os_family_counts),
         }
       ],
-      title: 'OS Family'
+      title: 'Operating System'
     };
 
     deviceTypeData = {
@@ -257,6 +258,16 @@
         }
       ],
       title: 'Response Code'
+    };
+
+    botBrowserFamilyData = {
+      labels: Object.keys(data.bot_browser_family_counts),
+      datasets: [
+        {
+          data: Object.values(data.bot_browser_family_counts),
+        }
+      ],
+      title: 'Bot Visits'
     };
   }
 
@@ -416,6 +427,7 @@
           <PieChart pieChartData={osFamilyData} {isPieChartLoading} />
           <PieChart pieChartData={deviceTypeData} {isPieChartLoading} />
           <PieChart pieChartData={responseCodeData} {isPieChartLoading} />
+          <PieChart pieChartData={botBrowserFamilyData} {isPieChartLoading} />
         </div>
       </div>
     </div>

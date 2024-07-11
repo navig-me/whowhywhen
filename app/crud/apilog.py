@@ -143,6 +143,7 @@ def get_counts_data(
             coalesce_to_other(APILog.user_agent_browser_family).label('browser_family'),
             func.count(APILog.user_agent_browser_family)
         )
+        .filter(APILog.is_bot == False)
         .group_by('browser_family')
         .all()
     )
@@ -152,6 +153,7 @@ def get_counts_data(
             coalesce_to_other(APILog.user_agent_os_family).label('os_family'),
             func.count(APILog.user_agent_os_family)
         )
+        .filter(APILog.is_bot == False)
         .group_by('os_family')
         .all()
     )
@@ -194,11 +196,31 @@ def get_counts_data(
         "Other": other_count
     }
 
+    # get the Browser Family counts where is_bot is True
+    bot_browser_family_counts = (
+        query.with_entities(
+            coalesce_to_other(APILog.user_agent_browser_family).label('browser_family'),
+            func.count(APILog.user_agent_browser_family)
+        )
+        .group_by('browser_family')
+        .filter(APILog.is_bot == True)
+        .all()
+    )
+
+    # Order the counts by the key
+    bot_browser_family_counts = dict(sorted(bot_browser_family_counts, key=lambda x: x[0]))
+    os_family_counts = dict(sorted(os_family_counts, key=lambda x: x[0]))
+    device_type_counts = dict(sorted(device_type_counts, key=lambda x: x[0]))
+    response_code_counts_keyed = dict(sorted(response_code_counts_keyed, key=lambda x: x[0]))
+    browser_family_counts = dict(sorted(browser_family_counts, key=lambda x: x[0]))
+
+
     return {
-        "browser_family_counts": dict(browser_family_counts),
-        "os_family_counts": dict(os_family_counts),
+        "browser_family_counts": browser_family_counts,
+        "os_family_counts": os_family_counts,
         "device_type_counts": device_type_counts,
-        "response_code_counts": response_code_counts_keyed
+        "response_code_counts": response_code_counts_keyed,
+        "bot_browser_family_counts": bot_browser_family_counts
     }
 
 
