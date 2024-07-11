@@ -206,21 +206,14 @@ def get_counts_data(
         .filter(APILog.is_bot == True)
         .all()
     )
-
-    # Order the counts by the key
-    bot_browser_family_counts = dict(sorted(bot_browser_family_counts, key=lambda x: x[0]))
-    os_family_counts = dict(sorted(os_family_counts, key=lambda x: x[0]))
-    device_type_counts = dict(sorted(device_type_counts, key=lambda x: x[0]))
-    response_code_counts_keyed = dict(sorted(response_code_counts_keyed, key=lambda x: x[0]))
-    browser_family_counts = dict(sorted(browser_family_counts, key=lambda x: x[0]))
-
+    
 
     return {
-        "browser_family_counts": browser_family_counts,
-        "os_family_counts": os_family_counts,
-        "device_type_counts": device_type_counts,
-        "response_code_counts": response_code_counts_keyed,
-        "bot_browser_family_counts": bot_browser_family_counts
+        "browser_family_counts": dict(browser_family_counts),
+        "os_family_counts": dict(os_family_counts),
+        "device_type_counts": dict(device_type_counts),
+        "response_code_counts": dict(response_code_counts_keyed),
+        "bot_browser_family_counts": dict(bot_browser_family_counts)
     }
 
 

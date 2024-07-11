@@ -6,14 +6,53 @@
 
   export let pieChartData = null;
   export let isPieChartLoading = false;
+
+  // Function to sort the pie chart data
+  function sortPieChartData(data) {
+    if (data && data.labels && data.datasets && data.datasets[0] && data.datasets[0].data) {
+      const labels = data.labels.slice();
+      const values = data.datasets[0].data.slice();
+
+      // Create an array of objects containing labels and values
+      const combined = labels.map((label, index) => {
+        return { label, value: values[index] };
+      });
+
+      // Sort the array by value in descending order
+      combined.sort((a, b) => b.value - a.value);
+
+      // Separate the sorted labels and values
+      const sortedLabels = combined.map(item => item.label);
+      const sortedValues = combined.map(item => item.value);
+
+      return {
+        ...data,
+        labels: sortedLabels,
+        datasets: [
+          {
+            ...data.datasets[0],
+            data: sortedValues
+          }
+        ]
+      };
+    }
+
+    return data;
+  }
+
+  // Sort the pie chart data
+  let sortedPieChartData = sortPieChartData(pieChartData);
+
+  // Watch for changes to pieChartData and sort it again if it changes
+  $: sortedPieChartData = sortPieChartData(pieChartData);
 </script>
 
 <div class="pie-chart">
   {#if isPieChartLoading}
     <p class="loading">Loading...</p>
-  {:else if pieChartData && pieChartData.labels && pieChartData.datasets}
+  {:else if sortedPieChartData && sortedPieChartData.labels && sortedPieChartData.datasets}
     <div class="chart-container">
-      <Pie data={pieChartData} options={{
+      <Pie data={sortedPieChartData} options={{
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
@@ -32,7 +71,7 @@
           },
           title: {
             display: true,
-            text: pieChartData.title,
+            text: sortedPieChartData.title,
             color: '#333',
             font: {
               size: 16,
