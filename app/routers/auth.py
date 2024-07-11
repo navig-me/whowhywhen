@@ -26,7 +26,7 @@ def get_stripe_payment_link(current_user: User = Depends(get_current_user), plan
 def get_customer_portal(current_user: User = Depends(get_current_user), session: Session = Depends(get_session)):
     return get_customer_portal_url(current_user)
 
-@router.post("/register", response_model=UserRead)
+@router.post("/register")
 def register(user: UserCreate, session: Session = Depends(get_session)):
     # Verify the Turnstile token
     verify_turnstile_token(user.cf_turnstile_response, TURNSTILE_SECRET_KEY)

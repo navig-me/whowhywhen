@@ -67,7 +67,7 @@ def get_payment_link(current_user, plan_name, session):
 
     # Return subscription link with price_id
     checkout_session = stripe.checkout.Session.create(
-        payment_method_types=['card'],
+        payment_method_types=['card', 'link', 'apple_pay', 'google_pay', 'paynow', 'alipay', 'grabpay', 'wechat_pay'],
         line_items=[{
             'price': price_id,
             'quantity': 1,

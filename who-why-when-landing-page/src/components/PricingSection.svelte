@@ -32,7 +32,7 @@
 				<p><i class="fas fa-check"></i> 5,000,000 monthly calls</p>
 				<p><i class="fas fa-check"></i> All Analytics</p>
 				<p><i class="fas fa-check"></i> Enhanced Alerts and Monitoring</p>
-				<p><i class="fas fa-check"></i> Teams and Collaboration</p>
+				<p><i class="fas fa-check"></i> Integrations</p>
 				<p class="price">$39</p>
 				<button class="btn-primary" on:click={() => changeView('register')}>Get Started</button>
 			</div>

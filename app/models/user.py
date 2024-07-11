@@ -19,7 +19,7 @@ class User(SQLModel, table=True):
     modified: datetime = Field(default_factory=datetime.now)
     active: bool = Field(default=True)
     subscription_plan: SubscriptionPlan = Field(default=SubscriptionPlan.free)
-    monthly_credit_limit: int = Field(default=10000)
+    monthly_credit_limit: int = Field(default=20000)
     monthly_credit_usage_crossed: bool = Field(default=False)
     monthly_credit_limit_reset: datetime = Field(default_factory=datetime.now)
     projects: List["UserProject"] = Relationship(back_populates="user")
