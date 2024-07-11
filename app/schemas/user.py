@@ -22,6 +22,7 @@ class UserProjectRead(BaseModel):
 class UserRead(BaseModel):
     id: uuid.UUID
     email: str
+    name: str
     created: datetime
     modified: datetime
     active: bool

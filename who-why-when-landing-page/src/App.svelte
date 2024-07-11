@@ -11,43 +11,45 @@
 	import HeroSection from './components/HeroSection.svelte';
 	import Dashboard from './routes/Dashboard.svelte';
 	import Projects from './routes/Projects.svelte';
+	import UserSettings from './routes/UserSettings.svelte';
 	import { isLoggedIn } from './stores/userStore';
   
 	let view;
   
-	// Subscribe to the currentView store
 	$: view, currentView.subscribe(value => view = value);
   
 	onMount(() => {
 	  const token = localStorage.getItem('token');
 	  if (token) {
 		isLoggedIn.set(true);
-		// Set view to dashboard
 		currentView.set('dashboard');
 	  } else {
 		isLoggedIn.set(false);
 	  }
 	});
-</script>
+  </script>
   
-<style>
+  <style>
 	@import './styles/global.css';
-</style>
+  </style>
   
-<Header />
+  <Header />
   
-{#if view === 'home'}
+  {#if view === 'home'}
 	<HeroSection />
 	<FeatureSection />
 	<PricingSection />
 	<SnippetSection />
 	<Footer />
-{:else if view === 'login'}
+  {:else if view === 'login'}
 	<LoginComponent />
-{:else if view === 'register'}
+  {:else if view === 'register'}
 	<RegisterComponent />
-{:else if view === 'dashboard'}
+  {:else if view === 'dashboard'}
 	<Dashboard />
-{:else if view === 'projects'}
+  {:else if view === 'projects'}
 	<Projects />
-{/if}
+  {:else if view === 'user-settings'}
+	<UserSettings />
+  {/if}
+  

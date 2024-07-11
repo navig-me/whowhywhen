@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { currentView } from '../stores/viewStore';
   import { clearToken, isLoggedIn } from '../stores/userStore';
-  import { DASH_API_BASE_URL } from '../config'; // Import the base URL
+  import { DASH_API_BASE_URL } from '../config';
 
   let loggedIn;
   let user = null;
@@ -10,7 +10,7 @@
   let monthlyCreditLimit = 0;
   let monthlyCreditUsageCrossed = false;
   let upgradeLink = '';
-  let menuOpen = false; // State for menu toggle
+  let menuOpen = false;
 
   isLoggedIn.subscribe(value => {
     loggedIn = value;
@@ -21,7 +21,7 @@
 
   function changeView(view) {
     currentView.set(view);
-    menuOpen = false; // Close the menu when changing views
+    menuOpen = false;
   }
 
   function logout() {
@@ -56,7 +56,7 @@
   function getNextPlan(currentPlan) {
     if (currentPlan === 'free') return 'starter';
     if (currentPlan === 'starter') return 'pro';
-    return ''; // No next plan for PRO
+    return '';
   }
 
   async function fetchUpgradeLink(planName, token) {
@@ -73,10 +73,10 @@
   }
 
   function getPlanColor(planName) {
-    if (planName === 'free') return '#1E90FF'; // FREE
-    if (planName === 'starter') return '#ff4500'; // STARTER
-    if (planName === 'pro') return '#8A2BE2'; // PRO
-    return '#1E90FF'; // Default to blue if no plan found
+    if (planName === 'free') return '#1E90FF';
+    if (planName === 'starter') return '#ff4500';
+    if (planName === 'pro') return '#8A2BE2';
+    return '#1E90FF';
   }
 
   function getPlanName(planName) {
@@ -133,6 +133,9 @@
           <a class="nav-link" href="https://whowhywhen.github.io" target="_blank" rel="noopener noreferrer">Docs</a>
           <a class="nav-link" on:click={() => changeView('dashboard')}>Dashboard</a>
           <a class="nav-link" on:click={() => changeView('projects')}>Projects</a>
+          <a class="nav-link" on:click={() => changeView('user-settings')}>
+            <i class="fa fa-user"></i>
+          </a>
           <a class="nav-link logout-link" on:click={logout}>Logout</a>
         {:else}
           <a class="nav-link" href="https://whowhywhen.github.io" target="_blank" rel="noopener noreferrer">Docs</a>
@@ -151,7 +154,7 @@
     border-bottom: 1px solid #ddd;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     position: relative;
-    z-index: 10; /* Increased z-index for mobile view */
+    z-index: 10;
   }
 
   .container {
@@ -225,10 +228,10 @@
     border-radius: 10px;
     border: 0.1px solid;
     background-color: #f9f9f9;
-    background-size: 56.57px 56.57px; /* Adjust based on the size needed */
+    background-size: 56.57px 56.57px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     width: 100%;
-    box-sizing: border-box; /* Ensure the border is included in the width */
+    box-sizing: border-box;
   }
 
   .user-info {
@@ -243,7 +246,7 @@
   .plan-info {
     font-weight: bold;
     text-align: center;
-    font-size: 1rem; /* Adjusted text size */
+    font-size: 1rem;
     width: 100%;
   }
 
@@ -284,7 +287,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 0.7rem; /* Smaller font size */
+    font-size: 0.7rem;
     color: #fff;
     font-weight: bold;
   }
@@ -299,7 +302,7 @@
     padding: 5px 10px;
     border-radius: 5px;
     text-decoration: none;
-    font-size: 0.7rem; /* Smaller font size */
+    font-size: 0.7rem;
     font-weight: bold;
     opacity: 0;
     transition: opacity 0.3s;
@@ -331,7 +334,7 @@
       top: 60px;
       left: 0;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      z-index: 11; /* Increased z-index for mobile view */
+      z-index: 11;
     }
 
     .menu.open {
@@ -348,8 +351,8 @@
       padding: 10px;
       border-radius: 0;
       box-shadow: none;
-      border: 0.2px solid; /* Ensure border is visible */
-      box-sizing: border-box; /* Ensure the border is included in the width */
+      border: 0.2px solid;
+      box-sizing: border-box;
     }
 
     .user-info {
