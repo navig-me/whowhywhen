@@ -302,6 +302,9 @@ def get_apilogs(
     logs_with_params = []
     for log in results:
         log_dict = log.dict()
+        # response_time to 5 decimal places
+        if log_dict["response_time"]:
+            log_dict["response_time"] = round(log_dict["response_time"], 5)
         log_dict["query_params"] = params_by_log_id.get(log.id, [])
         logs_with_params.append(log_dict)
     

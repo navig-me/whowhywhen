@@ -14,7 +14,7 @@ from app.models.apilog import APILog
 from app.dependencies.auth import verify_password
 from app.config import TURNSTILE_SECRET_KEY
 from app.crud.user import get_password_hash
-from app.services.stripe_service import get_payment_link, refresh_user_subscription, get_user_subscription
+from app.services.stripe_service import get_payment_link, refresh_user_subscription, get_customer_portal_url
 
 router = APIRouter()
 
@@ -22,6 +22,9 @@ router = APIRouter()
 def get_stripe_payment_link(current_user: User = Depends(get_current_user), plan_name: SubscriptionPlan = SubscriptionPlan.starter, session: Session = Depends(get_session)):
     return get_payment_link(current_user, plan_name, session)
     
+@router.get("/stripe/customer-portal", response_model=str)
+def get_customer_portal(current_user: User = Depends(get_current_user), session: Session = Depends(get_session)):
+    return get_customer_portal_url(current_user)
 
 @router.post("/register", response_model=UserRead)
 def register(user: UserCreate, session: Session = Depends(get_session)):

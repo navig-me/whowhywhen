@@ -6,6 +6,7 @@
   
     let user = null;
     let upgradeLink = '';
+    let customerPortalLink = '';
     let daysUntilRenewal = 0;
     let userRequestCount = 0;
     let showChangePasswordPopup = false;
@@ -29,6 +30,7 @@
         if (nextPlan) {
           upgradeLink = await fetchUpgradeLink(nextPlan, token);
         }
+        customerPortalLink = await fetchCustomerPortalLink(token);
         daysUntilRenewal = calculateDaysUntilRenewal(user.monthly_credit_limit_reset);
       } else if (response.status === 401) {
         clearToken();
@@ -41,6 +43,19 @@
       return '';
     }
   
+    async function fetchCustomerPortalLink(token) {
+      const response = await fetch(`${DASH_API_BASE_URL}/dashauth/stripe/customer-portal`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        return data.url || '';
+      }
+      return '';
+    }
+  
     async function fetchUpgradeLink(planName, token) {
       if (!planName) return '';
       const response = await fetch(`${DASH_API_BASE_URL}/dashauth/stripe/payment-link/${planName}`, {
@@ -49,7 +64,8 @@
         }
       });
       if (response.ok) {
-        return await response.json();
+        const data = await response.json();
+        return data.url || '';
       }
       return '';
     }
@@ -91,6 +107,9 @@
             <a href={upgradeLink} class="btn-upgrade" target="_blank" rel="noopener noreferrer">Upgrade to {getNextPlan(user.subscription_plan).toUpperCase()}</a>
           {:else}
             <a href="mailto:upgrade@whowhywhen.com" class="btn-upgrade">Contact to Upgrade</a>
+          {/if}
+          {#if user.subscription_plan !== 'free'}
+            <a href={customerPortalLink} class="btn-customerportal" target="_blank" rel="noopener noreferrer">Manage Subscription</a>
           {/if}
         </div>
       </div>
@@ -136,7 +155,7 @@
       color: #555;
     }
   
-    .btn-primary, .btn-upgrade {
+    .btn-primary, .btn-upgrade, .btn-customerportal {
       display: inline-block;
       background-color: #663399;
       color: #fff;
@@ -150,7 +169,7 @@
       text-align: center;
     }
   
-    .btn-primary:hover, .btn-upgrade:hover {
+    .btn-primary:hover, .btn-upgrade:hover, .btn-customerportal:hover {
       background-color: #552288;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     }
@@ -161,6 +180,15 @@
   
     .btn-upgrade:hover {
       background-color: #ff6347;
+    }
+  
+    .btn-customerportal {
+      background-color: #00aaff;
+      margin-top: 10px;
+    }
+  
+    .btn-customerportal:hover {
+      background-color: #0099cc;
     }
   
     .change-password {

@@ -103,3 +103,12 @@ def cancel_subscription(current_user, session):
     # Save the changes to the database
     session.add(current_user)
     session.commit()
+
+def get_customer_portal_url(current_user):
+    stripe_customer_id = current_user.stripe_customer_id
+
+    session = stripe.billing_portal.Session.create(
+        customer=stripe_customer_id,
+        return_url='https://whowhywhen.com/'
+    )
+    return session.url
