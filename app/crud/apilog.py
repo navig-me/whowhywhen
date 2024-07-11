@@ -110,12 +110,19 @@ def get_counts_data(
     db: Session, 
     user_id: uuid.UUID, 
     project_id: uuid.UUID = None, 
-    search_params = None
+    search_params = None,
+    start_datetime: Optional[datetime] = None,
+    end_datetime: Optional[datetime] = None
 ):
     query = db.query(APILog)
     
     query = query.filter(APILog.user_project_id == project_id)
     
+    if start_datetime:
+        query = query.filter(APILog.created_at >= start_datetime)
+    if end_datetime:
+        query = query.filter(APILog.created_at <= end_datetime)
+
     if search_params:
         if search_params.path:
             query = query.filter(APILog.path.ilike(f'{search_params.path}%'))
@@ -128,7 +135,6 @@ def get_counts_data(
         if search_params.response_code:
             query = query.filter(APILog.response_code == search_params.response_code)
     
-    # Helper function to replace null values with "Other"
     def coalesce_to_other(column):
         return func.coalesce(column, 'Other')
 
@@ -160,7 +166,6 @@ def get_counts_data(
     )
     response_code_counts = dict(response_code_counts)
     response_code_counts_keyed = dict()
-    # Change keys to add the text description
     for key, value in response_code_counts.items():
         response_code_counts_keyed[f"{key} ({get_response_code_text(key)})"] = value
 
@@ -206,7 +211,9 @@ def get_apilogs(
     search_params: Optional[APILogSearch] = None,
     q: Optional[str] = None,
     sort: Optional[str] = None,
-    sort_direction: Optional[str] = None
+    sort_direction: Optional[str] = None,
+    start_datetime: Optional[datetime] = None,
+    end_datetime: Optional[datetime] = None
 ):
     offset = (page - 1) * limit
     
@@ -214,6 +221,11 @@ def get_apilogs(
         query = select(APILog).where(APILog.user_project_id == project_id)
     else:
         query = select(APILog).where(APILog.user_id == user_id)
+
+    if start_datetime:
+        query = query.where(APILog.created_at >= start_datetime)
+    if end_datetime:
+        query = query.where(APILog.created_at <= end_datetime)
 
     if search_params:
         if search_params.path:
@@ -236,7 +248,6 @@ def get_apilogs(
             )
         )
 
-    # Total for query
     total_query = select(func.count()).select_from(query.subquery())
     total = db.execute(total_query).scalar()
 
@@ -262,20 +273,17 @@ def get_apilogs(
 
     results = db.execute(query).scalars().all()
     
-    # Fetch query params for each log
     log_ids = [log.id for log in results]
     query_params = db.execute(
         select(APILogQueryParam).where(APILogQueryParam.api_log_id.in_(log_ids))
     ).scalars().all()
     
-    # Group query params by log_id
     params_by_log_id = {}
     for param in query_params:
         if param.api_log_id not in params_by_log_id:
             params_by_log_id[param.api_log_id] = []
         params_by_log_id[param.api_log_id].append(param)
 
-    # Attach query params to logs
     logs_with_params = []
     for log in results:
         log_dict = log.dict()
@@ -285,19 +293,28 @@ def get_apilogs(
     return {"logs": logs_with_params, "total": total}
 
 
-def get_apilogs_stats(db: Session, user_id: uuid.UUID, project_id: uuid.UUID = None, search_params = None, frequency: str = "hour", q: Optional[str] = None):
-    end_date = datetime.now()
+def get_apilogs_stats(
+    db: Session, 
+    user_id: uuid.UUID, 
+    project_id: uuid.UUID = None, 
+    search_params = None, 
+    frequency: str = "hour", 
+    q: Optional[str] = None, 
+    start_datetime: Optional[datetime] = None, 
+    end_datetime: Optional[datetime] = None
+):
+    end_date = end_datetime if end_datetime else datetime.now()
 
     if frequency == "minute":
-        start_date = end_date - timedelta(hours=1)
+        start_date = start_datetime if start_datetime else end_date - timedelta(hours=1)
         period_fmt = '%Y-%m-%d %H:%M'
         date_trunc = func.date_trunc('minute', APILog.created_at)
     elif frequency == "day":
-        start_date = end_date - timedelta(days=30)
+        start_date = start_datetime if start_datetime else end_date - timedelta(days=30)
         period_fmt = '%Y-%m-%d'
         date_trunc = func.date_trunc('day', APILog.created_at)
     else:  # Default to hourly data
-        start_date = end_date - timedelta(hours=24)
+        start_date = start_datetime if start_datetime else end_date - timedelta(hours=24)
         period_fmt = '%Y-%m-%d %H'
         date_trunc = func.date_trunc('hour', APILog.created_at)
 

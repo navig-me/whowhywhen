@@ -10,7 +10,7 @@
 	<div class="overlay">
 		<div class="container">
 			<h2><span class="supercharge">Supercharge</span> Your API Insights</h2>
-			<p>Unlock detailed insights, optimize resources, and take control of your API performance with our lightweight and flexible analytics.</p>
+			<p>Unlock detailed insights, optimize resources, and take control of your API performance with lightweight and flexible analytics.</p>
 			<button class="btn-primary" on:click={() => changeView('register')}>Get Started</button>
 		</div>
 	</div>

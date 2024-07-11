@@ -32,6 +32,7 @@
   let isTableLoading = false;
   let isChartLoading = false;
   let isPieChartLoading = true;
+  let selectedTimeRange = 'all';
 
   const dispatch = createEventDispatcher();
 
@@ -90,6 +91,10 @@
     if (sortDirection) {
       url += `&sort_direction=${sortDirection}`;
     }
+    if (selectedTimeRange !== 'all') {
+      const timeParams = getTimeRangeParams(selectedTimeRange);
+      url += `&start_datetime=${timeParams.start_datetime}&end_datetime=${timeParams.end_datetime}`;
+    }
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -116,7 +121,12 @@
   async function fetchHourlyRequestsData() {
     isChartLoading = true;
     const token = localStorage.getItem('token');
-    const response = await fetch(`${DASH_API_BASE_URL}/dashapi/logs/project/stats/${selectedProjectId}?frequency=${frequency}`, {
+    let url = `${DASH_API_BASE_URL}/dashapi/logs/project/stats/${selectedProjectId}?frequency=${frequency}`;
+    if (selectedTimeRange !== 'all') {
+      const timeParams = getTimeRangeParams(selectedTimeRange);
+      url += `&start_datetime=${timeParams.start_datetime}&end_datetime=${timeParams.end_datetime}`;
+    }
+    const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -139,7 +149,12 @@
   async function fetchCountsData() {
     isPieChartLoading = true;
     const token = localStorage.getItem('token');
-    const response = await fetch(`${DASH_API_BASE_URL}/dashapi/logs/project/device-stats/${selectedProjectId}`, {
+    let url = `${DASH_API_BASE_URL}/dashapi/logs/project/device-stats/${selectedProjectId}`;
+    if (selectedTimeRange !== 'all') {
+      const timeParams = getTimeRangeParams(selectedTimeRange);
+      url += `?start_datetime=${timeParams.start_datetime}&end_datetime=${timeParams.end_datetime}`;
+    }
+    const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -245,6 +260,38 @@
     };
   }
 
+  function getTimeRangeParams(timeRange) {
+    const endDate = new Date().toISOString();
+    let startDate;
+    switch (timeRange) {
+      case 'last_hour':
+        startDate = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+        break;
+      case 'last_24_hours':
+        startDate = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+        break;
+      case 'last_7_days':
+        startDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+        break;
+      case 'last_30_days':
+        startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+        break;
+      case 'last_90_days':
+        startDate = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
+        break;
+      default:
+        startDate = null;
+    }
+    return { start_datetime: startDate, end_datetime: endDate };
+  }
+
+  function handleTimeRangeChange(event) {
+    selectedTimeRange = event.target.value;
+    fetchApiLogs();
+    fetchHourlyRequestsData();
+    fetchCountsData();
+  }
+
   function showToast(message, type) {
     toastMessage = message;
     toastType = type;
@@ -322,41 +369,54 @@
 
 <section class="dashboard-section">
   <div class="container">
-    <div class="dashboard-header">
+    <div class="dashboard-content">
       <div class="left-column">
-        <ProjectSelector {projects} bind:selectedProjectId on:reset={resetFilters} on:change={async () => { await fetchApiLogs(); await fetchHourlyRequestsData(); await fetchCountsData(); }} />
+        <div class="project-selector-container">
+          <ProjectSelector {projects} bind:selectedProjectId on:reset={resetFilters} on:change={async () => { await fetchApiLogs(); await fetchHourlyRequestsData(); await fetchCountsData(); }} />
+        </div>
+        <div class="filters-container">
+          <div class="time-range">
+            <label for="time-range-select">Show:</label>
+            <select id="time-range-select" on:change={handleTimeRangeChange}>
+              <option value="all">All</option>
+              <option value="last_hour">Last Hour</option>
+              <option value="last_24_hours">Last 24 Hours</option>
+              <option value="last_7_days">Last 7 Days</option>
+              <option value="last_30_days">Last 30 Days</option>
+              <option value="last_90_days">Last 90 Days</option>
+            </select>
+          </div>
+          <div class="selected-filters">
+            <p>Selected Filters:</p>
+            <ul>
+              {#if Object.keys(searchParams).length === 0}
+                <li>Select values in the table to filter</li>
+              {:else}
+                {#each Object.entries(searchParams) as [key, value]}
+                  <li>
+                    {formatKey(key)}: {value} <button on:click={() => removeFilter(key)}>✖</button>
+                  </li>
+                {/each}
+              {/if}
+            </ul>
+          </div>
+          <div class="search-container">
+            <input type="text" placeholder="Search..." on:input={handleSearchInput} />
+            <button on:click={triggerSearch}>Search</button>
+          </div>
+        </div>
       </div>
       <div class="right-column">
-        <div class="selected-filters">
-          <p>Selected Filters:</p>
-          <ul>
-            {#if Object.keys(searchParams).length === 0}
-              <li>Select values in the table to filter</li>
-            {:else}
-              {#each Object.entries(searchParams) as [key, value]}
-                <li>
-                  {formatKey(key)}: {value} <button on:click={() => removeFilter(key)}>✖</button>
-                </li>
-              {/each}
-            {/if}
-          </ul>
+        <LogsTable {apiLogs} {currentPage} {totalPages} {isTableLoading} on:changePage={(e) => changePage(e.detail.page)} on:cellClick={handleCellClick} on:addFilter={handleAddFilter} />
+        <div class="charts-container">
+          <RequestsChart {barChartData} {frequency} {isChartLoading} on:frequencyChange={handleFrequencyChange} class="full-width-chart"/>
         </div>
-        <div class="search-container">
-          <input type="text" placeholder="Search..." on:input={handleSearchInput} />
-          <button on:click={triggerSearch}>Search</button>
+        <div class="pie-charts-container">
+          <PieChart pieChartData={browserFamilyData} {isPieChartLoading} />
+          <PieChart pieChartData={osFamilyData} {isPieChartLoading} />
+          <PieChart pieChartData={deviceTypeData} {isPieChartLoading} />
+          <PieChart pieChartData={responseCodeData} {isPieChartLoading} />
         </div>
-      </div>
-    </div>
-    <div class="dashboard-content">
-      <LogsTable {apiLogs} {currentPage} {totalPages} {isTableLoading} on:changePage={(e) => changePage(e.detail.page)} on:cellClick={handleCellClick} on:addFilter={handleAddFilter} />
-      <div class="charts-container">
-        <RequestsChart {barChartData} {frequency} {isChartLoading} on:frequencyChange={handleFrequencyChange} class="full-width-chart"/>
-      </div>
-      <div class="pie-charts-container">
-        <PieChart pieChartData={browserFamilyData} {isPieChartLoading} />
-        <PieChart pieChartData={osFamilyData} {isPieChartLoading} />
-        <PieChart pieChartData={deviceTypeData} {isPieChartLoading} />
-        <PieChart pieChartData={responseCodeData} {isPieChartLoading} />
       </div>
     </div>
   </div>
@@ -368,14 +428,13 @@
 
 <style>
   .dashboard-section {
-    padding: 40px 20px;
+    padding: 20px 0;
     text-align: center;
     background: linear-gradient(135deg, #f9f9f9 25%, #fff 75%);
     color: #333;
   }
 
   .container {
-    max-width: 1200px;
     margin: 0 auto;
     background: #fff;
     padding: 20px;
@@ -383,22 +442,47 @@
     box-shadow: 0 6px 30px rgba(0, 0, 0, 0.1);
   }
 
-  .dashboard-header {
+  .dashboard-content {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 20px;
+    gap: 20px;
   }
 
   .left-column {
     flex: 1;
-    margin-right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 300px;
   }
 
   .right-column {
-    flex: 2;
+    flex: 4;
     display: flex;
     flex-direction: column;
+    gap: 20px;
+  }
+
+  .project-selector-container {
+    background: #f1f1f1;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .filters-container {
+    background: #f1f1f1;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .time-range {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
   }
 
   .selected-filters {
@@ -441,23 +525,23 @@
 
   .search-container {
     display: flex;
-    justify-content: flex-start;
+    flex-direction: column;
+    gap: 10px;
   }
 
   .search-container input {
     padding: 10px;
     border: 1px solid #ddd;
-    border-radius: 5px 0 0 5px;
+    border-radius: 5px;
     font-size: 1em;
     flex: 1;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   }
 
   .search-container button {
-    padding: 10px 20px;
+    padding: 10px;
     border: 1px solid #ddd;
-    border-left: none;
-    border-radius: 0 5px 5px 0;
+    border-radius: 5px;
     background-color: #663399;
     color: #fff;
     cursor: pointer;
@@ -470,13 +554,6 @@
     background-color: #7d42a6;
   }
 
-  .dashboard-content {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    margin-top: 20px;
-  }
-
   .charts-container {
     display: flex;
     justify-content: space-between;
@@ -486,7 +563,7 @@
 
   .full-width-chart {
     width: 100%;
-    min-height: 300px; /* Ensure the chart has a minimum height */
+    min-height: 300px;
   }
 
   .pie-charts-container {
@@ -529,12 +606,8 @@
       padding: 20px;
     }
 
-    .dashboard-header {
+    .dashboard-content {
       flex-direction: column;
-    }
-
-    .right-column {
-      margin-top: 20px;
     }
 
     .selected-filters ul {
@@ -544,10 +617,6 @@
     .selected-filters li {
       font-size: 0.8em;
       padding: 5px 10px;
-    }
-
-    .dashboard-content {
-      gap: 10px;
     }
 
     .charts-container {
@@ -576,10 +645,6 @@
     .toast {
       padding: 10px 20px;
       font-size: 0.9em;
-    }
-
-    .dashboard-content {
-      gap: 5px;
     }
 
     .charts-container {

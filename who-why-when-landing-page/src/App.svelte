@@ -49,7 +49,7 @@
 	<HeroSection />
 	<FeatureSection />
 	<PricingSection />
-	<SnippetSection />
+	<!-- <SnippetSection /> -->
 	<Footer />
   {:else if view === 'login'}
 	<LoginComponent />

@@ -24,7 +24,7 @@
 <section class="snippet-section">
 	<div class="container">
 		<h2>Integration Code Snippets</h2>
-		<p>Quickly integrate our API with these ready-to-use code snippets.</p>
+		<p>Quickly integrate our API with these ready-to-use code snippets. For more information, check out our <a href="https://whowhywhen.github.io/docs/integrations/api-analytics/code-snippets" target="_blank" rel="noopener noreferrer">documentation</a>.</p>
 		<div class="tabs">
 			{#each tabs as tab}
 			<button

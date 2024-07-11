@@ -8,6 +8,7 @@ from app.schemas.apilog import APILogCreate, APILogSearch
 from app.dependencies.apikey import get_api_key
 from app.dependencies.auth import get_current_user
 from app.models.user import UserProject, User
+from datetime import datetime, timedelta
 import uuid
 
 router_api = APIRouter()
@@ -54,10 +55,12 @@ def get_api_logs(
     query: Optional[str] = None,
     sort: Optional[str] = None,
     sort_direction: Optional[str] = None,
+    start_datetime: Optional[datetime] = None,
+    end_datetime: Optional[datetime] = None,
     current_user: User = Depends(get_current_user),
     session: Session = Depends(get_session)
 ):
-    return get_apilogs(session, current_user.id, page, limit, project_id, search_params, query, sort, sort_direction)
+    return get_apilogs(session, current_user.id, page, limit, project_id, search_params, query, sort, sort_direction, start_datetime, end_datetime)
 
 
 @router_dash.post("/logs/project/stats/{project_id}")
@@ -66,19 +69,23 @@ def get_api_logs_stats(
     search_params: Optional[APILogSearch] = None,
     frequency: str = "hour",
     query: Optional[str] = None,
+    start_datetime: Optional[datetime] = None,
+    end_datetime: Optional[datetime] = None,
     current_user: User = Depends(get_current_user),
     session: Session = Depends(get_session)
 ):
-    return get_apilogs_stats(session, current_user.id, project_id, search_params, frequency, query)
+    return get_apilogs_stats(session, current_user.id, project_id, search_params, frequency, query, start_datetime, end_datetime)
 
 
 @router_dash.post("/logs/project/device-stats/{project_id}")
 def get_counts(
     project_id: uuid.UUID,
     search_params: Optional[APILogSearch] = None,
+    start_datetime: Optional[datetime] = None,
+    end_datetime: Optional[datetime] = None,
     current_user: User = Depends(get_current_user),
     session: Session = Depends(get_session)
 ):
-    counts_data = get_counts_data(session, current_user.id, project_id, search_params)
+    counts_data = get_counts_data(session, current_user.id, project_id, search_params, start_datetime, end_datetime)
     return {"counts": counts_data}
 
