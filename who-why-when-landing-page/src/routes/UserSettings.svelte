@@ -2,11 +2,13 @@
     import { onMount } from 'svelte';
     import { clearToken, isLoggedIn } from '../stores/userStore';
     import { DASH_API_BASE_URL } from '../config';
+    import ChangePasswordPopup from './ChangePasswordPopup.svelte';
   
     let user = null;
     let upgradeLink = '';
     let daysUntilRenewal = 0;
     let userRequestCount = 0;
+    let showChangePasswordPopup = false;
   
     onMount(async () => {
       await fetchUserDetails();
@@ -59,64 +61,127 @@
       const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
       return 30 - diffDays;
     }
+  
+    function openChangePasswordPopup() {
+      showChangePasswordPopup = true;
+    }
+  
+    function closeChangePasswordPopup() {
+      showChangePasswordPopup = false;
+    }
   </script>
   
   <section class="user-settings">
     {#if user}
       <h2>User Settings</h2>
-      <div class="user-info">
-        <p><strong>Name:</strong> {user.name}</p>
-        <p><strong>Email:</strong> {user.email}</p>
-        <p><strong>Plan:</strong> {user.subscription_plan.toUpperCase()}</p>
-        <p><strong>Requests Used:</strong> {userRequestCount}/{user.monthly_credit_limit}</p>
-        <p><strong>Plan Renews In:</strong> {daysUntilRenewal} days</p>
-      </div>
-      <div class="upgrade-section">
-        {#if user.subscription_plan !== 'pro'}
-          <a href={upgradeLink} class="upgrade-button" target="_blank" rel="noopener noreferrer">Upgrade to {getNextPlan(user.subscription_plan).toUpperCase()}</a>
-        {:else}
-          <a href="mailto:upgrade@whowhywhen.com" class="upgrade-button">Contact to Upgrade</a>
-        {/if}
+      <div class="user-card">
+        <div class="user-info">
+          <div class="user-details">
+            <p><strong>Name:</strong> {user.name}</p>
+            <p><strong>Email:</strong> {user.email}</p>
+          </div>
+          <button class="btn-primary change-password" on:click={openChangePasswordPopup}>Change Password</button>
+        </div>
+        <div class="plan-info">
+          <h3>Subscription Plan</h3>
+          <p><strong>Plan:</strong> {user.subscription_plan.toUpperCase()}</p>
+          <p><strong>Requests Used:</strong> {userRequestCount}/{user.monthly_credit_limit}</p>
+          <p><strong>Plan Renews In:</strong> {daysUntilRenewal} days</p>
+          {#if user.subscription_plan !== 'pro'}
+            <a href={upgradeLink} class="btn-upgrade" target="_blank" rel="noopener noreferrer">Upgrade to {getNextPlan(user.subscription_plan).toUpperCase()}</a>
+          {:else}
+            <a href="mailto:upgrade@whowhywhen.com" class="btn-upgrade">Contact to Upgrade</a>
+          {/if}
+        </div>
       </div>
     {/if}
   </section>
   
+  {#if showChangePasswordPopup}
+    <ChangePasswordPopup on:close={closeChangePasswordPopup} />
+  {/if}
+  
   <style>
     .user-settings {
-      padding: 40px 20px;
-      background-color: #fff;
-      border-radius: 10px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-      max-width: 600px;
-      margin: 40px auto;
-    }
-  
-    .user-info {
-      margin-bottom: 20px;
-    }
-  
-    .user-info p {
-      margin: 5px 0;
-    }
-  
-    .upgrade-section {
+      padding: 60px 20px;
+      background: linear-gradient(135deg, #f5f7fa, #e9eff6);
       text-align: center;
     }
   
-    .upgrade-button {
-      display: inline-block;
-      padding: 10px 20px;
-      background-color: #ff4500;
-      color: #fff;
-      border-radius: 5px;
-      text-decoration: none;
-      font-size: 1rem;
-      font-weight: bold;
-      transition: background 0.3s;
+    h2 {
+      margin-bottom: 20px;
+      font-size: 2rem;
+      color: #333;
     }
   
-    .upgrade-button:hover {
+    .user-card {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      max-width: 800px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+  
+    .user-info, .plan-info {
+      text-align: left;
+    }
+  
+    .user-details p, .plan-info p {
+      margin: 10px 0;
+      font-size: 1rem;
+      color: #555;
+    }
+  
+    .btn-primary, .btn-upgrade {
+      display: inline-block;
+      background-color: #663399;
+      color: #fff;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background-color 0.3s, box-shadow 0.3s;
+      text-decoration: none;
+      text-align: center;
+    }
+  
+    .btn-primary:hover, .btn-upgrade:hover {
+      background-color: #552288;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+  
+    .btn-upgrade {
+      background-color: #ff4500;
+    }
+  
+    .btn-upgrade:hover {
       background-color: #ff6347;
+    }
+  
+    .change-password {
+      margin-top: 20px;
+      background-color: #ff4500;
+    }
+  
+    .change-password:hover {
+      background-color: #ff6347;
+    }
+  
+    .plan-info h3 {
+      font-size: 1.3rem;
+      margin-bottom: 10px;
+      color: #333;
+    }
+  
+    @media (min-width: 768px) {
+      .user-card {
+        grid-template-columns: 1fr 1fr;
+      }
     }
   </style>
   

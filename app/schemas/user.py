@@ -11,6 +11,10 @@ class UserCreate(BaseModel):
     project_name: str
     cf_turnstile_response: str
 
+class ChangePasswordForm(BaseModel):
+    old_password: str
+    new_password: str
+
 class UserProjectRead(BaseModel):
     id: uuid.UUID
     project_name: str

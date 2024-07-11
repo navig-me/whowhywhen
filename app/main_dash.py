@@ -18,7 +18,7 @@ app = FastAPI(
     title="WhoWhyWhen Dashboard",
     description="Dashboard for WhoWhyWhen",
     version="0.1.0",
-    docs_url=None,
+    docs_url='/docsnonpublic',
     redoc_url=None
 )
 

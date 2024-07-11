@@ -16,15 +16,25 @@
   
 	let view;
   
-	$: view, currentView.subscribe(value => view = value);
+	// Subscribe to the currentView store and store the current view in localStorage
+	$: view, currentView.subscribe(value => {
+	  view = value;
+	  localStorage.setItem('lastView', value);
+	});
   
 	onMount(() => {
 	  const token = localStorage.getItem('token');
 	  if (token) {
 		isLoggedIn.set(true);
-		currentView.set('dashboard');
+		const lastView = localStorage.getItem('lastView');
+		if (lastView) {
+		  currentView.set(lastView);
+		} else {
+		  currentView.set('dashboard');
+		}
 	  } else {
 		isLoggedIn.set(false);
+		currentView.set('home');
 	  }
 	});
   </script>

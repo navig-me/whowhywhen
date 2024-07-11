@@ -7,14 +7,14 @@ from jose import jwt
 from app.config import ACCESS_TOKEN_EXPIRE_MINUTES, SECRET_KEY, ALGORITHM
 from app.database import get_session
 from app.crud.user import create_user, get_user_by_email, User, save_user_project, get_user_projects, verify_turnstile_token
-from app.schemas.user import UserCreate, UserRead, UserStatusRead
+from app.schemas.user import UserCreate, UserRead, UserStatusRead, ChangePasswordForm
 from app.dependencies.auth import get_current_user
 from app.models.user import User, SubscriptionPlan
 from app.models.apilog import APILog
 from app.dependencies.auth import verify_password
 from app.config import TURNSTILE_SECRET_KEY, STRIPE_SECRET_KEY
 import stripe
-from app.crud.user import FREE_PLAN_LIMIT, STARTER_PLAN_LIMIT, PAID_PLAN_LIMIT
+from app.crud.user import FREE_PLAN_LIMIT, STARTER_PLAN_LIMIT, PAID_PLAN_LIMIT, get_password_hash
 
 stripe.api_key = STRIPE_SECRET_KEY
 
@@ -92,6 +92,17 @@ def register(user: UserCreate, session: Session = Depends(get_session)):
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     return create_user(session, user)
+
+@router.post("/change-password")
+def change_password(form_data: ChangePasswordForm, current_user: User = Depends(get_current_user),  session: Session = Depends(get_session)):
+    if not verify_password(form_data.old_password, current_user.password_hash):
+        raise HTTPException(status_code=400, detail="Incorrect old password")
+    hashed_password = get_password_hash(form_data.new_password)
+    current_user.password_hash = hashed_password
+    session.add(current_user)
+    session.commit()
+    session.refresh(current_user)
+    return current_user
 
 @router.post("/token")
 def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), session: Session = Depends(get_session)):

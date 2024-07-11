@@ -1,3 +1,4 @@
 import { writable } from 'svelte/store';
 
-export const currentView = writable('home');
+const initialView = localStorage.getItem('lastView') || 'home';
+export const currentView = writable(initialView);

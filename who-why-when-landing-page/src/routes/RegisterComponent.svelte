@@ -1,12 +1,13 @@
 <script>
   import { createEventDispatcher, onMount } from 'svelte';
   import Toast from '../components/Toast.svelte';
-  import { DASH_API_BASE_URL, API_BASE_URL } from '../config'; 
+  import { DASH_API_BASE_URL, API_BASE_URL } from '../config';
   import { currentView } from '../stores/viewStore';
 
   let name = '';
   let email = '';
   let password = '';
+  let retypePassword = '';
   let project_name = '';
   let toastMessage = '';
   let toastType = '';
@@ -34,6 +35,16 @@
   async function handleSubmit() {
     if (!turnstileToken) {
       showToast('Please complete the CAPTCHA challenge', 'error');
+      return;
+    }
+
+    if (password.length < 8 || !/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password) || !/[!@#$%^&*]/.test(password)) {
+      showToast('Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a number, and a special character', 'error');
+      return;
+    }
+
+    if (password !== retypePassword) {
+      showToast('Passwords do not match', 'error');
       return;
     }
 
@@ -83,10 +94,15 @@
       <div class="form-group">
         <label for="password">Password</label>
         <input type="password" id="password" bind:value={password} placeholder="Create a password" required />
+        <small>Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a number, and a special character.</small>
       </div>
       <div class="form-group">
-        <label for="project_name">Project Name</label>
-        <input type="text" id="project_name" bind:value={project_name} placeholder="Enter your project name" required />
+        <label for="retypePassword">Retype Password</label>
+        <input type="password" id="retypePassword" bind:value={retypePassword} placeholder="Retype your password" required />
+      </div>
+      <div class="form-group">
+        <label for="project_name">Default Project Name</label>
+        <input type="text" id="project_name" bind:value={project_name} placeholder="Enter your default project name" required />
       </div>
       <div id="turnstile-container" class="cf-turnstile"></div>
       <button type="submit" class="btn-primary">Register</button>
@@ -166,5 +182,11 @@
 
   .btn-primary:hover {
     background-color: #552288;
+  }
+
+  small {
+    display: block;
+    margin-top: 5px;
+    color: #888;
   }
 </style>

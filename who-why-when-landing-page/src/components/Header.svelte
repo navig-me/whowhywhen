@@ -72,20 +72,6 @@
     return '';
   }
 
-  function getPlanColor(planName) {
-    if (planName === 'free') return '#1E90FF';
-    if (planName === 'starter') return '#ff4500';
-    if (planName === 'pro') return '#8A2BE2';
-    return '#1E90FF';
-  }
-
-  function getPlanName(planName) {
-    if (planName === 'free') return 'FREE';
-    if (planName === 'starter') return 'STARTER';
-    if (planName === 'pro') return 'PRO';
-    return 'FREE';
-  }
-
   function getRequestBarWidth(used, limit) {
     return (used / limit) * 100;
   }
@@ -94,6 +80,14 @@
     const percentage = (used / limit) * 100;
     if (percentage > 90 || monthlyCreditUsageCrossed) return 'bar-red';
     return 'bar-green';
+  }
+
+  function calculateDaysUntilRenewal(resetDate) {
+    const reset = new Date(resetDate);
+    const now = new Date();
+    const timeDiff = Math.abs(reset.getTime() - now.getTime());
+    const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+    return 30 - diffDays;
   }
 </script>
 
@@ -111,9 +105,6 @@
           {#if user}
             <div class="plan-section">
               <div class="user-info">
-                <div class="plan-info" style="color: {getPlanColor(user.subscription_plan)}">
-                  Plan: {getPlanName(user.subscription_plan)}
-                </div>
                 <div class="request-info">
                   <div class="request-bar-container">
                     <div class="request-bar">
@@ -121,11 +112,12 @@
                     </div>
                     <span class="request-count">{userRequestCount}/{monthlyCreditLimit}</span>
                   </div>
+                  <small class="renewal-info">Renews in {calculateDaysUntilRenewal(user.monthly_credit_limit_reset)} days</small>
                 </div>
-                {#if user.subscription_plan === 'pro'}
-                  <a class="upgrade-button" href="mailto:upgrade@whowhywhen.com">Contact to Upgrade</a>
+                {#if user.subscription_plan !== 'pro'}
+                  <a class="upgrade-button" href={upgradeLink} target="_blank" rel="noopener noreferrer">Upgrade</a>
                 {:else}
-                  <a class="upgrade-button" href={upgradeLink} target="_blank" rel="noopener noreferrer">Upgrade to {getNextPlan(user.subscription_plan).toUpperCase()}</a>
+                  <a class="upgrade-button" href="mailto:upgrade@whowhywhen.com">Contact to Upgrade</a>
                 {/if}
               </div>
             </div>
@@ -243,13 +235,6 @@
     transition: all 0.3s;
   }
 
-  .plan-info {
-    font-weight: bold;
-    text-align: center;
-    font-size: 1rem;
-    width: 100%;
-  }
-
   .request-info {
     width: 100%;
     margin-top: 5px;
@@ -263,7 +248,7 @@
 
   .request-bar {
     width: 100%;
-    height: 8px;
+    height: 12px;
     background-color: #ddd;
     border-radius: 5px;
     overflow: hidden;
@@ -287,9 +272,16 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 0.7rem;
+    font-size: 0.6rem;
     color: #fff;
     font-weight: bold;
+  }
+
+  .renewal-info {
+    font-size: 0.7rem;
+    color: #888;
+    margin-top: 5px;
+    text-align: center;
   }
 
   .upgrade-button {
@@ -302,7 +294,7 @@
     padding: 5px 10px;
     border-radius: 5px;
     text-decoration: none;
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     font-weight: bold;
     opacity: 0;
     transition: opacity 0.3s;
@@ -310,7 +302,6 @@
     text-align: center;
   }
 
-  .user-info:hover .plan-info,
   .user-info:hover .request-info {
     opacity: 0;
   }
