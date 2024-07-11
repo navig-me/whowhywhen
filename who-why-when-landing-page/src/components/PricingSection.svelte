@@ -39,7 +39,7 @@
 
 <style>
 .pricing-section {
-	padding: 100px 20px;
+	padding: 80px 20px;
 	background: #f9f9f9;
 	text-align: center;
 	color: #333;
@@ -64,7 +64,8 @@
 }
 
 .plan {
-	width: 22%;
+	flex: 1 1 100%; /* 100% width on small screens */
+	max-width: 300px; /* Set a max width for larger screens */
 	background: #fff;
 	padding: 30px;
 	border-radius: 10px;
@@ -118,5 +119,18 @@
 .btn-primary:hover {
 	background-color: #e63900;
 	transform: scale(1.05);
+}
+
+/* Responsive adjustments */
+@media (min-width: 768px) {
+	.plan {
+		flex: 1 1 calc(50% - 40px); /* 50% width on medium screens */
+	}
+}
+
+@media (min-width: 1024px) {
+	.plan {
+		flex: 1 1 calc(33.33% - 40px); /* 33.33% width on large screens */
+	}
 }
 </style>

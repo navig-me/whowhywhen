@@ -227,7 +227,8 @@
     background-color: #f9f9f9;
     background-size: 56.57px 56.57px; /* Adjust based on the size needed */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 180px; /* Smaller and more sleek */
+    width: 100%;
+    box-sizing: border-box; /* Ensure the border is included in the width */
   }
 
   .user-info {
@@ -348,6 +349,7 @@
       border-radius: 0;
       box-shadow: none;
       border: 0.2px solid; /* Ensure border is visible */
+      box-sizing: border-box; /* Ensure the border is included in the width */
     }
 
     .user-info {

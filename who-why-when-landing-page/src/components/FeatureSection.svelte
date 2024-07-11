@@ -1,176 +1,244 @@
+<script>
+	let features = [
+		{
+			title: "Real-time Analytics",
+			description: "Access real-time analytics and see how your APIs are being used, enabling you to make informed decisions and optimize your services.",
+			icon: "fas fa-chart-line",
+			img: "/analytics.png"
+		},
+		{
+			title: "Performance Monitoring",
+			description: "Monitor the performance of your APIs and ensure they are meeting your SLAs.",
+			icon: "fas fa-tachometer-alt",
+			img: "/monitoring.png"
+		},
+		{
+			title: "Alerts and Notifications",
+			description: "Receive alerts and notifications when your APIs are under or over performance baselines.",
+			icon: "fas fa-bell"
+		},
+		{
+			title: "Customizable Reports",
+			description: "(Coming Soon) Generate detailed, customizable reports that provide insights into API usage trends, helping you optimize your services.",
+			icon: "fas fa-file-alt",
+			"img": "/reports.png"
+		},
+		{
+			title: "Understand Your Users",
+			description: "Gain insights into your users' behavior and preferences, enabling you to personalize your services and improve user experience.",
+			icon: "fas fa-user-friends",
+			img: "/users.png"
+		}
+	];
+
+	let selectedFeature = features[0];
+</script>
+
 <section class="feature-section">
-	<!-- <div class="parallax" style="background-image: url('/background1.png');"></div> -->
-	<div class="container">
-	  <h2>Powerful Features</h2>
-	  <p>Our platform offers a comprehensive set of tools to help you manage and optimize your APIs effectively.</p>
-	  <div class="features">
-		<div class="feature">
-		  <div class="icon">
-			<i class="fas fa-chart-line"></i>
-		  </div>
-		  <h3>Real-time Analytics</h3>
-		  <p>Access real-time analytics and see how your APIs are being used, enabling you to make informed decisions and optimize your services.</p>
-		</div>
-		<div class="feature">
-		  <div class="icon">
-			<i class="fas fa-tachometer-alt"></i>
-		  </div>
-		  <h3>Performance Monitoring</h3>
-		  <p>Monitor the performance of your APIs and ensure they are meeting your SLAs.</p>
-		</div>
-		<div class="feature">
-		  <div class="icon">
-			<i class="fas fa-bell"></i>
-		  </div>
-		  <h3>Alerts and Notifications</h3>
-		  <p>Receive alerts and notifications when your APIs are under or over performance baselines.</p>
-		</div>
-		<div class="feature">
-		  <div class="icon">
-			<i class="fas fa-file-alt"></i>
-		  </div>
-		  <h3>Customizable Reports</h3>
-		  <p>Generate detailed, customizable reports that provide insights into API usage trends, helping you optimize your services.</p>
-		</div>
-		<div class="feature">
-		  <div class="icon">
-			<i class="fas fa-user-friends"></i>
-		  </div>
-		  <h3>Understand your Users</h3>
-		  <p>Gain insights into your users' behavior and preferences, enabling you to personalize your services and improve user experience.</p>
-		</div>
-	  </div>
+	<div class="parallax">
+		<div class="overlay"></div>
 	</div>
-	<div class="parallax" style="background-image: url('/background1.png');"></div>
-  </section>
-  
-  <style>
-	.feature-section {
-	  position: relative;
-	  overflow: hidden;
-	  color: #333;
-	}
-  
-	.parallax {
-	  position: relative;
-	  height: 300px; /* Adjust based on the image height you want to show */
-	  background-attachment: fixed;
-	  background-position: center;
-	  background-repeat: no-repeat;
-	  background-size: cover;
-	  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black overlay */
-	  background-blend-mode: overlay;
-	}
-  
-	.overlay {
-	  position: absolute;
-	  top: 0;
-	  left: 0;
-	  right: 0;
-	  bottom: 0;
-	  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black overlay */
-	  background-blend-mode: overlay;
-	}
-  
-	.container {
-	  position: relative;
-	  z-index: 2;
-	  padding: 50px 20px;
-	  text-align: center;
-	  background: linear-gradient(135deg, #f9f9f9, #e0e0e0);
-	}
-  
-	.feature-section h2 {
-	  font-size: 2.5rem;
-	  margin-bottom: 10px;
-	  color: #663399;
-	}
-  
-	.feature-section p {
-	  font-size: 1.2rem;
-	  margin-bottom: 40px;
-	}
-  
-	.features {
-	  display: flex;
-	  flex-wrap: wrap;
-	  justify-content: center;
-	  gap: 40px;
-	}
-  
-	.feature {
-	  width: 22%;
-	  background: #fff;
-	  padding: 30px;
-	  border-radius: 10px;
-	  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-	  transition: transform 0.3s, box-shadow 0.3s;
-	  text-align: left;
-	}
-  
-	.feature:hover {
-	  transform: translateY(-10px);
-	  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2);
-	}
-  
-	.icon {
-	  margin-bottom: 20px;
-	  color: #663399; /* Icon color */
-	}
-  
-	.icon i {
-	  font-size: 3rem;
-	}
-  
-	.feature h3 {
-	  margin-bottom: 15px;
-	  font-size: 1.8rem;
-	  color: #663399;
-	}
-  
-	.feature p {
-	  font-size: 1rem;
-	  color: #555;
-	}
-  
-	@media (max-width: 768px) {
-	  .features {
+	<div class="container">
+		<h2>Powerful Features</h2>
+		<p>Our platform offers a comprehensive set of tools to help you manage and optimize your APIs effectively.</p>
+		<div class="content">
+			<div class="feature-list">
+				{#each features as feature}
+					<div class="feature-item" on:mouseover={() => selectedFeature = feature}>
+						<div class="icon">
+							<i class="{feature.icon}"></i>
+						</div>
+						<h3>{feature.title}</h3>
+					</div>
+				{/each}
+			</div>
+			<div class="feature-detail">
+				<div class="icon">
+					<i class="{selectedFeature.icon}"></i>
+				</div>
+				<h3>{selectedFeature.title}</h3>
+				<p>{selectedFeature.description}</p>
+				{#if selectedFeature.img}
+					<img src="{selectedFeature.img}" alt="{selectedFeature.title}">
+				{/if}
+			</div>
+		</div>
+	</div>
+</section>
+
+<style>
+.feature-section {
+	position: relative;
+	overflow: hidden;
+	color: #333;
+	padding: 100px 20px;
+}
+
+.parallax {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: url('/background1.png') no-repeat center center/cover;
+	background-attachment: fixed;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+	z-index: -1;
+}
+
+.overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.8); /* Dark overlay */
+}
+
+.container {
+	position: relative;
+	z-index: 2;
+	padding: 50px 20px;
+	background: rgba(255, 255, 255, 0.8);
+	border-radius: 10px;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.feature-section h2 {
+	font-size: 2.5rem;
+	margin-bottom: 10px;
+	color: #663399;
+}
+
+.feature-section p {
+	font-size: 1.2rem;
+	margin-bottom: 40px;
+}
+
+.content {
+	display: flex;
+	justify-content: space-between;
+	gap: 20px;
+}
+
+.feature-list {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	width: 30%;
+}
+
+.feature-item {
+	flex: 1;
+	background: #fff;
+	padding: 15px;
+	border-radius: 10px;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+	cursor: pointer;
+	transition: transform 0.3s, box-shadow 0.3s;
+	text-align: left;
+}
+
+.feature-item:hover {
+	transform: translateX(10px);
+	box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2);
+}
+
+.feature-item .icon {
+	margin-bottom: 10px;
+	color: #663399;
+}
+
+.feature-item h3 {
+	font-size: 1.2rem;
+	color: #333;
+}
+
+.feature-detail {
+	width: 68%;
+	padding: 30px;
+	background: #fff;
+	border-radius: 10px;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+	transition: opacity 0.3s;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+}
+
+.feature-detail .icon {
+	margin-bottom: 20px;
+	color: #663399;
+}
+
+.feature-detail h3 {
+	font-size: 1.8rem;
+	margin-bottom: 15px;
+	color: #333;
+}
+
+.feature-detail p {
+	font-size: 1.2rem;
+	color: #555;
+	margin-bottom: 20px;
+}
+
+.feature-detail img {
+	max-width: 100%;
+	border-radius: 10px;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 768px) {
+	.content {
 		flex-direction: column;
-		align-items: center;
-	  }
-  
-	  .feature {
-		width: 80%;
-		margin-bottom: 20px;
-	  }
 	}
-  
-	@media (max-width: 480px) {
-	  .container {
+
+	.feature-list, .feature-detail {
+		width: 100%;
+	}
+
+	.feature-detail {
+		margin-top: 20px;
+	}
+}
+
+@media (max-width: 480px) {
+	.container {
 		padding: 50px 10px;
-	  }
-  
-	  .feature-section h2 {
+	}
+
+	.feature-section h2 {
 		font-size: 2rem;
-	  }
-  
-	  .feature-section p {
+	}
+
+	.feature-section p {
 		font-size: 1rem;
 		margin-bottom: 20px;
-	  }
-  
-	  .feature {
-		width: 90%;
-		padding: 20px;
-	  }
-  
-	  .feature h3 {
-		font-size: 1.5rem;
-	  }
-  
-	  .feature p {
-		font-size: 0.9rem;
-	  }
 	}
-  </style>
-  
+
+	.feature-item {
+		padding: 10px;
+	}
+
+	.feature-item h3 {
+		font-size: 1rem;
+	}
+
+	.feature-detail {
+		padding: 20px;
+	}
+
+	.feature-detail h3 {
+		font-size: 1.5rem;
+	}
+
+	.feature-detail p {
+		font-size: 1rem;
+	}
+}
+</style>

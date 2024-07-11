@@ -51,7 +51,7 @@
   
 <style>
 .snippet-section {
-	padding: 100px 20px;
+	padding: 80px 20px;
 	text-align: center;
 	background: #663399;
 	color: #fff;
