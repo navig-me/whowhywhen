@@ -67,7 +67,7 @@ def get_payment_link(current_user, plan_name, session):
 
     # Return subscription link with price_id
     checkout_session = stripe.checkout.Session.create(
-        payment_method_types=['card', 'link', 'bancontact', 'sepa_debit'],
+        payment_method_types=['card', 'link'],
         line_items=[{
             'price': price_id,
             'quantity': 1,
