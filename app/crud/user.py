@@ -5,11 +5,9 @@ from app.schemas.user import UserCreate
 import bcrypt
 from datetime import datetime, timedelta
 import requests
+from app.services.stripe_service import create_stripe_customer, FREE_PLAN_LIMIT, STARTER_PLAN_LIMIT, PAID_PLAN_LIMIT
 import uuid
 
-FREE_PLAN_LIMIT = 20000
-STARTER_PLAN_LIMIT = 250000
-PAID_PLAN_LIMIT = 5000000
 
 def verify_turnstile_token(token: str, secret_key: str):
     url = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
@@ -26,9 +24,18 @@ def verify_turnstile_token(token: str, secret_key: str):
 def get_password_hash(password):
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
+
 def create_user(session: Session, user: UserCreate) -> User:
     hashed_password = get_password_hash(user.password).decode('utf-8')
     db_user = User(email=user.email, password_hash=hashed_password, name=user.name)
+    
+    # Create a Stripe customer for the user
+    try:
+        stripe_customer_id = create_stripe_customer(name=db_user.name, email=db_user.email)
+        db_user.stripe_customer_id = stripe_customer_id
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Error creating Stripe customer: {str(e)}")
+
     session.add(db_user)
     session.commit()
     session.refresh(db_user)

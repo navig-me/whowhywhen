@@ -23,6 +23,7 @@ class User(SQLModel, table=True):
     monthly_credit_usage_crossed: bool = Field(default=False)
     monthly_credit_limit_reset: datetime = Field(default_factory=datetime.now)
     projects: List["UserProject"] = Relationship(back_populates="user")
+    stripe_customer_id: Optional[str] = Field(default=None)
 
 class UserProject(SQLModel, table=True):
     id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
