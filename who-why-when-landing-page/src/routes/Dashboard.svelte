@@ -418,7 +418,6 @@
         </div>
       </div>
       <div class="right-column">
-        <LogsTable {apiLogs} {currentPage} {totalPages} {isTableLoading} on:changePage={(e) => changePage(e.detail.page)} on:cellClick={handleCellClick} on:addFilter={handleAddFilter} />
         <div class="charts-container">
           <RequestsChart {barChartData} {frequency} {isChartLoading} on:frequencyChange={handleFrequencyChange} class="full-width-chart"/>
         </div>
@@ -429,7 +428,8 @@
           <PieChart pieChartData={responseCodeData} {isPieChartLoading} />
           <PieChart pieChartData={botBrowserFamilyData} {isPieChartLoading} />
         </div>
-      </div>
+        <LogsTable {apiLogs} {currentPage} {totalPages} {isTableLoading} on:changePage={(e) => changePage(e.detail.page)} on:cellClick={handleCellClick} on:addFilter={handleAddFilter} />
+        </div>
     </div>
   </div>
 </section>
