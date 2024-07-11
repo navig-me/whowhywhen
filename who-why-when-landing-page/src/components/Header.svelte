@@ -61,7 +61,7 @@
 
   async function fetchUpgradeLink(planName, token) {
     if (!planName) return '';
-    const response = await fetch(`${API_BASE_URL}/dashauth/stripe/payment-link/${planName}`, {
+    const response = await fetch(`${DASH_API_BASE_URL}/dashauth/stripe/payment-link/${planName}`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -130,14 +130,14 @@
               </div>
             </div>
           {/if}
-          <a class="btn-primary" href="https://whowhywhen.github.io" target="_blank" rel="noopener noreferrer">Docs</a>
-          <a class="btn-primary" on:click={() => changeView('dashboard')}>Dashboard</a>
-          <a class="btn-primary" on:click={() => changeView('projects')}>Projects</a>
-          <a class="btn-secondary" on:click={logout}>Logout</a>
+          <a class="nav-link" href="https://whowhywhen.github.io" target="_blank" rel="noopener noreferrer">Docs</a>
+          <a class="nav-link" on:click={() => changeView('dashboard')}>Dashboard</a>
+          <a class="nav-link" on:click={() => changeView('projects')}>Projects</a>
+          <a class="nav-link logout-link" on:click={logout}>Logout</a>
         {:else}
-          <a class="btn-primary" href="https://whowhywhen.github.io" target="_blank" rel="noopener noreferrer">Docs</a>
-          <a class="btn-secondary" on:click={() => changeView('login')}>Login</a>
-          <a class="btn-secondary" on:click={() => changeView('register')}>Register</a>
+          <a class="nav-link" href="https://whowhywhen.github.io" target="_blank" rel="noopener noreferrer">Docs</a>
+          <a class="nav-link" on:click={() => changeView('login')}>Login</a>
+          <a class="nav-link" on:click={() => changeView('register')}>Register</a>
         {/if}
       </div>
     </nav>
@@ -150,6 +150,8 @@
     padding: 20px 0;
     border-bottom: 1px solid #ddd;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 10; /* Increased z-index for mobile view */
   }
 
   .container {
@@ -191,49 +193,41 @@
 
   .menu {
     display: flex;
-    gap: 10px;
+    gap: 20px;
     align-items: center;
   }
 
   nav a {
-    padding: 10px 20px;
-    border-radius: 5px;
     text-decoration: none;
-    transition: background-color 0.3s, color 0.3s;
-    display: inline-block;
+    transition: color 0.3s;
     cursor: pointer;
+    font-size: 1.1rem;
   }
 
-  .btn-primary {
-    background-color: #8A2BE2;
-    color: #fff;
-    border: 1px solid #8A2BE2;
-    text-decoration: none;
+  .nav-link {
+    color: #663399;
   }
 
-  .btn-primary:hover {
-    background-color: #ff4500;
-    color: #fff;
-  }
-
-  .btn-secondary {
-    background-color: #fff;
+  .nav-link:hover {
     color: #ff4500;
-    border: 1px solid #ff4500;
-    text-decoration: none;
   }
 
-  .btn-secondary:hover {
-    background-color: #ff4500;
-    color: #fff;
+  .logout-link {
+    color: #ff4500;
+  }
+
+  .logout-link:hover {
+    color: #663399;
   }
 
   .plan-section {
-    background-color: #f9f9f9;
     padding: 10px;
     border-radius: 10px;
+    border: 0.1px solid;
+    background-color: #f9f9f9;
+    background-size: 56.57px 56.57px; /* Adjust based on the size needed */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 220px; /* Smaller and more sleek */
+    width: 180px; /* Smaller and more sleek */
   }
 
   .user-info {
@@ -248,24 +242,24 @@
   .plan-info {
     font-weight: bold;
     text-align: center;
-    font-size: 0.9rem; /* Smaller text for sleeker design */
-    width: 100%; /* Ensure the width matches the container */
+    font-size: 1rem; /* Adjusted text size */
+    width: 100%;
   }
 
   .request-info {
-    width: 100%; /* Ensure the width matches the container */
-    margin-top: 5px; /* Smaller margin for more compact design */
+    width: 100%;
+    margin-top: 5px;
   }
 
   .request-bar-container {
     position: relative;
     width: 100%;
-    margin-top: 5px; /* Smaller margin for more compact design */
+    margin-top: 5px;
   }
 
   .request-bar {
     width: 100%;
-    height: 10px; /* Reduced height for a sleek look */
+    height: 8px;
     background-color: #ddd;
     border-radius: 5px;
     overflow: hidden;
@@ -308,7 +302,7 @@
     font-weight: bold;
     opacity: 0;
     transition: opacity 0.3s;
-    width: 100%; /* Ensure the width matches the container */
+    width: 100%;
     text-align: center;
   }
 
@@ -336,7 +330,7 @@
       top: 60px;
       left: 0;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      z-index: 1;
+      z-index: 11; /* Increased z-index for mobile view */
     }
 
     .menu.open {
@@ -353,6 +347,7 @@
       padding: 10px;
       border-radius: 0;
       box-shadow: none;
+      border: 0.2px solid; /* Ensure border is visible */
     }
 
     .user-info {

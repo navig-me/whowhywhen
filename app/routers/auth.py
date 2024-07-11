@@ -27,7 +27,7 @@ def get_stripe_payment_link(current_user: User = Depends(get_current_user), plan
     elif plan_name == SubscriptionPlan.starter:
         price_id = 'price_1PaBdIC0V9GgAoCfI9gq9MSL'
     elif plan_name == SubscriptionPlan.pro:
-        price_id = 'price_1PaBfwC0V9GgAoCfzrHuBtZs'
+        price_id = 'price_1PbDLyC0V9GgAoCfSjpbPwD3'
 
     # Return subscription link with price_id
     checkout_session = stripe.checkout.Session.create(
@@ -62,7 +62,7 @@ def get_user_subscription_from_stripe(current_user: User):
             print("Subscription item:", subscription.plan)
             if subscription.plan.id == 'price_1PaBdIC0V9GgAoCfI9gq9MSL':
                 return SubscriptionPlan.starter
-            elif subscription.plan.id == 'price_1PaBfwC0V9GgAoCfzrHuBtZs':
+            elif subscription.plan.id in ['price_1PaBfwC0V9GgAoCfzrHuBtZs', 'price_1PbDLyC0V9GgAoCfSjpbPwD3']:
                 return SubscriptionPlan.pro
     return SubscriptionPlan.free
         

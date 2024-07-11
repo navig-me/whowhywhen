@@ -7,9 +7,9 @@ from datetime import datetime, timedelta
 import requests
 import uuid
 
-FREE_PLAN_LIMIT = 10000
-STARTER_PLAN_LIMIT = 100000
-PAID_PLAN_LIMIT = 1000000
+FREE_PLAN_LIMIT = 20000
+STARTER_PLAN_LIMIT = 250000
+PAID_PLAN_LIMIT = 5000000
 
 def verify_turnstile_token(token: str, secret_key: str):
     url = "https://challenges.cloudflare.com/turnstile/v0/siteverify"

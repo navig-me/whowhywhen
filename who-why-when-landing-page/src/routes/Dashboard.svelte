@@ -490,19 +490,17 @@
   }
 
   .pie-charts-container {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
     margin-top: 20px;
-    flex-wrap: wrap;
   }
 
   .pie-chart {
-    flex: 1;
     background: #fff;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    margin: 20px;
   }
 
   .toast {
@@ -518,7 +516,6 @@
     z-index: 1000;
     animation: fadeInOut 6s ease-in-out;
   }
-
 
   @keyframes fadeInOut {
     0% { opacity: 0; }
@@ -558,7 +555,7 @@
     }
 
     .pie-charts-container {
-      flex-direction: column;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     }
   }
 
@@ -590,7 +587,7 @@
     }
 
     .pie-charts-container {
-      flex-direction: column;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     }
   }
 </style>

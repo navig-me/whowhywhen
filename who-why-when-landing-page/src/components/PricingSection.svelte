@@ -13,24 +13,24 @@
 		<div class="plans">
 			<div class="plan">
 				<h3>FREE</h3>
-				<p><i class="fas fa-check"></i> 10,000 monthly free calls</p>
+				<p><i class="fas fa-check"></i> 20,000 monthly free calls</p>
 				<p><i class="fas fa-check"></i> Basic Analytics</p>
 				<p class="price">$0/month</p>
 				<button class="btn-primary" on:click={() => changeView('register')}>Get Started</button>
 			</div>
 			<div class="plan best-value">
 				<h3>STARTER</h3>
-				<p><i class="fas fa-check"></i> 100,000 monthly calls</p>
+				<p><i class="fas fa-check"></i> 250,000 monthly calls</p>
 				<p><i class="fas fa-check"></i> Advanced Analytics</p>
 				<p class="price">$9/month</p>
 				<button class="btn-primary" on:click={() => changeView('register')}>Get Started</button>
 			</div>
 			<div class="plan">
 				<h3>PRO</h3>
-				<p><i class="fas fa-check"></i> 1,000,000 monthly calls</p>
+				<p><i class="fas fa-check"></i> 5,000,000 monthly calls</p>
 				<p><i class="fas fa-check"></i> Advanced Analytics</p>
 				<p><i class="fas fa-check"></i> Enhanced IP and Device Information</p>
-				<p class="price">$29/month</p>
+				<p class="price">$39/month</p>
 				<button class="btn-primary" on:click={() => changeView('register')}>Get Started</button>
 			</div>
 		</div>
