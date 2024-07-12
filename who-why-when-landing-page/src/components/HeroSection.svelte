@@ -19,7 +19,7 @@
 <style>
 .hero-section {
 	position: relative;
-	background: url('/www-bg.webp') no-repeat center center/cover;
+	background: url('/wordcloud.png') no-repeat center center/cover;
 	color: #fff;
 	padding: 200px 20px;
 	text-align: center;

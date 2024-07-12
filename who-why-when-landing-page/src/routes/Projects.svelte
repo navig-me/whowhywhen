@@ -5,7 +5,7 @@
     import { createEventDispatcher } from 'svelte';
     import Toast from '../components/Toast.svelte';
     import { API_BASE_URL, DASH_API_BASE_URL } from '../config'; // Import the base URL
-  
+    
     let projects = [];
     let apiKeys = [];
     let newProjectName = '';
@@ -17,14 +17,14 @@
     let showToast = false;
     let clientIp = '';
     let clientLocation = {};
-  
+    
     const dispatch = createEventDispatcher();
-  
+    
     onMount(async () => {
       await fetchProjects();
       await fetchIpLocation();
     });
-  
+    
     async function fetchProjects() {
       const token = localStorage.getItem('token');
       const response = await fetch(`${DASH_API_BASE_URL}/dashauth/users/me/projects`, {
@@ -38,7 +38,7 @@
         showToastMessage('Failed to fetch projects', 'error');
       }
     }
-  
+    
     async function fetchIpLocation() {
       const response = await fetch(`${DASH_API_BASE_URL}/dashapi/ip-location`);
       if (response.ok) {
@@ -48,7 +48,7 @@
         showToastMessage('Failed to fetch IP and location info', 'error');
       }
     }
-  
+    
     async function createProject() {
       if (projects.length >= 10) {
         showToastMessage('You have reached the maximum number of projects', 'error');
@@ -71,7 +71,7 @@
         showToastMessage(errorData.detail || 'Failed to create project', 'error');
       }
     }
-  
+    
     async function fetchApiKeys(projectId) {
       selectedProjectId = projectId;
       const token = localStorage.getItem('token');
@@ -87,7 +87,7 @@
         showToastMessage('Failed to fetch API keys', 'error');
       }
     }
-  
+    
     async function createApiKey() {
       if (apiKeys.length >= 3) {
         showToastMessage('You have reached the maximum number of API keys for this project', 'error');
@@ -110,7 +110,7 @@
         showToastMessage(errorData.detail || 'Failed to create API key', 'error');
       }
     }
-  
+    
     async function deleteApiKey(keyId) {
       const token = localStorage.getItem('token');
       const response = await fetch(`${DASH_API_BASE_URL}/dashapi/apikeys/${keyId}`, {
@@ -126,7 +126,7 @@
         showToastMessage('Failed to delete API key', 'error');
       }
     }
-  
+    
     async function testApiKey(apiKey) {
       const userAgent = navigator.userAgent;
       const response = await fetch(`${API_BASE_URL}/api/log`, {
@@ -148,16 +148,16 @@
         showToastMessage('Test request failed', 'error');
       }
     }
-  
+    
     function blurApiKey(apiKey, show) {
       return show ? apiKey : apiKey.slice(0, -4).replace(/./g, '*') + apiKey.slice(-4);
     }
-  
+    
     function logout() {
       clearToken();
       currentView.set('home');
     }
-  
+    
     function showToastMessage(message, type) {
       toastMessage = message;
       toastType = type;
@@ -166,13 +166,18 @@
         showToast = true;
       }, 0);
     }
-  
+    
     function viewDashboard(projectId) {
       selectedProjectIdStore.set(projectId); // Update the store with the selected project ID
       currentView.set('dashboard');
     }
+  
+    function viewUptimeMonitors(projectId) {
+      selectedProjectIdStore.set(projectId); // Update the store with the selected project ID
+      currentView.set('uptime-monitors');
+    }
   </script>
-    
+      
   <div class="projects-container">
     <h2>Your Projects</h2>
     <button class="btn-back" on:click={() => currentView.set('dashboard')}>Back to Dashboard</button>
@@ -188,6 +193,7 @@
           <div class="project-actions">
             <button class="btn-primary" on:click={() => fetchApiKeys(project.id)}>View API Keys</button>
             <button class="btn-secondary" on:click={() => viewDashboard(project.id)}>View Dashboard</button>
+            <!-- <button class="btn-secondary" on:click={() => viewUptimeMonitors(project.id)}>View Uptime Monitors</button> -->
           </div>
         </li>
       {/each}

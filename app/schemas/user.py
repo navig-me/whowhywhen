@@ -2,6 +2,7 @@ from pydantic import BaseModel, EmailStr
 from typing import Optional
 from datetime import datetime
 from app.models.user import SubscriptionPlan
+from app.models.uptime import MonitorType
 import uuid
 
 class UserCreate(BaseModel):
@@ -39,3 +40,4 @@ class UserRead(BaseModel):
 class UserStatusRead(BaseModel):
     user_request_count: int
     user: UserRead
+

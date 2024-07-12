@@ -12,6 +12,7 @@
 	import Dashboard from './routes/Dashboard.svelte';
 	import Projects from './routes/Projects.svelte';
 	import UserSettings from './routes/UserSettings.svelte';
+	import UptimeMonitor from './routes/UptimeMonitor.svelte';
 	import { isLoggedIn } from './stores/userStore';
   
 	let view;
@@ -61,5 +62,7 @@
 	<Projects />
   {:else if view === 'user-settings'}
 	<UserSettings />
+  {:else if view === 'uptime-monitors'}
+	<UptimeMonitor />
   {/if}
   

@@ -10,6 +10,7 @@ class SubscriptionPlan(enum.Enum):
     starter = "starter"
     pro = "pro"
 
+
 class User(SQLModel, table=True):
     id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
     name: str = Field(index=True)
@@ -38,3 +39,4 @@ class UserProject(SQLModel, table=True):
     user: "User" = Relationship(back_populates="projects")
     api_keys: List["APIKey"] = Relationship(back_populates="user_project")
     api_logs: List["APILog"] = Relationship(back_populates="user_project")
+    monitors: List["UptimeMonitor"] = Relationship(back_populates="project")

@@ -5,7 +5,7 @@ from sqlalchemy import pool
 
 from alembic import context
 
-from app.models import apilog, botinfo, user, apikey
+from app.models import apilog, botinfo, user, apikey, uptime
 from app.database import SQLModel
 
 # this is the Alembic Config object, which provides

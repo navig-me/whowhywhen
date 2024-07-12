@@ -13,6 +13,11 @@
 			img: "/monitoring.png"
 		},
 		{
+			title: "Uptime Monitoring",
+			description: "Monitor the uptime of your APIs and ensure they are up and running.",
+			icon: "fas fa-heartbeat"
+		},
+		{
 			title: "Alerts and Notifications",
 			description: "Receive alerts and notifications when your APIs are under or over performance baselines.",
 			icon: "fas fa-bell"
