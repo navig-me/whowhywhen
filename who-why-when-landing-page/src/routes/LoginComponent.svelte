@@ -41,7 +41,7 @@
   }
 
   async function handleTwoFactorSubmit() {
-    const response = await fetch(`${DASH_API_BASE_URL}/dashauth/verify-2fa`, {
+    const response = await fetch(`${DASH_API_BASE_URL}/dashauth/verify-2fa?user_email=${username}&token=${twoFactorCode}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
