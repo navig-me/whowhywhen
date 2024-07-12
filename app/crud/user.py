@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 import requests
 from app.services.stripe_service import create_stripe_customer, FREE_PLAN_LIMIT, STARTER_PLAN_LIMIT, PAID_PLAN_LIMIT
 import uuid
+import pyotp
 
 
 def verify_turnstile_token(token: str, secret_key: str):
@@ -27,7 +28,13 @@ def get_password_hash(password):
 
 def create_user(session: Session, user: UserCreate) -> User:
     hashed_password = get_password_hash(user.password).decode('utf-8')
-    db_user = User(email=user.email, password_hash=hashed_password, name=user.name)
+    totp_secret = pyotp.random_base32()
+    db_user = User(
+        email=user.email, 
+        password_hash=hashed_password, 
+        name=user.name,
+        totp_secret=totp_secret
+    )
     
     # Create a Stripe customer for the user
     try:

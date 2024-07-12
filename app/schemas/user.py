@@ -34,6 +34,7 @@ class UserRead(BaseModel):
     monthly_credit_usage_crossed: bool
     monthly_credit_limit_reset: datetime
     subscription_plan: Optional[SubscriptionPlan]
+    two_factor_enabled: bool
 
 class UserStatusRead(BaseModel):
     user_request_count: int

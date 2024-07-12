@@ -24,6 +24,8 @@ class User(SQLModel, table=True):
     monthly_credit_limit_reset: datetime = Field(default_factory=datetime.now)
     projects: List["UserProject"] = Relationship(back_populates="user")
     stripe_customer_id: Optional[str] = Field(default=None)
+    totp_secret: Optional[str] = Field(default=None)
+    two_factor_enabled: Optional[bool] = Field(default=False)
 
 class UserProject(SQLModel, table=True):
     id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, primary_key=True)

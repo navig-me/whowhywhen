@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "chart.js": "^4.4.3",
+    "qrcode": "^1.5.3",
     "sirv-cli": "^2.0.0",
     "svelte-chartjs": "^3.1.5",
     "svelte-routing": "^2.13.0"

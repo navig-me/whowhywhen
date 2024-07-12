@@ -12,3 +12,5 @@ httpx
 fastapi-utils
 typing_inspect
 user-agents
+pyotp
+qrcode

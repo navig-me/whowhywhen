@@ -15,6 +15,8 @@ from app.dependencies.auth import verify_password
 from app.config import TURNSTILE_SECRET_KEY
 from app.crud.user import get_password_hash
 from app.services.stripe_service import get_payment_link, refresh_user_subscription, get_customer_portal_url
+from app.services.fa_service import generate_totp_secret, generate_totp_uri, verify_totp_token
+import pyotp
 
 router = APIRouter()
 
@@ -50,16 +52,62 @@ def change_password(form_data: ChangePasswordForm, current_user: User = Depends(
 @router.post("/token")
 def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), session: Session = Depends(get_session)):
     user = get_user_by_email(session, form_data.username)
-    print(user)
     if not user or not verify_password(form_data.password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(data={"sub": user.email}, expires_delta=access_token_expires)
+
+    if user.two_factor_enabled:
+        return {"totp_required": True}
+
+    access_token = create_access_token(data={"sub": user.email})
     return {"access_token": access_token, "token_type": "bearer"}
+
+@router.post("/verify-2fa")
+def verify_2fa(user_email: str, token: str, session: Session = Depends(get_session)):
+    user = get_user_by_email(session, user_email)
+    if not user:
+        raise HTTPException(status_code=400, detail="Invalid user")
+    
+    totp = pyotp.TOTP(user.totp_secret)
+    if not totp.verify(token):
+        raise HTTPException(status_code=400, detail="Invalid 2FA token")
+    
+    access_token = create_access_token(data={"sub": user.email})
+    return {"access_token": access_token, "token_type": "bearer"}
+
+
+@router.post("/enable-2fa")
+def enable_2fa(user: User = Depends(get_current_user), session: Session = Depends(get_session)):
+    if user.two_factor_enabled:
+        raise HTTPException(status_code=400, detail="2FA is already enabled")
+
+    totp_secret = generate_totp_secret()
+    user.totp_secret = totp_secret
+    user.two_factor_enabled = True
+
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+
+    # Generate QR code URI
+    uri = generate_totp_uri(totp_secret, user.email, issuer_name="WhoWhyWhen")
+    return {"totp_uri": uri}
+
+@router.post("/disable-2fa")
+def disable_2fa(current_user: User = Depends(get_current_user), session: Session = Depends(get_session)):
+    if not current_user.two_factor_enabled:
+        raise HTTPException(status_code=400, detail="2FA is not enabled")
+
+    current_user.totp_secret = None
+    current_user.two_factor_enabled = False
+
+    session.add(current_user)
+    session.commit()
+
+    return {"message": "2FA disabled successfully"}
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
