@@ -11,8 +11,9 @@ RUN npm run build
 FROM caddy:2.4.6-alpine
 
 COPY --from=builder /app/public /srv
+COPY Caddyfile /etc/caddy/Caddyfile
 
 EXPOSE 80
 EXPOSE 443
 
-CMD ["caddy", "file-server", "--root", "/srv"]
+CMD ["caddy", "run", "--config", "/etc/caddy/Caddyfile"]
