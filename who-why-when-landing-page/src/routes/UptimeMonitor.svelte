@@ -1,31 +1,40 @@
 <script>
     import { onMount } from 'svelte';
-    import { selectedProjectIdStore, clearToken } from '../stores/userStore'; 
+    import { selectedProjectIdStore } from '../stores/userStore'; 
     import { createEventDispatcher } from 'svelte';
     import Toast from '../components/Toast.svelte';
+    import Modal from '../components/Modal.svelte';
     import { DASH_API_BASE_URL } from '../config'; // Import the base URL
   
     let monitors = [];
-    let newMonitorName = '';
-    let newMonitorUrl = '';
-    let newMonitorType = 'http';
-    let newMonitorInterval = 5;
     let projects = [];
     let selectedProjectId = null;
     let toastMessage = '';
     let toastType = '';
     let showToast = false;
+    let showModal = false;
+    let isEditing = false;
+    let monitorToEdit = null;
+  
+    let newMonitorName = '';
+    let newMonitorUrl = '';
+    let newMonitorType = 'http';
+    let newMonitorInterval = 5;
   
     const dispatch = createEventDispatcher();
   
     onMount(async () => {
-      selectedProjectIdStore.subscribe(value => {
+      selectedProjectIdStore.subscribe(async value => {
         selectedProjectId = value;
+        await fetchProjects();
         if (selectedProjectId) {
+          fetchMonitors();
+        } else if (projects.length > 0) {
+          selectedProjectId = projects[0].id;
+          selectedProjectIdStore.set(selectedProjectId);
           fetchMonitors();
         }
       });
-      await fetchProjects();
     });
   
     async function fetchProjects() {
@@ -61,15 +70,20 @@
       }
     }
   
-    async function createMonitor() {
+    async function createOrUpdateMonitor() {
       if (!selectedProjectId) {
         showToastMessage('Please select a project', 'error');
         return;
       }
-  
+
       const token = localStorage.getItem('token');
-      const response = await fetch(`${DASH_API_BASE_URL}/dashapi/projects/${selectedProjectId}/monitors`, {
-        method: 'POST',
+      const endpoint = isEditing
+        ? `${DASH_API_BASE_URL}/dashapi/monitors/${monitorToEdit.id}`
+        : `${DASH_API_BASE_URL}/dashapi/projects/${selectedProjectId}/monitors`;
+      const method = isEditing ? 'PUT' : 'POST';
+
+      const response = await fetch(endpoint, {
+        method: method,
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -86,10 +100,11 @@
         newMonitorUrl = '';
         newMonitorType = 'http';
         newMonitorInterval = 5;
+        showModal = false;
         await fetchMonitors();
-        showToastMessage('Monitor created successfully', 'success');
+        showToastMessage(`Monitor ${isEditing ? 'updated' : 'created'} successfully`, 'success');
       } else {
-        showToastMessage('Failed to create monitor', 'error');
+        showToastMessage(`Failed to ${isEditing ? 'update' : 'create'} monitor`, 'error');
       }
     }
   
@@ -107,6 +122,26 @@
         showToast = true;
       }, 0);
     }
+
+    function openCreateModal() {
+      newMonitorName = '';
+      newMonitorUrl = '';
+      newMonitorType = 'http';
+      newMonitorInterval = 5;
+      isEditing = false;
+      showModal = true;
+    }
+
+    function openEditModal(monitor) {
+      monitorToEdit = monitor;
+      newMonitorName = monitor.name;
+      newMonitorUrl = monitor.url;
+      newMonitorType = monitor.type;
+      newMonitorInterval = monitor.check_interval;
+      isEditing = true;
+      showModal = true;
+    }
+  
   </script>
   
   <section class="uptime-monitors">
@@ -118,32 +153,40 @@
       {/each}
     </select>
     {#if selectedProjectId}
+      <button class="btn-add" on:click={openCreateModal}>+</button>
       <ul class="monitor-list">
         {#each monitors as monitor}
           <li class="monitor-item">
-            <div class="monitor-details">
+            <div class="monitor-details" on:click={() => openEditModal(monitor)}>
               <span class="monitor-name">{monitor.name}</span>
               <span class="monitor-url">{monitor.url}</span>
               <span class="monitor-status">{monitor.status}</span>
             </div>
+            <button class="edit-btn" on:click={() => openEditModal(monitor)}>
+              ✏️
+            </button>
           </li>
         {/each}
       </ul>
-    
-      <h3>Create New Monitor</h3>
-      <input type="text" bind:value={newMonitorName} placeholder="Monitor Name" class="input-field" />
-      <input type="url" bind:value={newMonitorUrl} placeholder="Monitor URL" class="input-field" />
-      <select bind:value={newMonitorType} class="input-field">
-        <option value="http">HTTP</option>
-        <option value="https">HTTPS</option>
-        <option value="ping">Ping</option>
-      </select>
-      <input type="number" bind:value={newMonitorInterval} placeholder="Check Interval (minutes)" class="input-field" />
-      <button class="btn-primary" on:click={createMonitor}>Create Monitor</button>
     {/if}
   
     {#if showToast}
       <Toast message={toastMessage} type={toastType} />
+    {/if}
+  
+    {#if showModal}
+      <Modal on:close={() => showModal = false}>
+        <h3>{isEditing ? 'Edit Monitor' : 'Create New Monitor'}</h3>
+        <input type="text" bind:value={newMonitorName} placeholder="Monitor Name" class="input-field" />
+        <input type="url" bind:value={newMonitorUrl} placeholder="Monitor URL" class="input-field" />
+        <select bind:value={newMonitorType} class="input-field">
+          <option value="http">HTTP</option>
+          <option value="https">HTTPS</option>
+          <option value="ping">Ping</option>
+        </select>
+        <input type="number" bind:value={newMonitorInterval} placeholder="Check Interval (minutes)" class="input-field" />
+        <button class="btn-primary" on:click={createOrUpdateMonitor}>{isEditing ? 'Update Monitor' : 'Create Monitor'}</button>
+      </Modal>
     {/if}
   </section>
   
@@ -156,6 +199,7 @@
       border-radius: 10px;
       box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
       text-align: center;
+      position: relative;
     }
   
     h2, h3 {
@@ -185,6 +229,8 @@
       align-items: center;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+      position: relative;
     }
   
     .monitor-item:hover {
@@ -196,6 +242,7 @@
       display: flex;
       flex-direction: column;
       align-items: flex-start;
+      width: 90%;
     }
   
     .monitor-name {
@@ -233,5 +280,35 @@
     .btn-primary:hover {
       background-color: #7d42a6;
     }
-  </style>
   
+    .btn-add {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: #663399;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      font-size: 24px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+  
+    .btn-add:hover {
+      background-color: #7d42a6;
+    }
+    
+    .edit-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      margin-left: 10px;
+    }
+
+    .edit-btn:hover {
+      color: #663399;
+    }
+  </style>

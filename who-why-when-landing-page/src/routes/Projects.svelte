@@ -193,7 +193,7 @@
           <div class="project-actions">
             <button class="btn-primary" on:click={() => fetchApiKeys(project.id)}>View API Keys</button>
             <button class="btn-secondary" on:click={() => viewDashboard(project.id)}>View Dashboard</button>
-            <!-- <button class="btn-secondary" on:click={() => viewUptimeMonitors(project.id)}>View Uptime Monitors</button> -->
+            <button class="btn-secondary" on:click={() => viewUptimeMonitors(project.id)}>View Uptime Monitors</button>
           </div>
         </li>
       {/each}
