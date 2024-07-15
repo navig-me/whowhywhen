@@ -1,7 +1,7 @@
 <script>
     import { onMount } from 'svelte';
-    import { currentView } from '../stores/viewStore';
-    import { selectedProjectIdStore, isLoggedIn, clearToken } from '../stores/userStore'; 
+    import { Link } from 'svelte-routing';
+    import { selectedProjectIdStore, clearToken } from '../stores/userStore'; 
     import { createEventDispatcher } from 'svelte';
     import Toast from '../components/Toast.svelte';
     import { API_BASE_URL, DASH_API_BASE_URL } from '../config'; // Import the base URL
@@ -167,20 +167,14 @@
       }, 0);
     }
     
-    function viewDashboard(projectId) {
+    function handleProjectSelection(projectId, path) {
       selectedProjectIdStore.set(projectId); // Update the store with the selected project ID
-      currentView.set('dashboard');
-    }
-  
-    function viewUptimeMonitors(projectId) {
-      selectedProjectIdStore.set(projectId); // Update the store with the selected project ID
-      currentView.set('uptime-monitors');
     }
   </script>
-      
+    
   <div class="projects-container">
     <h2>Your Projects</h2>
-    <button class="btn-back" on:click={() => currentView.set('dashboard')}>Back to Dashboard</button>
+    <Link to="/dashboard" class="btn-back">Back to Dashboard</Link>
     <ul class="project-list">
       {#each projects as project}
         <li class="project-item">
@@ -192,8 +186,8 @@
           </div>
           <div class="project-actions">
             <button class="btn-primary" on:click={() => fetchApiKeys(project.id)}>View API Keys</button>
-            <button class="btn-secondary" on:click={() => viewDashboard(project.id)}>View Dashboard</button>
-            <button class="btn-secondary" on:click={() => viewUptimeMonitors(project.id)}>View Uptime Monitors</button>
+            <Link to="/dashboard" class="btn-secondary" on:click={() => handleProjectSelection(project.id)}>View Dashboard</Link>
+            <Link to="/uptime-monitors" class="btn-secondary" on:click={() => handleProjectSelection(project.id)}>View Uptime Monitors</Link>
           </div>
         </li>
       {/each}
@@ -267,6 +261,7 @@
       cursor: pointer;
       margin-bottom: 30px;
       transition: background-color 0.3s ease;
+      text-decoration: none;
     }
   
     .btn-back:hover {
