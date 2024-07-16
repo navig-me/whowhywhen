@@ -45,7 +45,7 @@
 	</div>
 	<div class="container">
 		<h2>Powerful Features</h2>
-		<p>Our platform offers a comprehensive set of tools to help you manage and optimize your APIs effectively.</p>
+		<p>Built by developers, for developers. </p>
 		<div class="content">
 			<div class="feature-list">
 				{#each features as feature}

@@ -3,7 +3,7 @@
   import { currentView } from '../stores/viewStore';
   import { setToken } from '../stores/userStore';
   import Toast from '../components/Toast.svelte';
-  import { DASH_API_BASE_URL } from '../config'; // Import the base URL
+  import { DASH_API_BASE_URL } from '../config';
 
   let username = '';
   let password = '';
@@ -31,7 +31,9 @@
       if (data.totp_required) {
         showTwoFactorInput = true;
       } else {
-        setToken(data.access_token); // Save the token
+        setToken(data.access_token);
+        gtag('set', 'user_id', data.user_id); // Set user ID in Google Analytics
+        gtag('event', 'login', { method: 'Password' });
         showToast('Login successful!', 'success');
         currentView.set('dashboard');
       }
@@ -54,7 +56,9 @@
 
     if (response.ok) {
       const data = await response.json();
-      setToken(data.access_token); // Save the token
+      setToken(data.access_token);
+      gtag('set', 'user_id', data.user_id); // Set user ID in Google Analytics
+      gtag('event', 'login', { method: '2FA' });
       showToast('Login successful!', 'success');
       currentView.set('dashboard');
     } else {

@@ -40,6 +40,10 @@
   selectedProjectIdStore.subscribe(async (projectId) => {
     if (projectId) {
       selectedProjectId = projectId;
+      gtag('event', 'select_project', {
+        event_category: 'Project',
+        event_label: projectId,
+      });
       await fetchApiLogs();
       await fetchHourlyRequestsData();
       await fetchCountsData();
@@ -48,6 +52,10 @@
 
   onMount(async () => {
     await fetchProjects();
+    gtag('event', 'page_view', {
+      page_title: 'Dashboard',
+      page_path: '/dashboard',
+    });
   });
 
   async function fetchProjects() {
