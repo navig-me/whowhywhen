@@ -12,8 +12,9 @@ services:
       - app-network
 
   celery:
-    build: .
-    command: celery -A app.tasks worker --loglevel=info
+    build:
+      context: .
+      dockerfile: Dockerfile.celery
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
@@ -21,8 +22,9 @@ services:
       - app-network
 
   celery_beat:
-    build: .
-    command: celery -A app.tasks beat --loglevel=info
+    build:
+      context: .
+      dockerfile: Dockerfile.celery_beat
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
