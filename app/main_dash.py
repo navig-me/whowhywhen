@@ -14,23 +14,17 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-app = FastAPI(
-    title="WhoWhyWhen Dashboard",
-    description="Dashboard for WhoWhyWhen",
-    version="0.1.0",
-    docs_url='/docsnonpublic',
-    redoc_url=None
-)
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    yield
+    create_db_and_tables()
+    app.state.db = next(get_session())
+
     @repeat_every(seconds=3600)
     async def check_monthly_credit_limit():
         print("Checking monthly credit limit...")
-        for user in app.state.db.query(User).all():
+        db = app.state.db
+        for user in db.query(User).all():
             print(f"Checking user {user.email}...")
-            db = next(get_session())
             total_requests_count = 0
             for project in user.projects:
                 total_requests_count += db.query(APILog).filter(APILog.user_project_id == project.id, APILog.created_at >= user.monthly_credit_limit_reset).count()
@@ -44,6 +38,21 @@ async def lifespan(app: FastAPI):
             db.add(user)
             db.commit()
             db.refresh(user)
+
+    app.state.check_monthly_credit_limit_task = check_monthly_credit_limit()
+
+    yield
+
+    app.state.db.close()
+
+app = FastAPI(
+    title="WhoWhyWhen Dashboard",
+    description="Dashboard for WhoWhyWhen",
+    version="0.1.0",
+    docs_url='/docsnonpublic',
+    redoc_url=None,
+    lifespan=lifespan
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -107,8 +116,6 @@ class APILogMiddleware(BaseHTTPMiddleware):
 
         await create_apilog(session, project_id, apilog)
 
-
-
 app.add_middleware(APILogMiddleware)
 
 @app.middleware("http")
@@ -117,10 +124,6 @@ async def add_background_tasks(request: Request, call_next):
     response = await call_next(request)
     response.background = request.state.background_tasks
     return response
-
-@app.on_event("startup")
-def on_startup():
-    create_db_and_tables()
 
 @app.get("/dashapi/ip-location")
 async def get_ip_location(request: Request):
