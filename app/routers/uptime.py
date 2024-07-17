@@ -10,6 +10,7 @@ from app.models.user import UserProject
 from app.models.uptime import UptimeMonitor, UptimeMonitorStatus, MonitorType
 import uuid
 from app.schemas.uptime import MonitorCreate, MonitorUpdate
+from app.tasks import schedule_monitor_check
 
 
 router = APIRouter()
@@ -29,6 +30,14 @@ def create_monitor(project_id: uuid.UUID, monitor: MonitorCreate, session: Sessi
     session.add(new_monitor)
     session.commit()
     session.refresh(new_monitor)
+
+    # Schedule the first check for the monitor
+    task_id = schedule_monitor_check.delay(new_monitor.id, new_monitor.check_interval)
+    new_monitor.task_id = task_id
+
+    session.commit()
+    session.refresh(new_monitor)
+
     return new_monitor
 
 @router.get("/projects/{project_id}/monitors/", response_model=List[UptimeMonitor])
