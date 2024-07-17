@@ -75,6 +75,7 @@ services:
       - app-network
 
   celery:
+    image: backend_celery
     build:
       context: .
       dockerfile: Dockerfile.celery
@@ -86,6 +87,7 @@ services:
       - app-network
 
   celery_beat:
+    image: backend_celery_beat
     build:
       context: .
       dockerfile: Dockerfile.celery_beat
