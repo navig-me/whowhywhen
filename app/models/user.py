@@ -27,6 +27,7 @@ class User(SQLModel, table=True):
     stripe_customer_id: Optional[str] = Field(default=None)
     totp_secret: Optional[str] = Field(default=None)
     two_factor_enabled: Optional[bool] = Field(default=False)
+    alerts: List["Alert"] = Relationship(back_populates="user")
 
 class UserProject(SQLModel, table=True):
     id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
