@@ -79,7 +79,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.celery
-    command: celery -A app.tasks worker --loglevel=info
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
@@ -91,7 +90,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.celery_beat
-    command: celery -A app.tasks beat --loglevel=info
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
