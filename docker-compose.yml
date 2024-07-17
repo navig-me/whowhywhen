@@ -1,6 +1,16 @@
 version: '3.8'
 
 services:
+  dash:
+    image: backend_dash
+    build:
+      context: .
+      dockerfile: Dockerfile.dash
+    environment:
+      - DATABASE_URL=postgresql://postgres:secrect@142.93.220.56:5432/wwwdb
+    networks:
+      - app-network
+
   api:
     image: backend_api
     build:
