@@ -1,5 +1,5 @@
 import httpx
-from app.celery import Celery
+from app.appcelery import Celery
 from datetime import datetime
 from sqlmodel import Session, select
 from app.database import get_session
