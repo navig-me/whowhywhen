@@ -20,6 +20,7 @@ async def create_monitor(project_id: uuid.UUID, monitor: MonitorCreate, session:
     project = session.get(UserProject, project_id)
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
+    
     new_monitor = UptimeMonitor(
         name=monitor.name,
         url=monitor.url,
@@ -32,8 +33,8 @@ async def create_monitor(project_id: uuid.UUID, monitor: MonitorCreate, session:
     session.refresh(new_monitor)
 
     # Schedule the first check for the monitor
-    task_id = await schedule_monitor_check.delay(new_monitor.id, new_monitor.check_interval)
-    new_monitor.task_id = task_id
+    task_result = schedule_monitor_check.delay(new_monitor.id, new_monitor.check_interval)
+    new_monitor.task_id = task_result.id
 
     session.commit()
     session.refresh(new_monitor)
