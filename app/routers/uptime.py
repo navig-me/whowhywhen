@@ -16,7 +16,7 @@ from app.tasks import schedule_monitor_check
 router = APIRouter()
 
 @router.post("/projects/{project_id}/monitors", response_model=UptimeMonitor)
-def create_monitor(project_id: uuid.UUID, monitor: MonitorCreate, session: Session = Depends(get_session)):
+async def create_monitor(project_id: uuid.UUID, monitor: MonitorCreate, session: Session = Depends(get_session)):
     project = session.get(UserProject, project_id)
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
@@ -32,7 +32,7 @@ def create_monitor(project_id: uuid.UUID, monitor: MonitorCreate, session: Sessi
     session.refresh(new_monitor)
 
     # Schedule the first check for the monitor
-    task_id = schedule_monitor_check.delay(new_monitor.id, new_monitor.check_interval)
+    task_id = await schedule_monitor_check.delay(new_monitor.id, new_monitor.check_interval)
     new_monitor.task_id = task_id
 
     session.commit()
