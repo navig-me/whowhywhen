@@ -101,6 +101,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.flower
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
     ports:
       - "5555:5555"
     networks:
