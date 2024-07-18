@@ -97,8 +97,8 @@ services:
       - app-network
 
   flower:
-    image: mher/flower:latest
-    command: ["flower", "--port=5555", "--broker=redis://redis:6379/0", "--basic_auth=user:password"]
+    image: mher/flower
+    command: ["celery", "-A", "app.tasks", "flower", "--loglevel=info", "--port=5555", "--broker=redis://redis:6379/0", "--basic_auth=user:password"]
     ports:
       - "5555:5555"
     networks:
