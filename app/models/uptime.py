@@ -28,7 +28,6 @@ class UptimeMonitor(SQLModel, table=True):
     created: datetime = Field(default_factory=datetime.now)
     modified: datetime = Field(default_factory=datetime.now)
     project_id: uuid.UUID = Field(foreign_key="userproject.id")
-    project: "UserProject" = Relationship(back_populates="monitors")
     status_history: List["UptimeMonitorStatus"] = Relationship(back_populates="monitor")
     alerts: List["Alert"] = Relationship(back_populates="monitor")
     task_id: Optional[uuid.UUID] = Field(default=None)

@@ -10,7 +10,7 @@ celery_app = Celery('tasks', broker='redis://localhost:6379/0', backend='redis:/
 @celery_app.task
 def check_monitor(monitor_id: str):
     session = next(get_session())
-    monitor = session.exec(select(UptimeMonitor).where(UptimeMonitor.id == monitor_id)).first()
+    monitor = session.get(UptimeMonitor, monitor_id)
     
     if not monitor:
         return
