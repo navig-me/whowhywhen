@@ -397,12 +397,12 @@
           <div class="time-range">
             <label for="time-range-select">Show:</label>
             <select id="time-range-select" on:change={handleTimeRangeChange}>
-              <option value="all">All</option>
               <option value="last_hour">Last Hour</option>
               <option value="last_24_hours">Last 24 Hours</option>
               <option value="last_7_days">Last 7 Days</option>
               <option value="last_30_days">Last 30 Days</option>
               <option value="last_90_days">Last 90 Days</option>
+              <option value="all">All</option>
             </select>
           </div>
           <div class="selected-filters">
