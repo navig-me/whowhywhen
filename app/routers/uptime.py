@@ -15,7 +15,7 @@ from app.tasks import schedule_monitor_check
 
 router = APIRouter()
 
-@router.post("/projects/{project_id}/monitors/", response_model=UptimeMonitor)
+@router.post("/projects/{project_id}/monitors", response_model=UptimeMonitor)
 def create_monitor(project_id: uuid.UUID, monitor: MonitorCreate, session: Session = Depends(get_session)):
     project = session.get(UserProject, project_id)
     if not project:
@@ -40,7 +40,7 @@ def create_monitor(project_id: uuid.UUID, monitor: MonitorCreate, session: Sessi
 
     return new_monitor
 
-@router.get("/projects/{project_id}/monitors/", response_model=List[UptimeMonitor])
+@router.get("/projects/{project_id}/monitors", response_model=List[UptimeMonitor])
 def get_monitors(project_id: uuid.UUID, session: Session = Depends(get_session)):
     project = session.get(UserProject, project_id)
     if not project:

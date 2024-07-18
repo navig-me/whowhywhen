@@ -33,7 +33,7 @@
   let isTableLoading = false;
   let isChartLoading = false;
   let isPieChartLoading = true;
-  let selectedTimeRange = 'all';
+  let selectedTimeRange = 'last_24_hours';
 
   const dispatch = createEventDispatcher();
 
