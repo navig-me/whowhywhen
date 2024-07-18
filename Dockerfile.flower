@@ -1,0 +1,18 @@
+FROM python:3.9
+
+WORKDIR /
+
+# Copy the requirements file
+COPY ./requirements.txt /
+
+# Install the dependencies
+RUN pip install -r requirements.txt
+
+# Copy the application code
+COPY ./app /app
+
+# Expose the Flower port
+EXPOSE 5555
+
+# Start Flower
+CMD ["celery", "-A", "app.tasks", "flower", "--loglevel=info", "--port=5555", "--broker=redis://redis:6379/0", "--basic_auth=user:password"]
