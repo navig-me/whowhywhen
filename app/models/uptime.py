@@ -53,7 +53,6 @@ class Alert(SQLModel, table=True):
     monitor_id: uuid.UUID = Field(foreign_key="uptimemonitor.id")
     monitor: "UptimeMonitor" = Relationship(back_populates="alerts")
     user_id: uuid.UUID = Field(foreign_key="user.id")
-    user: "User" = Relationship(back_populates="alerts")
     type: AlertType = Field(default=AlertType.email)
     threshold: int = Field(default=1)  # number of failures before alerting
     created: datetime = Field(default_factory=datetime.now)
