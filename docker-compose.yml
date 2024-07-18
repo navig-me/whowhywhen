@@ -28,6 +28,8 @@ services:
       dockerfile: Dockerfile.dash
     environment:
       - DATABASE_URL=postgresql://postgres:secrect@142.93.220.56:5432/wwwdb
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
     deploy:
       replicas: 1
       restart_policy:
