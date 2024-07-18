@@ -11,8 +11,8 @@ docker service rm www_stack_svelte
 docker service rm www_stack_traefik
 docker service rm www_stack_celery
 docker service rm www_stack_celery_beat
-docker service rm www_stack_redis
-docker service rm www_stack_flower
+# docker service rm www_stack_redis
+# docker service rm www_stack_flower
 
 # Deploy the updated stack
 docker stack deploy -c docker-compose.yml www_stack
