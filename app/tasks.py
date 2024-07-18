@@ -5,6 +5,8 @@ from sqlmodel import Session, select
 from app.database import get_session
 from app.models.uptime import UptimeMonitor, UptimeMonitorStatus, MonitorStatus, MonitorType
 from app.models.user import User, UserProject
+from app.models.apikey import *
+from app.models.apilog import *
 
 celery_app = Celery('tasks', broker='redis://localhost:6379/0', backend='redis://localhost:6379/0')
 
