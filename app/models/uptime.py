@@ -1,6 +1,5 @@
 from sqlmodel import SQLModel, Field, Relationship
-from typing import Optional, List, Dict
-from pydantic import EmailStr
+from typing import Optional, List
 from datetime import datetime
 import enum
 import uuid
@@ -37,8 +36,8 @@ class UptimeMonitor(SQLModel, table=True):
 class UptimeMonitorStatus(SQLModel, table=True):
     id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
     monitor_id: uuid.UUID = Field(foreign_key="uptimemonitor.id")
-    monitor: UptimeMonitor = Relationship(back_populates="status_history")
-    status: MonitorStatus = Field(default=MonitorStatus.unknown)
+    monitor: "UptimeMonitor" = Relationship(back_populates="status_history")
+    status: "MonitorStatus" = Field(default=MonitorStatus.unknown)
     response_time: Optional[float] = Field(default=None)
     response_code: Optional[int] = Field(default=None)
     response_code_text: Optional[str] = Field(default=None)
@@ -53,7 +52,7 @@ class AlertType(enum.Enum):
 class Alert(SQLModel, table=True):
     id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
     monitor_id: uuid.UUID = Field(foreign_key="uptimemonitor.id")
-    monitor: UptimeMonitor = Relationship(back_populates="alerts")
+    monitor: "UptimeMonitor" = Relationship(back_populates="alerts")
     user_id: uuid.UUID = Field(foreign_key="user.id")
     user: "User" = Relationship(back_populates="alerts")
     type: AlertType = Field(default=AlertType.email)
@@ -65,7 +64,7 @@ class Alert(SQLModel, table=True):
 class AlertStatus(SQLModel, table=True):
     id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
     alert_id: uuid.UUID = Field(foreign_key="alert.id")
-    alert: Alert = Relationship(back_populates="status_history")
+    alert: "Alert" = Relationship(back_populates="status_history")
     status: MonitorStatus = Field(default=MonitorStatus.unknown)
     response_time: Optional[float] = Field(default=None)
     response_code: Optional[int] = Field(default=None)

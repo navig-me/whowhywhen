@@ -10,7 +10,6 @@ class SubscriptionPlan(enum.Enum):
     starter = "starter"
     pro = "pro"
 
-
 class User(SQLModel, table=True):
     id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
     name: str = Field(index=True)
