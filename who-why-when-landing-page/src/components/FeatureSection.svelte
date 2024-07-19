@@ -40,9 +40,6 @@
 </script>
 
 <section class="feature-section">
-	<div class="parallax">
-		<div class="overlay"></div>
-	</div>
 	<div class="container">
 		<h2>Powerful Features</h2>
 		<p>Built by developers, for developers. </p>
@@ -77,29 +74,6 @@
 	overflow: hidden;
 	color: #333;
 	padding: 100px 20px;
-}
-
-.parallax {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	background: url('/background1.png') no-repeat center center/cover;
-	background-attachment: fixed;
-	background-position: center;
-	background-repeat: no-repeat;
-	background-size: cover;
-	z-index: -1;
-}
-
-.overlay {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	background-color: rgba(0, 0, 0, 0.8); /* Dark overlay */
 }
 
 .container {

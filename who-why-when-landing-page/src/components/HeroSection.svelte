@@ -7,41 +7,24 @@
 </script>
   
 <section class="hero-section">
-	<div class="overlay">
-		<div class="container">
-			<h2><span class="supercharge">Supercharge</span> Your APIs</h2>
-			<p>Unlock detailed insights, optimize resources, and take control of your API performance with lightweight and flexible analytics.</p>
-			<button class="btn-primary" on:click={() => changeView('register')}>Get Started</button>
-		</div>
+	<div class="container">
+		<h2><span class="supercharge">Supercharge</span> Your APIs</h2>
+		<p>Unlock detailed insights, optimize resources, and take control of your API performance with lightweight and flexible analytics.</p>
+		<button class="btn-primary" on:click={() => changeView('register')}>Get Started</button>
 	</div>
 </section>
   
 <style>
 .hero-section {
 	position: relative;
-	background: url('/wordcloud.png') no-repeat center center/cover;
+	/* background: url('/supercharge.jpg') no-repeat center center/cover; */
 	color: #fff;
 	padding: 200px 20px;
 	text-align: center;
-	overflow: hidden;
-	background-attachment: fixed;
-	background-position: center;
-	background-repeat: no-repeat;
-	background-size: cover;
-	background-blend-mode: overlay;
-}
-
-.overlay {
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	background: rgba(0, 0, 0, 0.6); /* Darker overlay for better text visibility */
 	display: flex;
-	align-items: center;
 	justify-content: center;
-	height: 100%; /* Ensures overlay covers the entire section */
+	align-items: center;
+	flex-direction: column;
 }
 
 .container {
@@ -50,6 +33,10 @@
 	max-width: 800px;
 	padding: 0 20px;
 	animation: fadeIn 1.5s ease-in-out;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
 }
 
 .hero-section h2 {
