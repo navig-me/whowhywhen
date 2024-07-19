@@ -19,7 +19,7 @@
 	position: relative;
 	/* background: url('/supercharge.jpg') no-repeat center center/cover; */
 	color: #fff;
-	padding: 200px 20px;
+	padding: 180px 20px;
 	text-align: center;
 	display: flex;
 	justify-content: center;

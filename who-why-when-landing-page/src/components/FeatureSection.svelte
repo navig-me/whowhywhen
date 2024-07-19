@@ -73,7 +73,7 @@
 	position: relative;
 	overflow: hidden;
 	color: #333;
-	padding: 100px 20px;
+	padding: 50px 20px;
 }
 
 .container {
