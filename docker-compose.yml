@@ -9,7 +9,7 @@ services:
     environment:
       - DATABASE_URL=postgresql://postgres:secrect@142.93.220.56:5432/wwwdb
     deploy:
-      replicas: 1
+      replicas: 2
       restart_policy:
         condition: on-failure
     networks:
@@ -76,48 +76,48 @@ services:
     networks:
       - app-network
 
-  celery:
-    image: backend_celery
-    build:
-      context: .
-      dockerfile: Dockerfile.celery
-    environment:
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
-    networks:
-      - app-network
+  # celery:
+  #   image: backend_celery
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.celery
+  #   environment:
+  #     - CELERY_BROKER_URL=redis://redis:6379/0
+  #     - CELERY_RESULT_BACKEND=redis://redis:6379/0
+  #   networks:
+  #     - app-network
 
-  celery_beat:
-    image: backend_celery_beat
-    build:
-      context: .
-      dockerfile: Dockerfile.celery_beat
-    environment:
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
-    networks:
-      - app-network
+  # celery_beat:
+  #   image: backend_celery_beat
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.celery_beat
+  #   environment:
+  #     - CELERY_BROKER_URL=redis://redis:6379/0
+  #     - CELERY_RESULT_BACKEND=redis://redis:6379/0
+  #   networks:
+  #     - app-network
 
-  flower:
-    image: backend_flower
-    build:
-      context: .
-      dockerfile: Dockerfile.flower
-    environment:
-      - CELERY_BROKER_URL=redis://redis:6379/0
-    ports:
-      - "5555:5555"
-    networks:
-      - app-network
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.flower.rule=Host(`flower.whowhywhen.com`)"
-      - "traefik.http.services.flower.loadbalancer.server.port=5555"
+  # flower:
+  #   image: backend_flower
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.flower
+  #   environment:
+  #     - CELERY_BROKER_URL=redis://redis:6379/0
+  #   ports:
+  #     - "5555:5555"
+  #   networks:
+  #     - app-network
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.flower.rule=Host(`flower.whowhywhen.com`)"
+  #     - "traefik.http.services.flower.loadbalancer.server.port=5555"
 
-  redis:
-    image: redis:alpine
-    networks:
-      - app-network
+  # redis:
+  #   image: redis:alpine
+  #   networks:
+  #     - app-network
 
 networks:
   app-network:

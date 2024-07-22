@@ -187,7 +187,7 @@
         <div class="project-actions">
         <button class="btn-primary" on:click={() => fetchApiKeys(project.id)}>View API Keys</button>
         <Link to="/dashboard" class="btn-secondary" on:click={() => handleProjectSelection(project.id)}>View Dashboard</Link>
-        <Link to="/uptime-monitors" class="btn-secondary" on:click={() => handleProjectSelection(project.id)}>View Uptime Monitors</Link>
+        <!-- <Link to="/uptime-monitors" class="btn-secondary" on:click={() => handleProjectSelection(project.id)}>View Uptime Monitors</Link> -->
         </div>
     </li>
     {/each}
