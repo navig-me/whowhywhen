@@ -8,6 +8,7 @@ import requests
 from app.services.stripe_service import create_stripe_customer, FREE_PLAN_LIMIT, STARTER_PLAN_LIMIT, PAID_PLAN_LIMIT
 import uuid
 import pyotp
+from app.services.email_service import send_welcome_email
 
 
 def verify_turnstile_token(token: str, secret_key: str):
@@ -51,6 +52,8 @@ def create_user(session: Session, user: UserCreate) -> User:
     session.add(default_project)
     session.commit()
 
+    send_welcome_email(db_user.email, db_user.name)
+    
     return db_user
 
 

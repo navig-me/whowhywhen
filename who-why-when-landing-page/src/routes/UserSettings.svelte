@@ -150,7 +150,7 @@
           {#if user.subscription_plan !== 'pro'}
             <a href={upgradeLink} class="btn-upgrade" target="_blank" rel="noopener noreferrer">Upgrade to {getNextPlan(user.subscription_plan).toUpperCase()}</a>
           {:else}
-            <a href="mailto:upgrade@whowhywhen.com" class="btn-upgrade">Contact to Upgrade</a>
+            <a href="mailto:support@whowhywhen.com" class="btn-upgrade">Contact to Upgrade</a>
           {/if}
           {#if user.subscription_plan !== 'free'}
             <a href={customerPortalLink} class="btn-customerportal" target="_blank" rel="noopener noreferrer">Manage Subscription</a>

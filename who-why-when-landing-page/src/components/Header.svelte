@@ -117,7 +117,7 @@
                 {#if user.subscription_plan !== 'pro'}
                   <a class="upgrade-button" href={upgradeLink} target="_blank" rel="noopener noreferrer">Upgrade</a>
                 {:else}
-                  <a class="upgrade-button" href="mailto:upgrade@whowhywhen.com">Contact to Upgrade</a>
+                  <a class="upgrade-button" href="mailto:support@whowhywhen.com">Contact to Upgrade</a>
                 {/if}
               </div>
             </div>
