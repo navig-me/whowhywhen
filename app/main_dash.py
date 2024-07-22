@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Request, BackgroundTasks
 from app.database import create_db_and_tables, get_session
-from app.routers import auth, apikey, apilog, botinfo, uptime
+from app.routers import auth, apikey, apilog, botinfo
 from app.models.user import User
 from app.models.apilog import APILog, APILogQueryParam
 from fastapi.middleware.cors import CORSMiddleware
@@ -134,4 +134,3 @@ app.include_router(auth.router, prefix="/dashauth", tags=["auth"])
 app.include_router(apikey.router, prefix="/dashapi", tags=["apikey"])
 app.include_router(apilog.router_dash, prefix="/dashapi", tags=["apilog"])
 app.include_router(botinfo.router, prefix="/dashapi", tags=["botinfo"])
-app.include_router(uptime.router, prefix="/dashapi", tags=["uptime"])

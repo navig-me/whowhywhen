@@ -15,7 +15,6 @@
 		"What browsers do my users use?", 
 		"Who uses my API the most?", 
 		"What time of day is busiest?", 
-		"Why is uptime important?", 
 		"When do I get the most errors?", 
 		"What is the average response time?", 
 		"Why monitor API performance?", 
@@ -25,7 +24,8 @@
 		"Why do I need real-time analytics?", 
 		"What endpoints are most popular?", 
 		"Why track API usage?", 
-		"Where can I optimize performance?"
+		"Where can I optimize performance?",
+		"How can I improve my APIs?"
 	];
 
 </script>

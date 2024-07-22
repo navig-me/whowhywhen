@@ -8,7 +8,6 @@
 	import Dashboard from './routes/Dashboard.svelte';
 	import Projects from './routes/Projects.svelte';
 	import UserSettings from './routes/UserSettings.svelte';
-	import UptimeMonitor from './routes/UptimeMonitor.svelte';
 	import { isLoggedIn } from './stores/userStore';
 	import { onMount } from 'svelte';
 
@@ -38,7 +37,6 @@
 	<Route path="/dashboard" component={Dashboard} />
 	<Route path="/projects" component={Projects} />
 	<Route path="/user-settings" component={UserSettings} />
-	<Route path="/uptime-monitors" component={UptimeMonitor} />
 	{#if !loggedIn}
 		<Footer />
 	{/if}
