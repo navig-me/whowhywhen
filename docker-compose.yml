@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: Dockerfile.api
     environment:
-      - DATABASE_URL=postgresql://postgres:secrect@142.93.220.56:5432/wwwdb
+      - DATABASE_URL=postgresql://doadmin:AVNS_OE93j-tOF5jRFWeEC37@wwwcluster-do-user-9035471-0.f.db.ondigitalocean.com:25060/wwwdb?sslmode=require
     deploy:
       replicas: 2
       restart_policy:
@@ -27,7 +27,7 @@ services:
       context: .
       dockerfile: Dockerfile.dash
     environment:
-      - DATABASE_URL=postgresql://postgres:secrect@142.93.220.56:5432/wwwdb
+      - DATABASE_URL=postgresql://doadmin:AVNS_OE93j-tOF5jRFWeEC37@wwwcluster-do-user-9035471-0.f.db.ondigitalocean.com:25060/wwwdb?sslmode=require
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
     deploy:
