@@ -7,19 +7,20 @@
 			img: "/analytics.png"
 		},
 		{
+			title: "Track Bots and AI Scrapers",
+			description: "Track bots and AI Scrapers if you want to block them from accessing your data. WhoWhyWhen suggests robots.txt updates to block them.",
+			icon: "fas fa-robot",
+			img: "/bots.png"
+		},
+		{
 			title: "Performance Monitoring",
 			description: "Monitor the performance of your APIs and ensure they are meeting your SLAs.",
 			icon: "fas fa-tachometer-alt",
 			img: "/monitoring.png"
 		},
 		{
-			title: "Alerts and Notifications",
-			description: "Receive alerts and notifications when your APIs are under or over performance baselines.",
-			icon: "fas fa-bell"
-		},
-		{
 			title: "Customizable Reports",
-			description: "(Coming Soon) Generate detailed, customizable reports that provide insights into API usage trends, helping you optimize your services.",
+			description: "View detailed, customizable reports that provide insights into API usage trends, helping you optimize your services.",
 			icon: "fas fa-file-alt",
 			"img": "/reports.png"
 		},
@@ -132,6 +133,7 @@
 
 .feature-detail {
 	width: 68%;
+	height: 700px;
 	padding: 30px;
 	background: #fff;
 	border-radius: 10px;
@@ -162,7 +164,7 @@
 }
 
 .feature-detail img {
-	max-width: 100%;
+	max-width: 70%;
 	border-radius: 10px;
 	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }

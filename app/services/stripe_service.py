@@ -25,17 +25,14 @@ def get_user_subscription(current_user):
     if not customers:
         return SubscriptionPlan.free
     
-    print("Stripe customer found:", customers[0])
-
     customer_id = customers[0].id
     subscriptions = stripe.Subscription.list(customer=customer_id).data
 
-    print("Subscriptions:", subscriptions)
-
     for subscription in subscriptions:
+        print("###### Subscription plan:", subscription.plan)
+        print("###### Subscription status:", subscription.status)
         if subscription.status == 'active':
-            print("Subscription item:", subscription.plan)
-            if subscription.plan.id == STARTER_PLAN_ID:
+            if subscription.plan.id in STARTER_PLAN_ID:
                 return SubscriptionPlan.starter
             elif subscription.plan.id in PRO_PLAN_ID:
                 return SubscriptionPlan.pro

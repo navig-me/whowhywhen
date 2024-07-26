@@ -17,6 +17,7 @@
     let toastType = '';
     let showToast = false;
     let clientIp = '';
+    let userAgent = navigator.userAgent;
     let clientLocation = {};
     let showIntegrationSnippet = false;
     let selectedApiKey = '';
@@ -144,7 +145,7 @@
     }
 
     async function testApiKey(apiKey) {
-        const userAgent = navigator.userAgent;
+        
         const response = await fetch(`${API_BASE_URL}/api/log`, {
             method: 'POST',
             headers: {
@@ -165,6 +166,10 @@
         }
 
         // Generate the curl command
+        openCurlModal(apiKey, clientIp, userAgent);
+    }
+
+    async function openCurlModal(apiKey, clientIp, userAgent) {
         curlCommand = `curl -X POST ${API_BASE_URL}/api/log \\
 -H "Content-Type: application/json" \\
 -H "X-API-KEY: ${apiKey}" \\
@@ -259,7 +264,7 @@
                                 <a href="javascript:void(0);" class="btn-secondary" on:click={() => key.show = !key.show}>{key.show ? 'Hide' : 'Show'}</a>
                                 <a href="javascript:void(0);" class="btn-secondary" on:click={() => testApiKey(key.key)}>Test API</a>
                                 <a href="javascript:void(0);" class="btn-secondary" on:click={() => showIntegrationSnippetModal(key.key)}>Integrate</a>
-                                <a href="javascript:void(0);" class="btn-secondary" on:click={() => showCurlModal = true}>Show cURL Command</a>
+                                <a href="javascript:void(0);" class="btn-secondary" on:click={() => openCurlModal(key.key, clientIp, userAgent)}>Show cURL Command</a>
                             </div>
                         </li>
                     {/each}
@@ -283,7 +288,7 @@
         <div class="modal">
             <div class="modal-content wide">
                 <span class="close" on:click={closeCurlModal}>&times;</span>
-                <h3>Curl Command</h3>
+                <h3>cURL Command</h3>
                 <pre>{curlCommand}</pre>
                 <a href="javascript:void(0);" class="btn-primary" on:click={closeCurlModal}>Close</a>
             </div>

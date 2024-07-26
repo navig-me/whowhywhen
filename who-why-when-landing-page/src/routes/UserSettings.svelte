@@ -56,7 +56,7 @@
     });
     if (response.ok) {
       const data = await response.json();
-      return data.url || '';
+      return data || '';
     }
     return '';
   }
@@ -161,7 +161,7 @@
           <p><strong>Name:</strong> {user.name}</p>
           <p><strong>Email:</strong> {user.email}</p>
         </div>
-        <button class="btn-primary change-password" on:click={openChangePasswordPopup}>Change Password</button>
+        <button class="btn-primary" on:click={openChangePasswordPopup}>Change Password</button>
       </div>
       <div class="plan-info">
         <h3>Subscription Plan</h3>
@@ -169,17 +169,17 @@
         <p><strong>Requests Used:</strong> {userRequestCount}/{user.monthly_credit_limit}</p>
         <p><strong>Plan Renews In:</strong> {daysUntilRenewal} days</p>
         {#if user.subscription_plan !== 'pro'}
-          <a href={upgradeLink} class="btn-upgrade" target="_blank" rel="noopener noreferrer">Upgrade to {getNextPlan(user.subscription_plan).toUpperCase()}</a>
+          <a href={upgradeLink} class="btn-primary" target="_blank" rel="noopener noreferrer">Upgrade to {getNextPlan(user.subscription_plan).toUpperCase()}</a>
         {:else}
-          <a href="mailto:support@whowhywhen.com" class="btn-upgrade">Contact to Upgrade</a>
+          <a href="mailto:support@whowhywhen.com" class="btn-primary">Contact to Upgrade</a>
         {/if}
         {#if user.subscription_plan !== 'free'}
-          <a href={customerPortalLink} class="btn-customerportal" target="_blank" rel="noopener noreferrer">Manage Subscription</a>
+          <a href={customerPortalLink} class="btn-primary" target="_blank" rel="noopener noreferrer">Manage Subscription</a>
         {/if}
         {#if !user.two_factor_enabled}
-          <button class="btn-primary enable-2fa" on:click={enable2FA}>Enable 2FA</button>
+          <button class="btn-primary" on:click={enable2FA}>Enable 2FA</button>
         {:else}
-          <button class="btn-primary disable-2fa" on:click={disable2FA}>Disable 2FA</button>
+          <button class="btn-primary" on:click={disable2FA}>Disable 2FA</button>
         {/if}
       </div>
     </div>
@@ -238,10 +238,10 @@ h2 {
   color: #555;
 }
 
-.btn-primary, .btn-upgrade, .btn-customerportal {
+.btn-primary {
   display: inline-block;
   background-color: #663399;
-  color: #fff;
+  color: #fff !important;
   padding: 12px 20px;
   border: none;
   border-radius: 5px;
@@ -250,38 +250,12 @@ h2 {
   transition: background-color 0.3s, box-shadow 0.3s;
   text-decoration: none;
   text-align: center;
-}
-
-.btn-primary:hover, .btn-upgrade:hover, .btn-customerportal:hover {
-  background-color: #552288;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-.btn-upgrade {
-  background-color: #ff4500;
-  color: #fff !important;
-}
-
-.btn-upgrade:hover {
-  background-color: #ff6347;
-}
-
-.btn-customerportal {
-  background-color: #00aaff;
   margin-top: 10px;
 }
 
-.btn-customerportal:hover {
-  background-color: #0099cc;
-}
-
-.change-password {
-  margin-top: 20px;
-  background-color: #ff4500;
-}
-
-.change-password:hover {
-  background-color: #ff6347;
+.btn-primary:hover {
+  background-color: #552288;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .plan-info h3 {
