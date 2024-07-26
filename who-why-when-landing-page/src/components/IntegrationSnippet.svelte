@@ -8,7 +8,7 @@
 
     const snippets = {
         FastAPI: {
-            description: `WhoWhyWhen can be integrated as a middleware in your FastAPI application. To ensure no increase latency, the tasks related to WhoWhyWhere are done in the background asynchronously, ensuring that your API performance is not hindered.`,
+            description: `Integrate WhoWhyWhen as a middleware in your FastAPI application. Tasks related to WhoWhyWhen are done asynchronously in the background, ensuring minimal latency impact on your API performance.`,
             code: `
 from fastapi import FastAPI, Request
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -290,7 +290,7 @@ app.listen(3000, () => {
         <div class="code-container">
             <pre>{snippets[selectedLanguage].code}</pre>
         </div>
-        <button class="btn-copy" on:click={copyToClipboard}>Copy</button>
+        <button class="btn-copy" on:click={copyToClipboard}>Copy to Clipboard</button>
     </div>
 </div>
 
@@ -304,25 +304,25 @@ app.listen(3000, () => {
         width: 100%;
         height: 100%;
         overflow: auto;
-        background-color: rgba(0, 0, 0, 0.5);
+        background-color: rgba(0, 0, 0, 0.6);
     }
 
     .modal-content {
         background-color: #fff;
-        margin: 10% auto;
-        padding: 30px;
+        margin: 5% auto;
+        padding: 20px;
         border: 1px solid #888;
         width: 80%;
         max-width: 600px;
-        border-radius: 10px;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         position: relative;
     }
 
     .close {
         color: #aaa;
         position: absolute;
-        top: 15px;
+        top: 10px;
         right: 20px;
         font-size: 28px;
         font-weight: bold;
@@ -330,13 +330,14 @@ app.listen(3000, () => {
     }
 
     .close:hover, .close:focus {
-        color: black;
+        color: #000;
         text-decoration: none;
+        cursor: pointer;
     }
 
     .code-container {
-        background: #f5f5f5;
-        padding: 10px;
+        background: #f4f4f4;
+        padding: 15px;
         border-radius: 5px;
         white-space: pre-wrap;
         word-wrap: break-word;
@@ -344,6 +345,7 @@ app.listen(3000, () => {
         max-height: 300px;
         overflow-y: auto;
         text-align: left;
+        font-family: monospace;
     }
 
     pre {
@@ -354,6 +356,7 @@ app.listen(3000, () => {
         margin: 10px 0;
         padding: 10px;
         font-size: 1rem;
+        width: 100%;
     }
 
     .btn-copy {
@@ -365,9 +368,24 @@ app.listen(3000, () => {
         cursor: pointer;
         transition: background-color 0.3s ease;
         margin-top: 10px;
+        display: block;
+        width: 100%;
+        font-size: 1rem;
+        text-align: center;
     }
 
     .btn-copy:hover {
         background-color: #7d42a6;
+    }
+
+    h3 {
+        margin-bottom: 10px;
+        color: #333;
+    }
+
+    p {
+        color: #555;
+        font-size: 1rem;
+        margin-bottom: 20px;
     }
 </style>

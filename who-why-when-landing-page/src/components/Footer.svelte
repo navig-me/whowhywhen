@@ -15,4 +15,8 @@
       padding: 20px 0;
       text-align: center;
   }
+  .footer a {
+    color: #fff !important;
+    text-decoration: underline;
+  }
 </style>

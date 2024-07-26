@@ -1,4 +1,4 @@
-from sqlmodel import Session, select
+from sqlmodel import Session
 from app.models.apikey import APIKey
 from uuid import uuid4
 from fastapi import HTTPException

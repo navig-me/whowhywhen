@@ -1,9 +1,8 @@
 from sqlmodel import Session, select
 from app.models.apilog import APILog, APILogQueryParam
 from app.schemas.apilog import APILogCreate, APILogSearch
-from app.crud.user import User
 from datetime import datetime, timedelta
-from sqlalchemy import select, func, extract, case
+from sqlalchemy import select, func, case
 from typing import List, Optional
 from sqlmodel import or_
 import uuid

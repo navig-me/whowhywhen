@@ -25,6 +25,15 @@ def send_welcome_email(email, name):
     # Send the email
     send_email(email, "Welcome to WhoWhyWhen", html)
 
+def send_new_user_notification_email(email, name):
+    to = 'mihirkhandekar@gmail.com'
+    # Create HTML content
+    html = f"""
+    New user registered: {name} ({email})
+    """
+    # Send the email
+    send_email(to, "WhoWhyWhen | New User Registered", html)
+
 def send_password_reset_email(email):
     # Load the HTML template
     with open(f"{TEMPLATES_DIR}/password_reset_email.html", "r") as f:

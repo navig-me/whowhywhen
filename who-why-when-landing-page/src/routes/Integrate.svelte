@@ -131,19 +131,14 @@ backend mybackend
 
 <div class="integrate-page">
     <h2>Integrate WhoWhyWhen with Your APIs</h2>
-    <p>Follow these detailed steps to integrate WhoWhyWhen analytics into your APIs:</p>
+    <p>Follow these steps to integrate WhoWhyWhen analytics into your APIs:</p>
     <ol>
         <li>Go to <Link to="/projects">your projects</Link> and create a new project or view an existing project that you want to enable analytics for.</li>
         <li>Click on "View API Keys" and either copy the API Key or create a new one.</li>
         <li>
             Add a middleware to your application to send logs to the URL 
-            
             <code>https://api.whowhywhen.com/api/log</code> 
-            
-            with the appropriate headers and request body. 
-            It is recommended to do this asynchronously to ensure that it does not affect the performance and latency of your application, and to handle all errors gracefully. 
-            The middleware should capture details of each request, including the URL, IP address, user agent, response code, and response time. 
-            The following request body parameters are required:
+            with the appropriate headers and request body. It is recommended to do this asynchronously to ensure that it does not affect the performance and latency of your application, and to handle all errors gracefully. The middleware should capture details of each request, including the URL, IP address, user agent, response code, and response time. The following request body parameters are required:
             <ol>
                 <li>url: The URL of the request.</li>
                 <li>ip_address: The IP address of the request.</li>
@@ -151,7 +146,6 @@ backend mybackend
                 <li>response_code: The response code of the request.</li>
                 <li>response_time: The response time of the request in milliseconds.</li>
             </ol>
-            
             The middleware should make a POST request with this data to the WhoWhyWhen API.
         </li>
         <li>If you are using a reverse proxy, ensure that the middleware is configured correctly to capture and forward the required headers and body.</li>
@@ -173,7 +167,7 @@ backend mybackend
             <h4>{selectedProxy} Configuration</h4>
             <p>{proxyConfigDescription}</p>
             <pre>{proxyConfigSnippet}</pre>
-            <button class="btn-copy" on:click={() => copyToClipboard(proxyConfigSnippet)}>Copy</button>
+            <button class="btn-copy" on:click={() => copyToClipboard(proxyConfigSnippet)}>Copy to Clipboard</button>
         </div>
     {/if}
 </div>
@@ -187,7 +181,7 @@ backend mybackend
         padding: 40px 20px;
         max-width: 900px;
         margin: 0 auto;
-        background-color: #f9f9f9;
+        background-color: #ffffff;
         border-radius: 10px;
         box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
         text-align: left;
@@ -223,23 +217,35 @@ backend mybackend
         background-color: #7d42a6;
     }
 
-    code, pre {
-        background: #f5f5f5;
+    code {
+        background: #f4f4f4;
         padding: 5px;
         border-radius: 3px;
-        display: block;
+        display: inline-block;
+        margin: 0 3px;
+    }
+
+    pre {
+        background: #f4f4f4;
+        padding: 15px;
+        border-radius: 5px;
+        white-space: pre-wrap;
+        word-wrap: break-word;
         overflow-x: auto;
+        margin: 10px 0;
+        max-height: 300px;
     }
 
     select {
         margin: 20px 0;
         padding: 10px;
         font-size: 1rem;
+        width: 100%;
     }
 
     .proxy-config {
         text-align: left;
-        background: #fff;
+        background: #f9f9f9;
         padding: 20px;
         border-radius: 5px;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);

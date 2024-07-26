@@ -94,7 +94,7 @@
 
 <header class="header">
   <div class="container">
-    <h1 on:click={() => changeView('')}>WhoWhyWhen</h1>
+    <h1 on:click={() => changeView('/')}>WhoWhyWhen</h1>
     <nav>
       <div class="menu-toggle" on:click={() => menuOpen = !menuOpen}>
         <div class="bar"></div>

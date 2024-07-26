@@ -3,12 +3,11 @@ from sqlmodel import Session, select
 from app.models.user import User, UserProject
 from app.schemas.user import UserCreate
 import bcrypt
-from datetime import datetime, timedelta
 import requests
-from app.services.stripe_service import create_stripe_customer, FREE_PLAN_LIMIT, STARTER_PLAN_LIMIT, PAID_PLAN_LIMIT
+from app.services.stripe_service import create_stripe_customer
 import uuid
 import pyotp
-from app.services.email_service import send_welcome_email
+from app.services.email_service import send_welcome_email, send_new_user_notification_email
 
 
 def verify_turnstile_token(token: str, secret_key: str):
@@ -53,6 +52,7 @@ def create_user(session: Session, user: UserCreate) -> User:
     session.commit()
 
     send_welcome_email(db_user.email, db_user.name)
+    send_new_user_notification_email(db_user.email, db_user.name)
     
     return db_user
 

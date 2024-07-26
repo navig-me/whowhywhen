@@ -1,55 +1,64 @@
+import asyncio
+import uuid
+import logging
+from datetime import datetime, timedelta
+
 from fastapi import FastAPI, Request, BackgroundTasks
+from starlette.middleware.base import BaseHTTPMiddleware
+from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
+
 from app.database import create_db_and_tables, get_session
 from app.routers import auth, apikey, apilog, botinfo
 from app.models.user import User
-from app.models.apilog import APILog, APILogQueryParam
-from fastapi.middleware.cors import CORSMiddleware
-from starlette.middleware.base import BaseHTTPMiddleware
-from datetime import datetime, timedelta
-from contextlib import asynccontextmanager
-from fastapi_utils.tasks import repeat_every
-from app.crud.apilog import get_geolocation, get_url_components, create_apilog
-import uuid
-import logging
+from app.models.apilog import APILog
+from app.crud.apilog import create_apilog
 
 logger = logging.getLogger(__name__)
 
+async def check_monthly_credit_limit():
+    while True:
+        print("Checking monthly credit limit...")
+        db = next(get_session())
+        try:
+            for user in db.query(User).all():
+                print(f"Checking user {user.email}...")
+                total_requests_count = 0
+                for project in user.projects:
+                    total_requests_count += db.query(APILog).filter(
+                        APILog.user_project_id == project.id,
+                        APILog.created_at >= user.monthly_credit_limit_reset
+                    ).count()
+                print(f"Total requests count: {total_requests_count}")
+                print(f"Monthly credit limit: {user.monthly_credit_limit}")
+                if total_requests_count > user.monthly_credit_limit:
+                    user.monthly_credit_usage_crossed = True
+                if datetime.now() - user.monthly_credit_limit_reset > timedelta(days=30):
+                    user.monthly_credit_usage_crossed = False
+                    user.monthly_credit_limit_reset = datetime.now()
+                db.add(user)
+                db.commit()
+                db.refresh(user)
+        except Exception as e:
+            logger.error(f"Error in check_monthly_credit_limit: {e}")
+        finally:
+            db.close()
+        await asyncio.sleep(600)
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    create_db_and_tables()
+    create_db_and_tables()  # Ensure this is uncommented if you want to create DB and tables on startup
     app.state.db = next(get_session())
-
-    @repeat_every(seconds=3600)
-    async def check_monthly_credit_limit():
-        print("Checking monthly credit limit...")
-        db = app.state.db
-        for user in db.query(User).all():
-            print(f"Checking user {user.email}...")
-            total_requests_count = 0
-            for project in user.projects:
-                total_requests_count += db.query(APILog).filter(APILog.user_project_id == project.id, APILog.created_at >= user.monthly_credit_limit_reset).count()
-            print(f"Total requests count: {total_requests_count}")
-            print(f"Monthly credit limit: {user.monthly_credit_limit}")
-            if total_requests_count > user.monthly_credit_limit:
-                user.monthly_credit_usage_crossed = True
-            if datetime.now() - user.monthly_credit_limit_reset > timedelta(days=30):
-                user.monthly_credit_usage_crossed = False
-                user.monthly_credit_limit_reset = datetime.now()
-            db.add(user)
-            db.commit()
-            db.refresh(user)
-
-    app.state.check_monthly_credit_limit_task = check_monthly_credit_limit()
-
+    task = asyncio.create_task(check_monthly_credit_limit())
     yield
-
+    task.cancel()
     app.state.db.close()
 
 app = FastAPI(
     title="WhoWhyWhen Dashboard",
     description="Dashboard for WhoWhyWhen",
     version="0.1.0",
-    docs_url='/docsnonpublic',
+    docs_url=None,
     redoc_url=None,
     lifespan=lifespan
 )

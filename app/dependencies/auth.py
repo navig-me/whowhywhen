@@ -4,7 +4,6 @@ from jose import JWTError, jwt
 from sqlmodel import Session
 from app.config import SECRET_KEY, ALGORITHM
 from app.database import get_session
-from app.models.user import User
 from app.crud.user import get_user_by_email
 import bcrypt
 

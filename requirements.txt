@@ -9,7 +9,8 @@ python-dotenv
 python-jose
 psycopg2
 httpx
-fastapi-utils
+# fastapi-utils
+greenlet
 typing_inspect
 user-agents
 pyotp
