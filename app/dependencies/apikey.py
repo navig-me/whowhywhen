@@ -28,5 +28,5 @@ def get_api_key(api_key_header: str = Security(api_key_header), session: Session
     user = session.exec(select(User).where(User.id == user_project.user_id)).first()
     print("User", user)
     if user.monthly_credit_usage_crossed:
-        raise HTTPException(status_code=403, detail="Monthly credit limit exceeded")
+        raise HTTPException(status_code=402, detail="Monthly credit limit exceeded")
     return user_project
