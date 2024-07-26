@@ -1,6 +1,6 @@
 <script>
   import { createEventDispatcher } from 'svelte';
-  import { currentView } from '../stores/viewStore';
+  import { navigate } from 'svelte-routing';
   import { setToken } from '../stores/userStore';
   import Toast from '../components/Toast.svelte';
   import { DASH_API_BASE_URL } from '../config';
@@ -36,7 +36,7 @@
         gtag('event', 'login', { method: 'Password' });
         showToast('Login successful!', 'success');
         setTimeout(() => {
-          currentView.set('dashboard');
+          navigate('/dashboard');
         }, 1500); // Add a slight delay before redirecting
       }
     } else {
@@ -68,7 +68,7 @@
       gtag('event', 'login', { method: '2FA' });
       showToast('Login successful!', 'success');
       setTimeout(() => {
-        currentView.set('dashboard');
+        navigate('/dashboard');
       }, 1500); // Add a slight delay before redirecting
     } else {
       showToast('2FA verification failed!', 'error');

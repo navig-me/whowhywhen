@@ -11,26 +11,26 @@
 	import UserSettings from './routes/UserSettings.svelte';
 	import { isLoggedIn } from './stores/userStore';
 	import { onMount } from 'svelte';
-
+  
 	let loggedIn = false;
-
+  
 	onMount(() => {
-		const token = localStorage.getItem('token');
-		if (token) {
-			isLoggedIn.set(true);
-			loggedIn = true;
-		} else {
-			isLoggedIn.set(false);
-			loggedIn = false;
-		}
+	  const token = localStorage.getItem('token');
+	  if (token) {
+		isLoggedIn.set(true);
+		loggedIn = true;
+	  } else {
+		isLoggedIn.set(false);
+		loggedIn = false;
+	  }
 	});
-</script>
-
-<style>
+  </script>
+  
+  <style>
 	@import './styles/global.css';
-</style>
-
-<Router>
+  </style>
+  
+  <Router>
 	<Header />
 	<Route path="/" component={Home} />
 	<Route path="/login" component={LoginComponent} />
@@ -40,6 +40,7 @@
 	<Route path="/integrate" component={Integrate} />
 	<Route path="/user-settings" component={UserSettings} />
 	{#if !loggedIn}
-		<Footer />
+	  <Footer />
 	{/if}
-</Router>
+  </Router>
+  

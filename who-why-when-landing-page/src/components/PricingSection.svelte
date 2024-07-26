@@ -1,8 +1,9 @@
 <script>
 	import { currentView } from '../stores/viewStore';
-  
+    import { navigate } from 'svelte-routing';
+
 	function changeView(view) {
-	  currentView.set(view);
+	  
 	}
 </script>
 
@@ -17,7 +18,7 @@
 				<p><i class="fas fa-check"></i> All Analytics</p>
 				<p><i class="fas fa-check"></i> Limited Alerts and Monitoring</p>
 				<p class="price">$0</p>
-				<button class="btn-primary" on:click={() => changeView('register')}>Get Started</button>
+				<button class="btn-primary" on:click={() => changeView('/register')}>Get Started</button>
 			</div>
 			<div class="plan best-value">
 				<h3>STARTER</h3>
@@ -25,7 +26,7 @@
 				<p><i class="fas fa-check"></i> All Analytics</p>
 				<p><i class="fas fa-check"></i> Enhanced Alerts and Monitoring</p>
 				<p class="price">$9</p>
-				<button class="btn-primary" on:click={() => changeView('register')}>Get Started</button>
+				<button class="btn-primary" on:click={() => changeView('/register')}>Get Started</button>
 			</div>
 			<div class="plan">
 				<h3>PRO</h3>
@@ -34,7 +35,7 @@
 				<p><i class="fas fa-check"></i> Enhanced Alerts and Monitoring</p>
 				<p><i class="fas fa-check"></i> Integrations</p>
 				<p class="price">$39</p>
-				<button class="btn-primary" on:click={() => changeView('register')}>Get Started</button>
+				<button class="btn-primary" on:click={() => changeView('/register')}>Get Started</button>
 			</div>
 		</div>
 	</div>

@@ -3,6 +3,7 @@
   import Toast from '../components/Toast.svelte';
   import { DASH_API_BASE_URL, API_BASE_URL } from '../config';
   import { currentView } from '../stores/viewStore';
+  import { navigate } from 'svelte-routing';
 
   let name = '';
   let email = '';
@@ -67,7 +68,7 @@
       showToast('Registration successful! Redirecting to login...', 'success');
       setTimeout(() => {
         dispatch('register', data);
-        currentView.set('login');
+        navigate('/login');
       }, 2000); // Delay to show success message before redirecting
     } else {
       const errorData = await response.json();

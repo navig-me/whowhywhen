@@ -6,7 +6,8 @@
     import Toast from '../components/Toast.svelte';
     import IntegrationSnippet from '../components/IntegrationSnippet.svelte';
     import { API_BASE_URL, DASH_API_BASE_URL } from '../config'; // Import the base URL
-    
+    import { navigate } from 'svelte-routing';
+
     let projects = [];
     let apiKeys = [];
     let newProjectName = '';
@@ -158,7 +159,7 @@
     
     function logout() {
         clearToken();
-        currentView.set('home');
+        navigate('/');
     }
     
     function showToastMessage(message, type) {

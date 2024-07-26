@@ -3,6 +3,7 @@
   import { currentView } from '../stores/viewStore';
   import { clearToken, isLoggedIn } from '../stores/userStore';
   import { DASH_API_BASE_URL } from '../config';
+  import { navigate } from 'svelte-routing';
 
   let loggedIn;
   let user = null;
@@ -20,14 +21,14 @@
   });
 
   function changeView(view) {
-    currentView.set(view);
+    navigate(view);
     menuOpen = false;
   }
 
   function logout() {
     isLoggedIn.set(false);
     clearToken();
-    changeView('home');
+    changeView('/');
   }
 
   async function fetchUserDetails() {
@@ -49,7 +50,7 @@
       }
     } else if (response.status === 401) {
       clearToken();
-      changeView('home');
+      changeView('/');
     }
   }
 
@@ -93,7 +94,7 @@
 
 <header class="header">
   <div class="container">
-    <h1 on:click={() => changeView('home')}>WhoWhyWhen</h1>
+    <h1 on:click={() => changeView('')}>WhoWhyWhen</h1>
     <nav>
       <div class="menu-toggle" on:click={() => menuOpen = !menuOpen}>
         <div class="bar"></div>

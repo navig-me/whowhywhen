@@ -9,6 +9,7 @@
   import RequestsChart from './RequestsChart.svelte';
   import PieChart from './PieChart.svelte';
   import { API_BASE_URL, DASH_API_BASE_URL } from '../config';
+  import { navigate } from 'svelte-routing';
 
   let projects = [];
   let selectedProjectId = null;
@@ -79,7 +80,7 @@
       }
     } else if (response.status === 401) {
       clearToken();
-      currentView.set('login');
+      navigate('/login');
     } else {
       showToast('Failed to fetch projects', 'error');
     }
@@ -121,7 +122,7 @@
       totalPages = Math.ceil(data.total / logsPerPage);
     } else if (response.status === 401) {
       clearToken();
-      currentView.set('login');
+      navigate('/login');
     } else {
       showToast('Failed to fetch API logs', 'error');
     }
@@ -149,7 +150,7 @@
       updateChartData();
     } else if (response.status === 401) {
       clearToken();
-      currentView.set('login');
+      navigate('/login');
     } else {
       showToast('Failed to fetch hourly requests data', 'error');
     }
@@ -178,7 +179,7 @@
       updatePieChartData(data);
     } else if (response.status === 401) {
       clearToken();
-      currentView.set('login');
+      navigate('/login');
     } else {
       showToast('Failed to fetch counts data', 'error');
     }

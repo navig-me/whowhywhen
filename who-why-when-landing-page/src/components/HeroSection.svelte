@@ -1,8 +1,9 @@
 <script>
 	import { currentView } from '../stores/viewStore';
-  
+	import { navigate } from 'svelte-routing';
+
 	function changeView(view) {
-	  currentView.set(view);
+	  navigate(view);
 	}
 </script>
   
@@ -10,7 +11,7 @@
 	<div class="container">
 		<h2><span class="supercharge">Supercharge</span> Your APIs</h2>
 		<p>Unlock detailed insights, optimize resources, and take control of your API performance with lightweight and flexible analytics.</p>
-		<button class="btn-primary" on:click={() => changeView('register')}>Get Started</button>
+		<button class="btn-primary" on:click={() => changeView('/register')}>Get Started</button>
 	</div>
 </section>
   
