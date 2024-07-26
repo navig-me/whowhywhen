@@ -38,6 +38,7 @@
   let selectedTimeRange = 'last_24_hours';
 
   const dispatch = createEventDispatcher();
+  let showBanner = false;
 
   selectedProjectIdStore.subscribe(async (projectId) => {
     if (projectId) {
@@ -120,6 +121,7 @@
       const data = await response.json();
       apiLogs = data.logs;
       totalPages = Math.ceil(data.total / logsPerPage);
+      showBanner = apiLogs.length <= 5;
     } else if (response.status === 401) {
       clearToken();
       navigate('/login');
@@ -400,6 +402,11 @@
 
 <section class="dashboard-section">
   <div class="container">
+    {#if showBanner}
+      <div class="banner">
+        <p>Data yet to be processed for the selected time range. Visit the <a href="/projects">Projects</a> page to test your API keys and see data on this chart. Click on <strong>Integrate</strong> to view the steps to integrate with your API.</p>
+      </div>
+    {/if}
     <div class="dashboard-content">
       <div class="left-column">
         <div class="project-selector-container">
@@ -465,6 +472,27 @@
     text-align: center;
     background: linear-gradient(135deg, #f9f9f9 25%, #fff 75%);
     color: #333;
+  }
+
+  .banner {
+    background: #ffcc00;
+    color: #333;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+  }
+
+  .banner p {
+    margin: 0;
+  }
+
+  .banner a {
+    color: #663399;
+    text-decoration: none;
+  }
+
+  .banner a:hover {
+    text-decoration: underline;
   }
 
   .container {

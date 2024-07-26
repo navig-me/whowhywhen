@@ -1,12 +1,11 @@
 <script>
     import { onMount } from 'svelte';
-    import { Link } from 'svelte-routing';
-    import { selectedProjectIdStore, clearToken } from '../stores/userStore'; 
+    import { Link, navigate } from 'svelte-routing';
+    import { selectedProjectIdStore, clearToken } from '../stores/userStore';
     import { createEventDispatcher } from 'svelte';
     import Toast from '../components/Toast.svelte';
     import IntegrationSnippet from '../components/IntegrationSnippet.svelte';
-    import { API_BASE_URL, DASH_API_BASE_URL } from '../config'; // Import the base URL
-    import { navigate } from 'svelte-routing';
+    import { API_BASE_URL, DASH_API_BASE_URL } from '../config';
 
     let projects = [];
     let apiKeys = [];
@@ -21,14 +20,18 @@
     let clientLocation = {};
     let showIntegrationSnippet = false;
     let selectedApiKey = '';
-    
+    let showCurlModal = false;
+    let curlCommand = '';
+    let showDeleteConfirm = false;
+    let apiKeyToDelete = null;
+
     const dispatch = createEventDispatcher();
-    
+
     onMount(async () => {
         await fetchProjects();
         await fetchIpLocation();
     });
-    
+
     async function fetchProjects() {
         const token = localStorage.getItem('token');
         const response = await fetch(`${DASH_API_BASE_URL}/dashauth/users/me/projects`, {
@@ -42,7 +45,7 @@
             showToastMessage('Failed to fetch projects', 'error');
         }
     }
-    
+
     async function fetchIpLocation() {
         const response = await fetch(`${DASH_API_BASE_URL}/dashapi/ip-location`);
         if (response.ok) {
@@ -52,7 +55,7 @@
             showToastMessage('Failed to fetch IP and location info', 'error');
         }
     }
-    
+
     async function createProject() {
         if (projects.length >= 10) {
             showToastMessage('You have reached the maximum number of projects', 'error');
@@ -75,7 +78,7 @@
             showToastMessage(errorData.detail || 'Failed to create project', 'error');
         }
     }
-    
+
     async function fetchApiKeys(projectId) {
         selectedProjectId = projectId;
         const token = localStorage.getItem('token');
@@ -91,7 +94,7 @@
             showToastMessage('Failed to fetch API keys', 'error');
         }
     }
-    
+
     async function createApiKey() {
         if (apiKeys.length >= 3) {
             showToastMessage('You have reached the maximum number of API keys for this project', 'error');
@@ -114,10 +117,17 @@
             showToastMessage(errorData.detail || 'Failed to create API key', 'error');
         }
     }
-    
-    async function deleteApiKey(keyId) {
+
+    function confirmDeleteApiKey(keyId) {
+        apiKeyToDelete = keyId;
+        showDeleteConfirm = true;
+    }
+
+    async function deleteApiKey() {
+        if (!apiKeyToDelete) return;
+
         const token = localStorage.getItem('token');
-        const response = await fetch(`${DASH_API_BASE_URL}/dashapi/apikeys/${keyId}`, {
+        const response = await fetch(`${DASH_API_BASE_URL}/dashapi/apikeys/${apiKeyToDelete}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -129,8 +139,10 @@
         } else {
             showToastMessage('Failed to delete API key', 'error');
         }
+        apiKeyToDelete = null;
+        showDeleteConfirm = false;
     }
-    
+
     async function testApiKey(apiKey) {
         const userAgent = navigator.userAgent;
         const response = await fetch(`${API_BASE_URL}/api/log`, {
@@ -151,17 +163,31 @@
         } else {
             showToastMessage('Test request failed', 'error');
         }
+
+        // Generate the curl command
+        curlCommand = `curl -X POST ${API_BASE_URL}/api/log \\
+-H "Content-Type: application/json" \\
+-H "X-API-KEY: ${apiKey}" \\
+-d '{
+  "url": "www.whowhywhen.com/whowhywhen-test?q=test",
+  "ip_address": "${clientIp}",
+  "user_agent": "${userAgent}",
+  "response_code": 200
+}'`;
+
+        // Show the modal with the curl command
+        showCurlModal = true;
     }
-    
+
     function blurApiKey(apiKey, show) {
         return show ? apiKey : apiKey.slice(0, -4).replace(/./g, '*') + apiKey.slice(-4);
     }
-    
+
     function logout() {
         clearToken();
         navigate('/');
     }
-    
+
     function showToastMessage(message, type) {
         toastMessage = message;
         toastType = type;
@@ -170,7 +196,7 @@
             showToast = true;
         }, 0);
     }
-    
+
     function handleProjectSelection(projectId, path) {
         selectedProjectIdStore.set(projectId); // Update the store with the selected project ID
     }
@@ -183,74 +209,102 @@
     function closeIntegrationSnippetModal() {
         showIntegrationSnippet = false;
     }
+
+    function closeCurlModal() {
+        showCurlModal = false;
+    }
 </script>
-    
+
 <div class="projects-container">
-<h2>Your Projects</h2>
-<Link to="/dashboard" class="btn-back">Back to Dashboard</Link>
-<ul class="project-list">
-    {#each projects as project}
-    <li class="project-item">
-        <div class="project-details">
-        <span class="project-name">{project.name}</span>
-        {#if project.is_default}
-            <span class="default-star">★</span>
-        {/if}
-        </div>
-        <div class="project-actions">
-        <a href="javascript:void(0);" class="btn-primary" on:click={() => fetchApiKeys(project.id)}>View API Keys</a>
-        <Link to="/dashboard" class="btn-primary" on:click={() => handleProjectSelection(project.id)}>View Dashboard</Link>
-        </div>
-    </li>
-    {/each}
-</ul>
-
-<h3>Create New Project</h3>
-<input type="text" bind:value={newProjectName} placeholder="Project Name" class="input-field" />
-<a href="javascript:void(0);" class="btn-primary" on:click={createProject}>Create Project</a>
-{#if projects.length >= 10}
-    <p>You have reached the maximum number of projects.</p>
-{/if}
-
-{#if showApiKeysModal}
-    <div class="modal">
-    <div class="modal-content">
-        <span class="close" on:click={() => showApiKeysModal = false}>&times;</span>
-        <h3>API Keys</h3>
-        <ul class="api-keys-list">
-        {#each apiKeys as key}
-            <li class="api-key-item">
-            <div class="api-key-details">
-                <span class="api-key-name">{key.name}</span>
-                <span class={key.show ? 'unblurred' : 'blurred'}>{blurApiKey(key.key, key.show)}</span>
-            </div>
-            <div class="api-key-actions">
-                <a href="javascript:void(0);" class="btn-secondary" on:click={() => deleteApiKey(key.id)}>Delete</a>
-                <a href="javascript:void(0);" class="btn-secondary" on:click={() => key.show = !key.show}>{key.show ? 'Hide' : 'Show'}</a>
-                <a href="javascript:void(0);" class="btn-secondary" on:click={() => testApiKey(key.key)}>Test API</a>
-                <a href="javascript:void(0);" class="btn-secondary" on:click={() => showIntegrationSnippetModal(key.key)}>Integrate</a>
-            </div>
+    <h2>Your Projects</h2>
+    <Link to="/dashboard" class="btn-back">Back to Dashboard</Link>
+    <ul class="project-list">
+        {#each projects as project}
+            <li class="project-item">
+                <div class="project-details">
+                    <span class="project-name">{project.name}</span>
+                    {#if project.is_default}
+                        <span class="default-star">★</span>
+                    {/if}
+                </div>
+                <div class="project-actions">
+                    <a href="javascript:void(0);" class="btn-primary" on:click={() => fetchApiKeys(project.id)}>View API Keys</a>
+                    <Link to="/dashboard" class="btn-primary" on:click={() => handleProjectSelection(project.id)}>View Dashboard</Link>
+                </div>
             </li>
         {/each}
-        </ul>
-        {#if apiKeys.length >= 3}
-        <p>You have reached the maximum number of API keys for this project. Delete an existing API key to create a new one.</p>
-        {/if}
-        <div class="create-api-key">
-        <input type="text" bind:value={newApiKeyName} placeholder="API Key Name" class="input-field" />
-        <a href="javascript:void(0);" class="btn-primary" on:click={createApiKey}>Create New API Key</a>
-        </div>
-    </div>
-    </div>
-{/if}
+    </ul>
 
-{#if showIntegrationSnippet}
-    <IntegrationSnippet {selectedApiKey} clientIp={clientIp} userAgent={navigator.userAgent} close={closeIntegrationSnippetModal} />
-{/if}
+    <h3>Create New Project</h3>
+    <input type="text" bind:value={newProjectName} placeholder="Project Name" class="input-field" />
+    <a href="javascript:void(0);" class="btn-primary" on:click={createProject}>Create Project</a>
+    {#if projects.length >= 10}
+        <p>You have reached the maximum number of projects.</p>
+    {/if}
+
+    {#if showApiKeysModal}
+        <div class="modal">
+            <div class="modal-content wide">
+                <span class="close" on:click={() => showApiKeysModal = false}>&times;</span>
+                <h3>API Keys</h3>
+                <ul class="api-keys-list">
+                    {#each apiKeys as key}
+                        <li class="api-key-item">
+                            <div class="api-key-details">
+                                <span class="api-key-name">{key.name}</span>
+                                <span class={key.show ? 'unblurred' : 'blurred'}>{blurApiKey(key.key, key.show)}</span>
+                            </div>
+                            <div class="api-key-actions">
+                                <a href="javascript:void(0);" class="btn-secondary" on:click={() => confirmDeleteApiKey(key.id)}>Delete</a>
+                                <a href="javascript:void(0);" class="btn-secondary" on:click={() => key.show = !key.show}>{key.show ? 'Hide' : 'Show'}</a>
+                                <a href="javascript:void(0);" class="btn-secondary" on:click={() => testApiKey(key.key)}>Test API</a>
+                                <a href="javascript:void(0);" class="btn-secondary" on:click={() => showIntegrationSnippetModal(key.key)}>Integrate</a>
+                                <a href="javascript:void(0);" class="btn-secondary" on:click={() => showCurlModal = true}>Show cURL Command</a>
+                            </div>
+                        </li>
+                    {/each}
+                </ul>
+                {#if apiKeys.length >= 3}
+                    <p>You have reached the maximum number of API keys for this project. Delete an existing API key to create a new one.</p>
+                {/if}
+                <div class="create-api-key">
+                    <input type="text" bind:value={newApiKeyName} placeholder="API Key Name" class="input-field" />
+                    <a href="javascript:void(0);" class="btn-primary" on:click={createApiKey}>Create New API Key</a>
+                </div>
+            </div>
+        </div>
+    {/if}
+
+    {#if showIntegrationSnippet}
+        <IntegrationSnippet {selectedApiKey} clientIp={clientIp} userAgent={navigator.userAgent} close={closeIntegrationSnippetModal} />
+    {/if}
+
+    {#if showCurlModal}
+        <div class="modal">
+            <div class="modal-content wide">
+                <span class="close" on:click={closeCurlModal}>&times;</span>
+                <h3>Curl Command</h3>
+                <pre>{curlCommand}</pre>
+                <a href="javascript:void(0);" class="btn-primary" on:click={closeCurlModal}>Close</a>
+            </div>
+        </div>
+    {/if}
+
+    {#if showDeleteConfirm}
+        <div class="modal">
+            <div class="modal-content">
+                <span class="close" on:click={() => showDeleteConfirm = false}>&times;</span>
+                <h3>Confirm Deletion</h3>
+                <p>Are you sure you want to delete this API key?</p>
+                <a href="javascript:void(0);" class="btn-secondary" on:click={deleteApiKey}>Yes, Delete</a>
+                <a href="javascript:void(0);" class="btn-primary" on:click={() => showDeleteConfirm = false}>Cancel</a>
+            </div>
+        </div>
+    {/if}
 </div>
 
 {#if showToast}
-<Toast message={toastMessage} type={toastType} />
+    <Toast message={toastMessage} type={toastType} />
 {/if}
 
 <style>
@@ -354,10 +408,15 @@ h2, h3 {
     padding: 30px;
     border: 1px solid #888;
     width: 80%;
-    max-width: 600px;
+    max-width: 800px;
     border-radius: 10px;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
     position: relative;
+}
+
+.modal-content.wide {
+    width: 80%;
+    max-width: 1000px;
 }
 
 .close {
@@ -400,5 +459,14 @@ h2, h3 {
 
 .create-api-key {
     margin-top: 20px;
+}
+
+pre {
+    background-color: #f4f4f4;
+    padding: 20px;
+    border-radius: 5px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    text-align: left;
 }
 </style>

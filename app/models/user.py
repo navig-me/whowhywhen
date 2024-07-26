@@ -29,7 +29,7 @@ class User(SQLModel, table=True):
 
 class UserProject(SQLModel, table=True):
     id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
-    name: str = Field(index=True, unique=True)
+    name: str = Field(index=True)
     created: datetime = Field(default_factory=datetime.now)
     modified: datetime = Field(default_factory=datetime.now)
     active: bool = Field(default=True)
