@@ -35,7 +35,9 @@
         gtag('set', 'user_id', data.user_id); // Set user ID in Google Analytics
         gtag('event', 'login', { method: 'Password' });
         showToast('Login successful!', 'success');
-        currentView.set('dashboard');
+        setTimeout(() => {
+          currentView.set('dashboard');
+        }, 1500); // Add a slight delay before redirecting
       }
     } else {
       showToast('Login failed!', 'error');
@@ -43,6 +45,11 @@
   }
 
   async function handleTwoFactorSubmit() {
+    if (!/^\d{6}$/.test(twoFactorCode)) {
+      showToast('Invalid 2FA code. Please enter a 6-digit code.', 'error');
+      return;
+    }
+
     const response = await fetch(`${DASH_API_BASE_URL}/dashauth/verify-2fa?user_email=${username}&token=${twoFactorCode}`, {
       method: 'POST',
       headers: {
@@ -60,7 +67,9 @@
       gtag('set', 'user_id', data.user_id); // Set user ID in Google Analytics
       gtag('event', 'login', { method: '2FA' });
       showToast('Login successful!', 'success');
-      currentView.set('dashboard');
+      setTimeout(() => {
+        currentView.set('dashboard');
+      }, 1500); // Add a slight delay before redirecting
     } else {
       showToast('2FA verification failed!', 'error');
     }
@@ -88,7 +97,7 @@
       {#if showTwoFactorInput}
         <div class="form-group">
           <label for="twoFactorCode">2FA Code</label>
-          <input type="text" id="twoFactorCode" bind:value={twoFactorCode} placeholder="Enter your 2FA code" required />
+          <input type="text" id="twoFactorCode" bind:value={twoFactorCode} placeholder="Enter your 2FA code" maxlength="6" required />
         </div>
       {/if}
       <button type="submit" class="btn-primary">{showTwoFactorInput ? 'Verify 2FA' : 'Login'}</button>

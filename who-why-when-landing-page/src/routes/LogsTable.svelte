@@ -61,6 +61,19 @@
     function handleFilterClick(field, value) {
         dispatch('addFilter', { field, value });
     }
+
+    function getStatusColor(responseCode) {
+        if (responseCode >= 200 && responseCode < 300) {
+            return 'status-green';
+        } else if (responseCode >= 300 && responseCode < 400) {
+            return 'status-blue';
+        } else if (responseCode >= 400 && responseCode < 500) {
+            return 'status-orange';
+        } else if (responseCode >= 500) {
+            return 'status-red';
+        }
+        return '';
+    }
 </script>
 
 <div class="logs-table">
@@ -72,23 +85,25 @@
             <table>
                 <thead>
                     <tr>
+                        <th></th>
                         <th>Path</th>
                         <th>IP Address</th>
                         <th>User Agent</th>
                         <th>Response Code</th>
                         <th>Response Time</th>
-                        <th>Created At</th>
+                        <th>Datetime</th>
                         <th>Query Parameters</th>
                     </tr>
                 </thead>
                 <tbody>
                     {#if apiLogs.length === 0}
                         <tr>
-                            <td colspan="7">No logs available</td>
+                            <td colspan="8">No logs available</td>
                         </tr>
                     {:else}
                         {#each apiLogs as log}
                             <tr>
+                                <td class={getStatusColor(log.response_code)}></td>
                                 <td>
                                     {log.path}
                                     <i class="fa fa-filter filter-icon" aria-hidden="true" on:click={() => handleFilterClick('path', log.path)}></i>
@@ -443,6 +458,26 @@
         white-space: pre-wrap;
         word-wrap: break-word;
         margin: 10px 0;
+    }
+
+    .status-green {
+        background-color: #4caf50;
+        width: 4px;
+    }
+
+    .status-blue {
+        background-color: #2196f3;
+        width: 4px;
+    }
+
+    .status-orange {
+        background-color: #ff9800;
+        width: 4px;
+    }
+
+    .status-red {
+        background-color: #f44336;
+        width: 4px;
     }
 </style>
 

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import Session
 from datetime import timedelta, datetime
@@ -78,23 +78,31 @@ def verify_2fa(user_email: str, token: str, session: Session = Depends(get_sessi
     access_token = create_access_token(data={"sub": user.email})
     return {"access_token": access_token, "token_type": "bearer"}
 
+@router.post("/get-2fa-qr-code")
+def get_2fa_qr_code(user: User = Depends(get_current_user), session: Session = Depends(get_session)):
+    totp_secret = generate_totp_secret()
+    user.totp_secret = totp_secret
+    session.add(user)
+    session.commit()
+    return {"totp_uri": generate_totp_uri(totp_secret, user.email, issuer_name="WhoWhyWhen")}
 
 @router.post("/enable-2fa")
-def enable_2fa(user: User = Depends(get_current_user), session: Session = Depends(get_session)):
+def enable_2fa(token: str = None, user: User = Depends(get_current_user), session: Session = Depends(get_session)):
     if user.two_factor_enabled:
         raise HTTPException(status_code=400, detail="2FA is already enabled")
 
-    totp_secret = generate_totp_secret()
-    user.totp_secret = totp_secret
+    # Validate current 2FA token
+    if user.totp_secret and token:
+        totp = pyotp.TOTP(user.totp_secret)
+        if not totp.verify(token):
+            raise HTTPException(status_code=400, detail="Invalid 2FA token")
+
     user.two_factor_enabled = True
 
     session.add(user)
     session.commit()
     session.refresh(user)
-
-    # Generate QR code URI
-    uri = generate_totp_uri(totp_secret, user.email, issuer_name="WhoWhyWhen")
-    return {"totp_uri": uri}
+    return {"message": "2FA enabled successfully"}
 
 @router.post("/disable-2fa")
 def disable_2fa(current_user: User = Depends(get_current_user), session: Session = Depends(get_session)):
