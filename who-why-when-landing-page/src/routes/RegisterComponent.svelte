@@ -64,17 +64,24 @@
 
     if (response.ok) {
       const data = await response.json();
-      dispatch('register', data);
-      showToast('Registration successful!', 'success');
-      currentView.set('login');
+      showToast('Registration successful! Redirecting to login...', 'success');
+      setTimeout(() => {
+        dispatch('register', data);
+        currentView.set('login');
+      }, 2000); // Delay to show success message before redirecting
     } else {
-      showToast('Registration failed!', 'error');
+      const errorData = await response.json();
+      showToast(errorData.detail || 'Registration failed!', 'error');
     }
   }
 
   function showToast(message, type) {
     toastMessage = message;
     toastType = type;
+    setTimeout(() => {
+      toastMessage = '';
+      toastType = '';
+    }, 5000); // Clear toast message after 5 seconds
   }
 </script>
 

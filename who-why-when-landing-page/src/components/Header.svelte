@@ -122,15 +122,17 @@
               </div>
             </div>
           {/if}
-          <a class="nav-link" href="https://whowhywhen.github.io" target="_blank" rel="noopener noreferrer">Docs</a>
+          <!-- <a class="nav-link" href="https://whowhywhen.github.io" target="_blank" rel="noopener noreferrer">Docs</a> -->
           <Link class="nav-link" to="/dashboard">Dashboard</Link>
           <Link class="nav-link" to="/projects">Projects</Link>
+          <Link class="nav-link" to="/integrate">Integrate</Link>
           <Link class="nav-link" to="/user-settings">
             <i class="fa fa-user"></i>
           </Link>
           <a class="nav-link logout-link" on:click={logout}>Logout</a>
         {:else}
-          <a class="nav-link" href="https://whowhywhen.github.io" target="_blank" rel="noopener noreferrer">Docs</a>
+          <!-- <a class="nav-link" href="https://whowhywhen.github.io" target="_blank" rel="noopener noreferrer">Docs</a> -->
+          <Link class="nav-link" to="/integrate">Integrate</Link>
           <Link class="nav-link" to="/login">Login</Link>
           <Link class="nav-link" to="/register">Register</Link>
         {/if}
@@ -200,7 +202,7 @@
   }
 
   .nav-link {
-    color: #663399;
+    color: #663399 !important;
   }
 
   .nav-link:hover {
@@ -208,7 +210,7 @@
   }
 
   .logout-link {
-    color: #ff4500;
+    color: #ff4500 !important;
   }
 
   .logout-link:hover {

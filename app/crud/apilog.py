@@ -158,6 +158,26 @@ def get_counts_data(
         .all()
     )
 
+    # User agent counts (Get top 10 and add others)
+    user_agent_counts = (
+        query.with_entities(
+            coalesce_to_other(APILog.user_agent).label('user_agent'),
+            func.count(APILog.user_agent)
+        )
+        .filter(APILog.is_bot == False)
+        .group_by('user_agent')
+        .order_by(func.count(APILog.user_agent).desc())
+        .all()
+    )
+
+    # Process the user agent counts to get top 10 and aggregate others
+    top_15_user_agents = user_agent_counts[:10]
+    others_count = sum(count for _, count in user_agent_counts[10:])
+    if others_count > 0:
+        top_15_user_agents.append(('Other', others_count))
+
+    top_15_user_agent_counts = dict(top_15_user_agents)
+
     response_code_counts = (
         query.with_entities(
             APILog.response_code.label('response_code'),
@@ -206,14 +226,14 @@ def get_counts_data(
         .filter(APILog.is_bot == True)
         .all()
     )
-    
 
     return {
         "browser_family_counts": dict(browser_family_counts),
         "os_family_counts": dict(os_family_counts),
         "device_type_counts": dict(device_type_counts),
         "response_code_counts": dict(response_code_counts_keyed),
-        "bot_browser_family_counts": dict(bot_browser_family_counts)
+        "bot_browser_family_counts": dict(bot_browser_family_counts),
+        "user_agent_counts": top_15_user_agent_counts
     }
 
 

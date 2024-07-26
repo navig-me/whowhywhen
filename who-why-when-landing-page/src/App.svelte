@@ -7,6 +7,7 @@
 	import Footer from './components/Footer.svelte';
 	import Dashboard from './routes/Dashboard.svelte';
 	import Projects from './routes/Projects.svelte';
+	import Integrate from './routes/Integrate.svelte';
 	import UserSettings from './routes/UserSettings.svelte';
 	import { isLoggedIn } from './stores/userStore';
 	import { onMount } from 'svelte';
@@ -36,6 +37,7 @@
 	<Route path="/register" component={RegisterComponent} />
 	<Route path="/dashboard" component={Dashboard} />
 	<Route path="/projects" component={Projects} />
+	<Route path="/integrate" component={Integrate} />
 	<Route path="/user-settings" component={UserSettings} />
 	{#if !loggedIn}
 		<Footer />

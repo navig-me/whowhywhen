@@ -9,6 +9,8 @@
     let showModal = false;
     let modalContent = [];
     let modalTitle = "";
+    let showBlockModal = false;
+    let blockContent = "";
 
     function handleCellClick(field, value) {
         dispatch('cellClick', { field, value });
@@ -33,6 +35,16 @@
         showModal = false;
         modalContent = [];
         modalTitle = "";
+    }
+
+    function showBlockUserAgentModal(userAgent) {
+        blockContent = `User-agent: ${userAgent}\nDisallow: /`;
+        showBlockModal = true;
+    }
+
+    function closeBlockModal() {
+        showBlockModal = false;
+        blockContent = "";
     }
 
     function getDeviceIcon(log) {
@@ -104,6 +116,7 @@
                                         { key: "Is Bot", value: log.is_bot },
                                     ])}></i>
                                     <i class="fa fa-filter filter-icon" aria-hidden="true" on:click={() => handleFilterClick('user_agent', log.user_agent)}></i>
+                                    <i class="fa fa-ban block-icon" aria-hidden="true" on:click={() => showBlockUserAgentModal(log.user_agent)}></i>
                                 </td>
                                 <td>
                                     {log.response_code}
@@ -159,25 +172,91 @@
                     </table>
                 {/if}
             {:else if modalTitle === "User Agent Details"}
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Field</th>
-                            <th>Value</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {#each modalContent as detail}
-                            <tr>
-                                <td>{detail.key}</td>
-                                <td>{detail.value}</td>
-                            </tr>
-                        {/each}
-                    </tbody>
-                </table>
+                <div class="user-agent-details">
+                    <div class="section">
+                        <h4>Browser</h4>
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td>Family</td>
+                                    <td>{modalContent.find(item => item.key === "Browser Family").value}</td>
+                                </tr>
+                                <tr>
+                                    <td>Version</td>
+                                    <td>{modalContent.find(item => item.key === "Browser Version").value}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="section">
+                        <h4>OS</h4>
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td>Family</td>
+                                    <td>{modalContent.find(item => item.key === "OS Family").value}</td>
+                                </tr>
+                                <tr>
+                                    <td>Version</td>
+                                    <td>{modalContent.find(item => item.key === "OS Version").value}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="section">
+                        <h4>Device</h4>
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td>Family</td>
+                                    <td>{modalContent.find(item => item.key === "Device Family").value}</td>
+                                </tr>
+                                <tr>
+                                    <td>Brand</td>
+                                    <td>{modalContent.find(item => item.key === "Device Brand").value}</td>
+                                </tr>
+                                <tr>
+                                    <td>Model</td>
+                                    <td>{modalContent.find(item => item.key === "Device Model").value}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="section">
+                        <h4>Capabilities</h4>
+                        <div class="capabilities">
+                            {#if modalContent.find(item => item.key === "Is Mobile").value}
+                                <i class="fa fa-mobile mobile" aria-hidden="true" title="Mobile"></i>
+                            {/if}
+                            {#if modalContent.find(item => item.key === "Is Tablet").value}
+                                <i class="fa fa-tablet tablet" aria-hidden="true" title="Tablet"></i>
+                            {/if}
+                            {#if modalContent.find(item => item.key === "Is PC").value}
+                                <i class="fa fa-desktop pc" aria-hidden="true" title="PC"></i>
+                            {/if}
+                            {#if modalContent.find(item => item.key === "Is Touch Capable").value}
+                                <i class="fa fa-hand-pointer-o touch" aria-hidden="true" title="Touch Capable"></i>
+                            {/if}
+                            {#if modalContent.find(item => item.key === "Is Bot").value}
+                                <i class="fa fa-robot bot" aria-hidden="true" title="Bot"></i>
+                            {/if}
+                        </div>
+                    </div>
+                </div>
             {:else}
                 <p>{modalContent}</p>
             {/if}
+        </div>
+    </div>
+{/if}
+
+{#if showBlockModal}
+    <div class="modal">
+        <div class="modal-content">
+            <span class="close" on:click={closeBlockModal}>&times;</span>
+            <h3>Block User Agent</h3>
+            <p>To block the user agent, add the following line to your robots.txt file:</p>
+            <pre>{blockContent.split('\n')[0]}<br/>Disallow: /</pre>
         </div>
     </div>
 {/if}
@@ -275,6 +354,7 @@
         width: 50%;
         max-height: 80%;
         overflow-y: auto;
+        text-align: left;
     }
 
     .close {
@@ -303,6 +383,16 @@
         color: #333;
     }
 
+    .block-icon {
+        margin-left: 5px;
+        cursor: pointer;
+        color: #ff0000; /* Red color */
+    }
+
+    .block-icon:hover {
+        color: #cc0000; /* Darker red on hover */
+    }
+
     .query-params table,
     .user-agent-details table {
         width: 100%;
@@ -324,6 +414,35 @@
 
     .query-params tr:hover, .user-agent-details tr:hover {
         background-color: #f1f1f1;
+    }
+
+    .user-agent-details .section {
+        margin-bottom: 20px;
+    }
+
+    .user-agent-details h4 {
+        margin-bottom: 10px;
+        color: #663399;
+    }
+
+    .capabilities i {
+        margin-right: 10px;
+        font-size: 1.5em;
+    }
+
+    .mobile { color: #4caf50; }
+    .tablet { color: #ff9800; }
+    .pc { color: #2196f3; }
+    .touch { color: #9c27b0; }
+    .bot { color: #f44336; }
+
+    pre {
+        background: #f5f5f5;
+        padding: 10px;
+        border-radius: 5px;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        margin: 10px 0;
     }
 </style>
 

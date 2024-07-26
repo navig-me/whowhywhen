@@ -4,6 +4,7 @@
     import { selectedProjectIdStore, clearToken } from '../stores/userStore'; 
     import { createEventDispatcher } from 'svelte';
     import Toast from '../components/Toast.svelte';
+    import IntegrationSnippet from '../components/IntegrationSnippet.svelte';
     import { API_BASE_URL, DASH_API_BASE_URL } from '../config'; // Import the base URL
     
     let projects = [];
@@ -17,158 +18,169 @@
     let showToast = false;
     let clientIp = '';
     let clientLocation = {};
+    let showIntegrationSnippet = false;
+    let selectedApiKey = '';
     
     const dispatch = createEventDispatcher();
     
     onMount(async () => {
-    await fetchProjects();
-    await fetchIpLocation();
+        await fetchProjects();
+        await fetchIpLocation();
     });
     
     async function fetchProjects() {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${DASH_API_BASE_URL}/dashauth/users/me/projects`, {
-        headers: {
-        'Authorization': `Bearer ${token}`
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${DASH_API_BASE_URL}/dashauth/users/me/projects`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (response.ok) {
+            projects = await response.json();
+        } else {
+            showToastMessage('Failed to fetch projects', 'error');
         }
-    });
-    if (response.ok) {
-        projects = await response.json();
-    } else {
-        showToastMessage('Failed to fetch projects', 'error');
-    }
     }
     
     async function fetchIpLocation() {
-    const response = await fetch(`${DASH_API_BASE_URL}/dashapi/ip-location`);
-    if (response.ok) {
-        const data = await response.json();
-        clientIp = data.ip;
-    } else {
-        showToastMessage('Failed to fetch IP and location info', 'error');
-    }
+        const response = await fetch(`${DASH_API_BASE_URL}/dashapi/ip-location`);
+        if (response.ok) {
+            const data = await response.json();
+            clientIp = data.ip;
+        } else {
+            showToastMessage('Failed to fetch IP and location info', 'error');
+        }
     }
     
     async function createProject() {
-    if (projects.length >= 10) {
-        showToastMessage('You have reached the maximum number of projects', 'error');
-        return;
-    }
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${DASH_API_BASE_URL}/dashauth/users/me/projects?project_name=${newProjectName}`, {
-        method: 'POST',
-        headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
+        if (projects.length >= 10) {
+            showToastMessage('You have reached the maximum number of projects', 'error');
+            return;
         }
-    });
-    if (response.ok) {
-        newProjectName = '';
-        await fetchProjects();
-        showToastMessage('Project created successfully', 'success');
-    } else {
-        const errorData = await response.json();
-        showToastMessage(errorData.detail || 'Failed to create project', 'error');
-    }
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${DASH_API_BASE_URL}/dashauth/users/me/projects?project_name=${newProjectName}`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        if (response.ok) {
+            newProjectName = '';
+            await fetchProjects();
+            showToastMessage('Project created successfully', 'success');
+        } else {
+            const errorData = await response.json();
+            showToastMessage(errorData.detail || 'Failed to create project', 'error');
+        }
     }
     
     async function fetchApiKeys(projectId) {
-    selectedProjectId = projectId;
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${DASH_API_BASE_URL}/dashapi/apikeys?user_project_id=${projectId}`, {
-        headers: {
-        'Authorization': `Bearer ${token}`
+        selectedProjectId = projectId;
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${DASH_API_BASE_URL}/dashapi/apikeys?user_project_id=${projectId}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (response.ok) {
+            apiKeys = await response.json();
+            showApiKeysModal = true;
+        } else {
+            showToastMessage('Failed to fetch API keys', 'error');
         }
-    });
-    if (response.ok) {
-        apiKeys = await response.json();
-        showApiKeysModal = true;
-    } else {
-        showToastMessage('Failed to fetch API keys', 'error');
-    }
     }
     
     async function createApiKey() {
-    if (apiKeys.length >= 3) {
-        showToastMessage('You have reached the maximum number of API keys for this project', 'error');
-        return;
-    }
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${DASH_API_BASE_URL}/dashapi/apikeys?user_project_id=${selectedProjectId}&name=${newApiKeyName}`, {
-        method: 'POST',
-        headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
+        if (apiKeys.length >= 3) {
+            showToastMessage('You have reached the maximum number of API keys for this project', 'error');
+            return;
         }
-    });
-    if (response.ok) {
-        newApiKeyName = '';
-        await fetchApiKeys(selectedProjectId);
-        showToastMessage('API key created successfully', 'success');
-    } else {
-        const errorData = await response.json();
-        showToastMessage(errorData.detail || 'Failed to create API key', 'error');
-    }
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${DASH_API_BASE_URL}/dashapi/apikeys?user_project_id=${selectedProjectId}&name=${newApiKeyName}`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        if (response.ok) {
+            newApiKeyName = '';
+            await fetchApiKeys(selectedProjectId);
+            showToastMessage('API key created successfully', 'success');
+        } else {
+            const errorData = await response.json();
+            showToastMessage(errorData.detail || 'Failed to create API key', 'error');
+        }
     }
     
     async function deleteApiKey(keyId) {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${DASH_API_BASE_URL}/dashapi/apikeys/${keyId}`, {
-        method: 'DELETE',
-        headers: {
-        'Authorization': `Bearer ${token}`
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${DASH_API_BASE_URL}/dashapi/apikeys/${keyId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (response.ok) {
+            await fetchApiKeys(selectedProjectId);
+            showToastMessage('API key deleted successfully', 'success');
+        } else {
+            showToastMessage('Failed to delete API key', 'error');
         }
-    });
-    if (response.ok) {
-        await fetchApiKeys(selectedProjectId);
-        showToastMessage('API key deleted successfully', 'success');
-    } else {
-        showToastMessage('Failed to delete API key', 'error');
-    }
     }
     
     async function testApiKey(apiKey) {
-    const userAgent = navigator.userAgent;
-    const response = await fetch(`${API_BASE_URL}/api/log`, {
-        method: 'POST',
-        headers: {
-        'Content-Type': 'application/json',
-        'X-API-KEY': apiKey
-        },
-        body: JSON.stringify({
-        url: 'www.whowhywhen.com/whowhywhen-test?q=test',
-        ip_address: clientIp,
-        user_agent: userAgent,
-        response_code: 200
-        })
-    });
-    if (response.ok) {
-        showToastMessage('Test request successful', 'success');
-    } else {
-        showToastMessage('Test request failed', 'error');
-    }
+        const userAgent = navigator.userAgent;
+        const response = await fetch(`${API_BASE_URL}/api/log`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-API-KEY': apiKey
+            },
+            body: JSON.stringify({
+                url: 'www.whowhywhen.com/whowhywhen-test?q=test',
+                ip_address: clientIp,
+                user_agent: userAgent,
+                response_code: 200
+            })
+        });
+        if (response.ok) {
+            showToastMessage('Test request successful', 'success');
+        } else {
+            showToastMessage('Test request failed', 'error');
+        }
     }
     
     function blurApiKey(apiKey, show) {
-    return show ? apiKey : apiKey.slice(0, -4).replace(/./g, '*') + apiKey.slice(-4);
+        return show ? apiKey : apiKey.slice(0, -4).replace(/./g, '*') + apiKey.slice(-4);
     }
     
     function logout() {
-    clearToken();
-    currentView.set('home');
+        clearToken();
+        currentView.set('home');
     }
     
     function showToastMessage(message, type) {
-    toastMessage = message;
-    toastType = type;
-    showToast = false; // Reset the toast visibility to force re-render
-    setTimeout(() => {
-        showToast = true;
-    }, 0);
+        toastMessage = message;
+        toastType = type;
+        showToast = false; // Reset the toast visibility to force re-render
+        setTimeout(() => {
+            showToast = true;
+        }, 0);
     }
     
     function handleProjectSelection(projectId, path) {
-    selectedProjectIdStore.set(projectId); // Update the store with the selected project ID
+        selectedProjectIdStore.set(projectId); // Update the store with the selected project ID
+    }
+
+    function showIntegrationSnippetModal(apiKey) {
+        selectedApiKey = apiKey;
+        showIntegrationSnippet = true;
+    }
+
+    function closeIntegrationSnippetModal() {
+        showIntegrationSnippet = false;
     }
 </script>
     
@@ -185,8 +197,8 @@
         {/if}
         </div>
         <div class="project-actions">
-        <button class="btn-primary" on:click={() => fetchApiKeys(project.id)}>View API Keys</button>
-        <Link to="/dashboard" class="btn-secondary" on:click={() => handleProjectSelection(project.id)}>View Dashboard</Link>
+        <a href="javascript:void(0);" class="btn-primary" on:click={() => fetchApiKeys(project.id)}>View API Keys</a>
+        <Link to="/dashboard" class="btn-primary" on:click={() => handleProjectSelection(project.id)}>View Dashboard</Link>
         </div>
     </li>
     {/each}
@@ -194,7 +206,7 @@
 
 <h3>Create New Project</h3>
 <input type="text" bind:value={newProjectName} placeholder="Project Name" class="input-field" />
-<button class="btn-primary" on:click={createProject}>Create Project</button>
+<a href="javascript:void(0);" class="btn-primary" on:click={createProject}>Create Project</a>
 {#if projects.length >= 10}
     <p>You have reached the maximum number of projects.</p>
 {/if}
@@ -212,9 +224,10 @@
                 <span class={key.show ? 'unblurred' : 'blurred'}>{blurApiKey(key.key, key.show)}</span>
             </div>
             <div class="api-key-actions">
-                <button class="btn-secondary" on:click={() => deleteApiKey(key.id)}>Delete</button>
-                <button class="btn-secondary" on:click={() => key.show = !key.show}>{key.show ? 'Hide' : 'Show'}</button>
-                <button class="btn-secondary" on:click={() => testApiKey(key.key)}>Test API</button>
+                <a href="javascript:void(0);" class="btn-secondary" on:click={() => deleteApiKey(key.id)}>Delete</a>
+                <a href="javascript:void(0);" class="btn-secondary" on:click={() => key.show = !key.show}>{key.show ? 'Hide' : 'Show'}</a>
+                <a href="javascript:void(0);" class="btn-secondary" on:click={() => testApiKey(key.key)}>Test API</a>
+                <a href="javascript:void(0);" class="btn-secondary" on:click={() => showIntegrationSnippetModal(key.key)}>Integrate</a>
             </div>
             </li>
         {/each}
@@ -224,10 +237,14 @@
         {/if}
         <div class="create-api-key">
         <input type="text" bind:value={newApiKeyName} placeholder="API Key Name" class="input-field" />
-        <button class="btn-primary" on:click={createApiKey}>Create New API Key</button>
+        <a href="javascript:void(0);" class="btn-primary" on:click={createApiKey}>Create New API Key</a>
         </div>
     </div>
     </div>
+{/if}
+
+{#if showIntegrationSnippet}
+    <IntegrationSnippet {selectedApiKey} clientIp={clientIp} userAgent={navigator.userAgent} close={closeIntegrationSnippetModal} />
 {/if}
 </div>
 
@@ -308,34 +325,6 @@ h2, h3 {
 .project-actions {
     display: flex;
     gap: 10px;
-}
-
-.btn-primary, .btn-secondary {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-.btn-primary {
-    background-color: #663399;
-    color: #fff;
-}
-
-.btn-primary:hover {
-    background-color: #7d42a6;
-    transform: translateY(-2px);
-}
-
-.btn-secondary {
-    background-color: #ff4000;
-    color: #fff;
-}
-
-.btn-secondary:hover {
-    background-color: #e63900;
-    transform: translateY(-2px);
 }
 
 .input-field {

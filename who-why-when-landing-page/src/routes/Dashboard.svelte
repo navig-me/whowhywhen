@@ -24,6 +24,7 @@
   let deviceTypeData = null;
   let responseCodeData = null;
   let botBrowserFamilyData = null;
+  let userAgentData = null;
   let barChartData = null;
   let frequency = "hour";
   let searchParams = {};
@@ -277,6 +278,16 @@
       ],
       title: 'Bot Visits'
     };
+
+    userAgentData = {
+      labels: Object.keys(data.user_agent_counts),
+      datasets: [
+        {
+          data: Object.values(data.user_agent_counts),
+        }
+      ],
+      title: 'User Agents'
+    };
   }
 
   function getTimeRangeParams(timeRange) {
@@ -435,6 +446,7 @@
           <PieChart pieChartData={deviceTypeData} {isPieChartLoading} />
           <PieChart pieChartData={responseCodeData} {isPieChartLoading} />
           <PieChart pieChartData={botBrowserFamilyData} {isPieChartLoading} />
+          <PieChart pieChartData={userAgentData} {isPieChartLoading} />
         </div>
         <LogsTable {apiLogs} {currentPage} {totalPages} {isTableLoading} on:changePage={(e) => changePage(e.detail.page)} on:cellClick={handleCellClick} on:addFilter={handleAddFilter} />
         </div>
