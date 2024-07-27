@@ -57,10 +57,11 @@ def get_api_logs(
     sort_direction: Optional[str] = None,
     start_datetime: Optional[datetime] = None,
     end_datetime: Optional[datetime] = None,
+    bots_only: bool = False,  # Add this parameter
     current_user: User = Depends(get_current_user),
     session: Session = Depends(get_session)
 ):
-    return get_apilogs(session, current_user.id, page, limit, project_id, search_params, query, sort, sort_direction, start_datetime, end_datetime)
+    return get_apilogs(session, current_user.id, page, limit, project_id, search_params, query, sort, sort_direction, start_datetime, end_datetime, bots_only)
 
 
 @router_dash.post("/logs/project/stats/{project_id}")
@@ -71,10 +72,11 @@ def get_api_logs_stats(
     query: Optional[str] = None,
     start_datetime: Optional[datetime] = None,
     end_datetime: Optional[datetime] = None,
+    bots_only: bool = False,  # Add this parameter
     current_user: User = Depends(get_current_user),
     session: Session = Depends(get_session)
 ):
-    return get_apilogs_stats(session, current_user.id, project_id, search_params, frequency, query, start_datetime, end_datetime)
+    return get_apilogs_stats(session, current_user.id, project_id, search_params, frequency, query, start_datetime, end_datetime, bots_only)
 
 
 @router_dash.post("/logs/project/device-stats/{project_id}")
@@ -83,9 +85,9 @@ def get_counts(
     search_params: Optional[APILogSearch] = None,
     start_datetime: Optional[datetime] = None,
     end_datetime: Optional[datetime] = None,
+    bots_only: bool = False,  # Add this parameter
     current_user: User = Depends(get_current_user),
     session: Session = Depends(get_session)
 ):
-    counts_data = get_counts_data(session, current_user.id, project_id, search_params, start_datetime, end_datetime)
+    counts_data = get_counts_data(session, current_user.id, project_id, search_params, start_datetime, end_datetime, bots_only)
     return {"counts": counts_data}
-

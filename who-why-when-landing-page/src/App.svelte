@@ -6,6 +6,7 @@
 	import Header from './components/Header.svelte';
 	import Footer from './components/Footer.svelte';
 	import Dashboard from './routes/Dashboard.svelte';
+	import Bots from './routes/Bots.svelte';
 	import Projects from './routes/Projects.svelte';
 	import Integrate from './routes/Integrate.svelte';
 	import UserSettings from './routes/UserSettings.svelte';
@@ -36,6 +37,7 @@
 	<Route path="/login" component={LoginComponent} />
 	<Route path="/register" component={RegisterComponent} />
 	<Route path="/dashboard" component={Dashboard} />
+	<Route path="/bots" component={Bots} />
 	<Route path="/projects" component={Projects} />
 	<Route path="/integrate" component={Integrate} />
 	<Route path="/user-settings" component={UserSettings} />

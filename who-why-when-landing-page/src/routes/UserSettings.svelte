@@ -161,25 +161,30 @@
           <p><strong>Name:</strong> {user.name}</p>
           <p><strong>Email:</strong> {user.email}</p>
         </div>
-        <button class="btn-primary" on:click={openChangePasswordPopup}>Change Password</button>
+        <a href="javascript:void(0);" class="btn-link" on:click={openChangePasswordPopup}>Change Password</a>
       </div>
+      <hr>
       <div class="plan-info">
         <h3>Subscription Plan</h3>
         <p><strong>Plan:</strong> {user.subscription_plan.toUpperCase()}</p>
         <p><strong>Requests Used:</strong> {userRequestCount}/{user.monthly_credit_limit}</p>
         <p><strong>Plan Renews In:</strong> {daysUntilRenewal} days</p>
         {#if user.subscription_plan !== 'pro'}
-          <a href={upgradeLink} class="btn-primary" target="_blank" rel="noopener noreferrer">Upgrade to {getNextPlan(user.subscription_plan).toUpperCase()}</a>
+          <a href={upgradeLink} class="btn-link" target="_blank" rel="noopener noreferrer">Upgrade to {getNextPlan(user.subscription_plan).toUpperCase()}</a>
         {:else}
-          <a href="mailto:support@whowhywhen.com" class="btn-primary">Contact to Upgrade</a>
+          <a href="mailto:support@whowhywhen.com" class="btn-link">Contact to Upgrade</a>
         {/if}
         {#if user.subscription_plan !== 'free'}
-          <a href={customerPortalLink} class="btn-primary" target="_blank" rel="noopener noreferrer">Manage Subscription</a>
+          <a href={customerPortalLink} class="btn-link" target="_blank" rel="noopener noreferrer">Manage Subscription</a>
         {/if}
+      </div>
+      <hr>
+      <div class="security-info">
+        <h3>Security</h3>
         {#if !user.two_factor_enabled}
-          <button class="btn-primary" on:click={enable2FA}>Enable 2FA</button>
+          <a href="javascript:void(0);" class="btn-link" on:click={enable2FA}>Enable 2FA</a>
         {:else}
-          <button class="btn-primary" on:click={disable2FA}>Disable 2FA</button>
+          <a href="javascript:void(0);" class="btn-link" on:click={disable2FA}>Disable 2FA</a>
         {/if}
       </div>
     </div>
@@ -198,7 +203,7 @@
     <p>Use your authenticator app to scan the QR code and complete the 2FA setup.</p>
     <input type="text" placeholder="Enter current 2FA code" bind:value={current2FAToken} />
     <button class="btn-primary" on:click={verifyAndEnable2FA}>Verify and Enable 2FA</button>
-    <button class="btn-primary" on:click={closeEnable2FAPopup}>Close</button>
+    <button class="btn-secondary" on:click={closeEnable2FAPopup}>Close</button>
   </div>
 </div>
 {/if}
@@ -221,24 +226,43 @@ h2 {
   border-radius: 10px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
   padding: 30px;
-  max-width: 800px;
+  max-width: 600px;
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 20px;
-}
-
-.user-info, .plan-info {
   text-align: left;
 }
 
-.user-details p, .plan-info p {
+.user-info, .plan-info, .security-info {
+  margin-bottom: 20px;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 20px 0;
+}
+
+.user-details p, .plan-info p, .security-info p {
   margin: 10px 0;
   font-size: 1rem;
   color: #555;
 }
 
-.btn-primary {
+.btn-link {
+  display: inline-block;
+  color: #663399;
+  text-decoration: none;
+  font-size: 0.9rem;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.btn-link:hover {
+  color: #552288;
+  text-decoration: underline !important ;
+}
+
+.btn-primary, .btn-secondary {
   display: inline-block;
   background-color: #663399;
   color: #fff !important;
@@ -248,9 +272,12 @@ h2 {
   cursor: pointer;
   font-size: 0.9rem;
   transition: background-color 0.3s, box-shadow 0.3s;
-  text-decoration: none;
   text-align: center;
   margin-top: 10px;
+}
+
+.btn-secondary {
+  background-color: #ccc;
 }
 
 .btn-primary:hover {
@@ -258,15 +285,21 @@ h2 {
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-.plan-info h3 {
-  font-size: 1.3rem;
-  margin-bottom: 10px;
+.popup-content h3 {
+  margin-bottom: 20px;
+  font-size: 1.5rem;
   color: #333;
+}
+
+.popup-content img {
+  width: 100%;
+  max-width: 200px;
+  margin-bottom: 20px;
 }
 
 @media (min-width: 768px) {
   .user-card {
-    grid-template-columns: 1fr 1fr;
+    max-width: 600px;
   }
 }
 
@@ -289,18 +322,6 @@ h2 {
   border-radius: 10px;
   text-align: center;
   max-width: 400px;
-}
-
-.popup-content h3 {
-  margin-bottom: 20px;
-  font-size: 1.5rem;
-  color: #333;
-}
-
-.popup-content img {
-  width: 100%;
-  max-width: 200px;
-  margin-bottom: 20px;
 }
 
 </style>

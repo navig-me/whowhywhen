@@ -111,7 +111,8 @@ def get_counts_data(
     project_id: uuid.UUID = None, 
     search_params = None,
     start_datetime: Optional[datetime] = None,
-    end_datetime: Optional[datetime] = None
+    end_datetime: Optional[datetime] = None,
+    bots_only: bool = False  # Add this parameter
 ):
     query = db.query(APILog)
     
@@ -133,7 +134,10 @@ def get_counts_data(
             query = query.filter(APILog.location.ilike(f'{search_params.location}%'))
         if search_params.response_code:
             query = query.filter(APILog.response_code == search_params.response_code)
-    
+
+    if bots_only:
+        query = query.filter(APILog.is_bot == True)  # Add the bots_only filter
+
     def coalesce_to_other(column):
         return func.coalesce(column, 'Other')
 
@@ -247,7 +251,8 @@ def get_apilogs(
     sort: Optional[str] = None,
     sort_direction: Optional[str] = None,
     start_datetime: Optional[datetime] = None,
-    end_datetime: Optional[datetime] = None
+    end_datetime: Optional[datetime] = None,
+    bots_only: bool = False  # Add this parameter
 ):
     offset = (page - 1) * limit
     
@@ -281,6 +286,9 @@ def get_apilogs(
                 APILog.ip_address.ilike(f'%{q}%'),
             )
         )
+
+    if bots_only:
+        query = query.where(APILog.is_bot == True)  # Add the bots_only filter
 
     total_query = select(func.count()).select_from(query.subquery())
     total = db.execute(total_query).scalar()
@@ -338,7 +346,8 @@ def get_apilogs_stats(
     frequency: str = "hour", 
     q: Optional[str] = None, 
     start_datetime: Optional[datetime] = None, 
-    end_datetime: Optional[datetime] = None
+    end_datetime: Optional[datetime] = None,
+    bots_only: bool = False  # Add this parameter
 ):
     end_date = end_datetime if end_datetime else datetime.now()
 
@@ -383,6 +392,9 @@ def get_apilogs_stats(
                 APILog.ip_address.ilike(f'%{q}%'),
             )
         )
+
+    if bots_only:
+        query = query.filter(APILog.is_bot == True)  # Add the bots_only filter
 
     stats_query = (
         query.with_entities(

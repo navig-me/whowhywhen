@@ -13,6 +13,7 @@
     let newApiKeyName = '';
     let showApiKeysModal = false;
     let selectedProjectId = null;
+    let selectedProjectName = '';
     let toastMessage = '';
     let toastType = '';
     let showToast = false;
@@ -25,6 +26,8 @@
     let curlCommand = '';
     let showDeleteConfirm = false;
     let apiKeyToDelete = null;
+    let showNewProjectModal = false;
+    let showNewApiKeyModal = false;
 
     const dispatch = createEventDispatcher();
 
@@ -71,17 +74,21 @@
             }
         });
         if (response.ok) {
+            const project = await response.json();
             newProjectName = '';
             await fetchProjects();
             showToastMessage('Project created successfully', 'success');
+            fetchApiKeys(project.id, project.name);  // Automatically open API keys popup
         } else {
             const errorData = await response.json();
             showToastMessage(errorData.detail || 'Failed to create project', 'error');
         }
+        showNewProjectModal = false;  // Close the new project modal
     }
 
-    async function fetchApiKeys(projectId) {
+    async function fetchApiKeys(projectId, projectName) {
         selectedProjectId = projectId;
+        selectedProjectName = projectName;
         const token = localStorage.getItem('token');
         const response = await fetch(`${DASH_API_BASE_URL}/dashapi/apikeys?user_project_id=${projectId}`, {
             headers: {
@@ -111,12 +118,13 @@
         });
         if (response.ok) {
             newApiKeyName = '';
-            await fetchApiKeys(selectedProjectId);
+            await fetchApiKeys(selectedProjectId, selectedProjectName);
             showToastMessage('API key created successfully', 'success');
         } else {
             const errorData = await response.json();
             showToastMessage(errorData.detail || 'Failed to create API key', 'error');
         }
+        showNewApiKeyModal = false;  // Close the new API key modal
     }
 
     function confirmDeleteApiKey(keyId) {
@@ -135,7 +143,7 @@
             }
         });
         if (response.ok) {
-            await fetchApiKeys(selectedProjectId);
+            await fetchApiKeys(selectedProjectId, selectedProjectName);
             showToastMessage('API key deleted successfully', 'success');
         } else {
             showToastMessage('Failed to delete API key', 'error');
@@ -222,7 +230,6 @@
 
 <div class="projects-container">
     <h2>Your Projects</h2>
-    <Link to="/dashboard" class="btn-back">Back to Dashboard</Link>
     <ul class="project-list">
         {#each projects as project}
             <li class="project-item">
@@ -233,25 +240,31 @@
                     {/if}
                 </div>
                 <div class="project-actions">
-                    <a href="javascript:void(0);" class="btn-primary" on:click={() => fetchApiKeys(project.id)}>View API Keys</a>
+                    <a href="javascript:void(0);" class="btn-primary" on:click={() => fetchApiKeys(project.id, project.name)}>View API Keys</a>
                     <Link to="/dashboard" class="btn-primary" on:click={() => handleProjectSelection(project.id)}>View Dashboard</Link>
+                    <Link to="/bots" class="btn-primary" on:click={() => handleProjectSelection(project.id)}>Bot Requests</Link>
                 </div>
             </li>
         {/each}
     </ul>
+    <button class="btn-new-project" on:click={() => showNewProjectModal = true}>+ New Project</button>
 
-    <h3>Create New Project</h3>
-    <input type="text" bind:value={newProjectName} placeholder="Project Name" class="input-field" />
-    <a href="javascript:void(0);" class="btn-primary" on:click={createProject}>Create Project</a>
-    {#if projects.length >= 10}
-        <p>You have reached the maximum number of projects.</p>
+    {#if showNewProjectModal}
+        <div class="modal">
+            <div class="modal-content">
+                <span class="close" on:click={() => showNewProjectModal = false}>&times;</span>
+                <h3>Create New Project</h3>
+                <input type="text" bind:value={newProjectName} placeholder="Project Name" class="input-field" />
+                <a href="javascript:void(0);" class="btn-primary" on:click={createProject}>Create Project</a>
+            </div>
+        </div>
     {/if}
 
     {#if showApiKeysModal}
         <div class="modal">
             <div class="modal-content wide">
                 <span class="close" on:click={() => showApiKeysModal = false}>&times;</span>
-                <h3>API Keys</h3>
+                <h3>API Keys for {selectedProjectName}</h3>
                 <ul class="api-keys-list">
                     {#each apiKeys as key}
                         <li class="api-key-item">
@@ -264,7 +277,7 @@
                                 <a href="javascript:void(0);" class="btn-secondary" on:click={() => key.show = !key.show}>{key.show ? 'Hide' : 'Show'}</a>
                                 <a href="javascript:void(0);" class="btn-secondary" on:click={() => testApiKey(key.key)}>Test API</a>
                                 <a href="javascript:void(0);" class="btn-secondary" on:click={() => showIntegrationSnippetModal(key.key)}>Integrate</a>
-                                <a href="javascript:void(0);" class="btn-secondary" on:click={() => openCurlModal(key.key, clientIp, userAgent)}>Show cURL Command</a>
+                                <a href="javascript:void(0);" class="btn-secondary" on:click={() => openCurlModal(key.key, clientIp, userAgent)}>cURL Command</a>
                             </div>
                         </li>
                     {/each}
@@ -272,10 +285,18 @@
                 {#if apiKeys.length >= 3}
                     <p>You have reached the maximum number of API keys for this project. Delete an existing API key to create a new one.</p>
                 {/if}
-                <div class="create-api-key">
-                    <input type="text" bind:value={newApiKeyName} placeholder="API Key Name" class="input-field" />
-                    <a href="javascript:void(0);" class="btn-primary" on:click={createApiKey}>Create New API Key</a>
-                </div>
+                <button class="btn-new-api-key" on:click={() => showNewApiKeyModal = true}>+ API Key</button>
+            </div>
+        </div>
+    {/if}
+
+    {#if showNewApiKeyModal}
+        <div class="modal">
+            <div class="modal-content">
+                <span class="close" on:click={() => showNewApiKeyModal = false}>&times;</span>
+                <h3>Create New API Key</h3>
+                <input type="text" bind:value={newApiKeyName} placeholder="API Key Name" class="input-field" />
+                <a href="javascript:void(0);" class="btn-primary" on:click={createApiKey}>Create API Key</a>
             </div>
         </div>
     {/if}
@@ -393,6 +414,36 @@ h2, h3 {
     border: 1px solid #ddd;
     border-radius: 5px;
     margin-bottom: 20px;
+}
+
+.btn-new-project {
+    background-color: #663399;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-new-project:hover {
+    background-color: #552288;
+}
+
+.btn-new-api-key {
+    background-color: #663399;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-new-api-key:hover {
+    background-color: #552288;
 }
 
 .modal {

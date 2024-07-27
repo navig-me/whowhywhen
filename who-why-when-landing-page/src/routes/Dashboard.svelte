@@ -404,7 +404,7 @@
   <div class="container">
     {#if showBanner}
       <div class="banner">
-        <p>Data yet to be processed for the selected time range. Visit the <a href="/projects">Projects</a> page to test your API keys and see data on this chart. Click on <strong>Integrate</strong> to view the steps to integrate with your API.</p>
+        <p>Not enough data for the selected filters. Visit the <a href="/projects">Projects</a> page to test your API keys and see data on this chart. Click on <strong>Integrate</strong> to view the steps to integrate with your API.</p>
       </div>
     {/if}
     <div class="dashboard-content">
