@@ -104,41 +104,29 @@
       <div class={`menu ${menuOpen ? 'open' : ''}`}>
         {#if loggedIn}
           {#if user}
-            <div class="plan-section">
-              <div class="user-info">
-                <div class="request-info">
-                  <div class="request-bar-container">
-                    <div class="request-bar">
-                      <div class="request-bar-inner {getRequestBarClass(userRequestCount, monthlyCreditLimit)}" style="width: {getRequestBarWidth(userRequestCount, monthlyCreditLimit)}%"></div>
-                    </div>
-                    <span class="request-count">{userRequestCount}/{monthlyCreditLimit}</span>
-                  </div>
-                  <small class="renewal-info">Renews in {calculateDaysUntilRenewal(user.monthly_credit_limit_reset)} days</small>
+            <div class="nav-section">
+              <Link class="nav-link" to="/dashboard">Dashboard</Link>
+              <span class="dot">•</span>
+              <Link class="nav-link" to="/bots">Bots</Link>
+            </div>
+            <div class="nav-section">
+              <Link class="nav-link" to="/projects">Projects</Link>
+              <span class="dot">•</span>
+              <Link class="nav-link" to="/integrate">Usage</Link>
+            </div>
+            <div class="nav-section">
+              <Link class="nav-link" to="/user-settings">Settings</Link>
+              <div class="request-bar-container" on:click={() => changeView('/user-settings')}>
+                <div class="request-bar">
+                  <div class="request-bar-inner {getRequestBarClass(userRequestCount, monthlyCreditLimit)}" style="width: {getRequestBarWidth(userRequestCount, monthlyCreditLimit)}%"></div>
                 </div>
-                {#if user.subscription_plan !== 'pro'}
-                  <a class="upgrade-button" href={upgradeLink} target="_blank" rel="noopener noreferrer">Upgrade</a>
-                {:else}
-                  <a class="upgrade-button" href="mailto:support@whowhywhen.com">Contact to Upgrade</a>
-                {/if}
+                <span class="request-count">{userRequestCount}/{monthlyCreditLimit}</span>
               </div>
             </div>
+            <div class="nav-section">
+              <a class="nav-link logout-link" on:click={logout}>Logout</a>
+            </div>
           {/if}
-          <div class="nav-section">
-            <Link class="nav-link" to="/dashboard">Dashboard</Link>
-            <span class="dot">•</span>
-            <Link class="nav-link" to="/bots">Bots</Link>
-          </div>
-          <div class="nav-section">
-            <Link class="nav-link" to="/projects">Projects</Link>
-            <span class="dot">•</span>
-            <Link class="nav-link" to="/integrate">Usage</Link>
-          </div>
-          <div class="nav-section">
-            <Link class="nav-link" to="/user-settings">Settings</Link>
-          </div>
-          <div class="nav-section">
-            <a class="nav-link logout-link" on:click={logout}><i class="fas fa-sign-out-alt"></i> Logout</a>
-          </div>
         {:else}
           <div class="nav-section">
             <Link class="nav-link" to="/integrate">Usage</Link>
@@ -235,7 +223,6 @@
 
   .nav-link {
     color: #663399 !important;
-    /* width: 120px; */
   }
 
   .nav-link:hover {
@@ -250,36 +237,16 @@
     color: #663399;
   }
 
-  .plan-section {
-    padding: 10px;
-    border-radius: 10px;
-    border: 0.1px solid;
-    background-color: #f9f9f9;
-    background-size: 56.57px 56.57px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  .request-bar-container {
     width: 100%;
     max-width: 120px;
-    box-sizing: border-box;
-  }
-
-  .user-info {
+    min-width: 100px;
+    cursor: pointer;
     display: flex;
     flex-direction: column;
     align-items: center;
     position: relative;
-    cursor: pointer;
-    transition: all 0.3s;
-  }
-
-  .request-info {
-    width: 100%;
-    margin-top: 5px;
-  }
-
-  .request-bar-container {
-    position: relative;
-    width: 100%;
-    margin-top: 5px;
+    margin-left: 10px; /* Add some margin to the left to align with the Settings link */
   }
 
   .request-bar {
@@ -311,39 +278,6 @@
     font-size: 0.6rem;
     color: #fff;
     font-weight: bold;
-  }
-
-  .renewal-info {
-    font-size: 0.7rem;
-    color: #888;
-    margin-top: 5px;
-    text-align: center;
-  }
-
-  .upgrade-button {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #ff4500;
-    color: #fff;
-    padding: 5px 10px;
-    border-radius: 5px;
-    text-decoration: none;
-    font-size: 0.8rem;
-    font-weight: bold;
-    opacity: 0;
-    transition: opacity 0.3s;
-    width: 100%;
-    text-align: center;
-  }
-
-  .user-info:hover .request-info {
-    opacity: 0;
-  }
-
-  .user-info:hover .upgrade-button {
-    opacity: 1;
   }
 
   @media (max-width: 768px) {
@@ -379,25 +313,15 @@
       margin-left: 0;
     }
 
-    .plan-section {
+    .request-bar-container {
       width: 100%;
       max-width: 120px;
+      min-width: 100px;
       padding: 10px;
       border-radius: 0;
       box-shadow: none;
       border: 0.2px solid;
       box-sizing: border-box;
-    }
-
-    .user-info {
-      width: 100%;
-    }
-
-    .upgrade-button {
-      position: relative;
-      transform: none;
-      margin-top: 10px;
-      opacity: 1;
     }
   }
 </style>

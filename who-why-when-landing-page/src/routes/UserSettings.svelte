@@ -15,6 +15,7 @@
   let totpUri = '';
   let qrCodeUrl = '';
   let current2FAToken = '';
+  let showPricing = false; // State to show/hide pricing section
 
   onMount(async () => {
     await fetchUserDetails();
@@ -150,6 +151,10 @@
   function closeEnable2FAPopup() {
     showEnable2FAPopup = false;
   }
+
+  function togglePricing() {
+    showPricing = !showPricing;
+  }
 </script>
 
 <section class="user-settings">
@@ -171,11 +176,38 @@
         <p><strong>Plan Renews In:</strong> {daysUntilRenewal} days</p>
         {#if user.subscription_plan !== 'pro'}
           <a href={upgradeLink} class="btn-link" target="_blank" rel="noopener noreferrer">Upgrade to {getNextPlan(user.subscription_plan).toUpperCase()}</a>
-        {:else}
-          <a href="mailto:support@whowhywhen.com" class="btn-link">Contact to Upgrade</a>
         {/if}
         {#if user.subscription_plan !== 'free'}
-          <a href={customerPortalLink} class="btn-link" target="_blank" rel="noopener noreferrer">Manage Subscription</a>
+          <a href={customerPortalLink} class="btn-link manage-subscription" target="_blank" rel="noopener noreferrer">Manage Subscription</a>
+        {/if}
+        <button class="accordion-toggle" on:click={togglePricing}>
+          <i class="fas fa-chevron-down"></i> {showPricing ? 'Hide Pricing' : 'Show Pricing'}
+        </button>
+        {#if showPricing}
+          <div class="accordion">
+            <div class="accordion-content">
+              <div class="plans">
+                <div class="plan">
+                  <h3>FREE</h3>
+                  <p>20,000 monthly calls</p>
+                  <p>All Analytics</p>
+                  <p class="price">$0</p>
+                </div>
+                <div class="plan best-value">
+                  <h3>STARTER</h3>
+                  <p>250,000 monthly calls</p>
+                  <p>All Analytics</p>
+                  <p class="price">$9</p>
+                </div>
+                <div class="plan">
+                  <h3>PRO</h3>
+                  <p>5,000,000 monthly calls</p>
+                  <p>All Analytics</p>
+                  <p class="price">$39</p>
+                </div>
+              </div>
+            </div>
+          </div>
         {/if}
       </div>
       <hr>
@@ -213,6 +245,10 @@
   padding: 60px 20px;
   background: linear-gradient(135deg, #f5f7fa, #e9eff6);
   text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+  border-radius: 10px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
 }
 
 h2 {
@@ -226,7 +262,7 @@ h2 {
   border-radius: 10px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
   padding: 30px;
-  max-width: 600px;
+  max-width: 100%;
   margin: 0 auto;
   text-align: left;
 }
@@ -259,7 +295,7 @@ hr {
 
 .btn-link:hover {
   color: #552288;
-  text-decoration: underline !important ;
+  text-decoration: underline !important;
 }
 
 .btn-primary, .btn-secondary {
@@ -285,6 +321,34 @@ hr {
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
+.manage-subscription {
+  display: block;
+  margin-top: 10px;
+}
+
+.accordion-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  background-color: #f5f7fa;
+  border: none;
+  color: #663399;
+  font-size: 1rem;
+  padding: 10px;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: background-color 0.3s;
+}
+
+.accordion-toggle:hover {
+  background-color: #e9eff6;
+}
+
+.accordion-toggle i {
+  margin-right: 5px;
+}
+
 .popup-content h3 {
   margin-bottom: 20px;
   font-size: 1.5rem;
@@ -299,7 +363,7 @@ hr {
 
 @media (min-width: 768px) {
   .user-card {
-    max-width: 600px;
+    max-width: 800px;
   }
 }
 
@@ -324,4 +388,65 @@ hr {
   max-width: 400px;
 }
 
+/* Accordion styles */
+.accordion {
+  margin-top: 20px;
+  width: 100%;
+}
+
+.accordion-content {
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  /* width: 100%; */
+}
+
+.plans {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.plan {
+  flex: 1 1 20%; /* Adjust the width to fit 3 cards in a row */
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.plan h3 {
+  margin-bottom: 10px;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.plan p {
+  margin-bottom: 10px;
+  font-size: 1rem;
+  color: #555;
+}
+
+.plan .price {
+  margin-top: 10px;
+  font-size: 1.5rem;
+  color: #333;
+  font-weight: bold;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .plan {
+    flex: 1 1 100%; /* 100% width on small screens */
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .plan {
+    flex: 1 1 calc(50% - 20px); /* 50% width on medium screens */
+  }
+}
 </style>
