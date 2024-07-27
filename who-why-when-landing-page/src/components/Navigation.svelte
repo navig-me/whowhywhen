@@ -24,10 +24,10 @@
           <li><Link to="dashboard">Dashboard</Link></li>
           <li><Link to="bots">Bots</Link></li>
           <li><Link to="projects">Projects</Link></li>
-          <li><Link to="integrate">Usage Guide</Link></li>
+          <li><Link to="integrate">Usage</Link></li>
           <li><a on:click={logout}>Logout</a></li>
         {:else}
-          <li><Link to="integrate">Usage Guide</Link></li>
+          <li><Link to="integrate">Usage</Link></li>
           <li><Link to="login">Login</Link></li>
           <li><Link to="register">Register</Link></li>
         {/if}

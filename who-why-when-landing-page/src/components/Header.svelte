@@ -123,18 +123,28 @@
               </div>
             </div>
           {/if}
-          <!-- <a class="nav-link" href="https://whowhywhen.github.io" target="_blank" rel="noopener noreferrer">Docs</a> -->
-          <Link class="nav-link" to="/dashboard">Dashboard</Link>
-          <Link class="nav-link" to="/bots">Bots</Link>
-          <Link class="nav-link" to="/projects">Projects</Link>
-          <Link class="nav-link" to="/integrate">Usage Guide</Link>
-          <Link class="nav-link" to="/user-settings">Settings</Link>
-          <a class="nav-link logout-link" on:click={logout}>Logout</a>
+          <div class="nav-section">
+            <Link class="nav-link" to="/dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</Link>
+            <Link class="nav-link" to="/bots"><i class="fas fa-robot"></i> Bots</Link>
+          </div>
+          <div class="nav-section">
+            <Link class="nav-link" to="/projects"><i class="fas fa-project-diagram"></i> Projects</Link>
+            <Link class="nav-link" to="/integrate"><i class="fas fa-book"></i> Usage</Link>
+          </div>
+          <div class="nav-section">
+            <Link class="nav-link" to="/user-settings"><i class="fas fa-cog"></i> Settings</Link>
+          </div>
+          <div class="nav-section">
+            <a class="nav-link logout-link" on:click={logout}><i class="fas fa-sign-out-alt"></i> Logout</a>
+          </div>
         {:else}
-          <!-- <a class="nav-link" href="https://whowhywhen.github.io" target="_blank" rel="noopener noreferrer">Docs</a> -->
-          <Link class="nav-link" to="/integrate">Usage Guide</Link>
-          <Link class="nav-link" to="/login">Login</Link>
-          <Link class="nav-link" to="/register">Register</Link>
+          <div class="nav-section">
+            <Link class="nav-link" to="/integrate"><i class="fas fa-book"></i> Usage</Link>
+          </div>
+          <div class="nav-section">
+            <Link class="nav-link" to="/login"><i class="fas fa-sign-in-alt"></i> Login</Link>
+            <Link class="nav-link" to="/register"><i class="fas fa-user-plus"></i> Register</Link>
+          </div>
         {/if}
       </div>
     </nav>
@@ -194,6 +204,18 @@
     align-items: center;
   }
 
+  .nav-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .nav-section + .nav-section {
+    border-left: 1px solid #ddd;
+    padding-left: 10px;
+    margin-left: 10px;
+  }
+
   nav a {
     text-decoration: none;
     transition: color 0.3s;
@@ -203,6 +225,7 @@
 
   .nav-link {
     color: #663399 !important;
+    width: 120px;
   }
 
   .nav-link:hover {
@@ -225,6 +248,7 @@
     background-size: 56.57px 56.57px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     width: 100%;
+    max-width: 120px;
     box-sizing: border-box;
   }
 
@@ -339,8 +363,15 @@
       border-bottom: 1px solid #ddd;
     }
 
+    .nav-section + .nav-section {
+      border-left: none;
+      padding-left: 0;
+      margin-left: 0;
+    }
+
     .plan-section {
       width: 100%;
+      max-width: 120px;
       padding: 10px;
       border-radius: 0;
       box-shadow: none;

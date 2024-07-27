@@ -13,6 +13,7 @@ from app.routers import auth, apikey, apilog, botinfo
 from app.models.user import User
 from app.models.apilog import APILog
 from app.crud.apilog import create_apilog
+from app.services.stripe_service import get_subscription_end_date
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +34,11 @@ async def check_monthly_credit_limit():
                 print(f"Monthly credit limit: {user.monthly_credit_limit}")
                 if total_requests_count > user.monthly_credit_limit:
                     user.monthly_credit_usage_crossed = True
-                if datetime.now() - user.monthly_credit_limit_reset > timedelta(days=30):
+                
+                # Get the subscription end date from Stripe
+                subscription_end_date = get_subscription_end_date(user)
+                
+                if subscription_end_date and datetime.now() > subscription_end_date:
                     user.monthly_credit_usage_crossed = False
                     user.monthly_credit_limit_reset = datetime.now()
                 db.add(user)

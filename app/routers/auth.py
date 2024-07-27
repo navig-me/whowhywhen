@@ -130,7 +130,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
 @router.get("/users/me", response_model=UserStatusRead)
 def read_users_me(current_user: User = Depends(get_current_user), session: Session = Depends(get_session)):
     refresh_user_subscription(current_user, session)
-    user_projects = get_user_projects(session,current_user.id)
+    user_projects = get_user_projects(session, current_user.id)
     user_request_count = 0
     for project in user_projects:
         user_request_count += session.query(APILog).filter(APILog.user_project_id == project.id).filter(APILog.created_at >= current_user.monthly_credit_limit_reset).count()
