@@ -124,26 +124,29 @@
             </div>
           {/if}
           <div class="nav-section">
-            <Link class="nav-link" to="/dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</Link>
-            <Link class="nav-link" to="/bots"><i class="fas fa-robot"></i> Bots</Link>
+            <Link class="nav-link" to="/dashboard">Dashboard</Link>
+            <span class="dot">•</span>
+            <Link class="nav-link" to="/bots">Bots</Link>
           </div>
           <div class="nav-section">
-            <Link class="nav-link" to="/projects"><i class="fas fa-project-diagram"></i> Projects</Link>
-            <Link class="nav-link" to="/integrate"><i class="fas fa-book"></i> Usage</Link>
+            <Link class="nav-link" to="/projects">Projects</Link>
+            <span class="dot">•</span>
+            <Link class="nav-link" to="/integrate">Usage</Link>
           </div>
           <div class="nav-section">
-            <Link class="nav-link" to="/user-settings"><i class="fas fa-cog"></i> Settings</Link>
+            <Link class="nav-link" to="/user-settings">Settings</Link>
           </div>
           <div class="nav-section">
             <a class="nav-link logout-link" on:click={logout}><i class="fas fa-sign-out-alt"></i> Logout</a>
           </div>
         {:else}
           <div class="nav-section">
-            <Link class="nav-link" to="/integrate"><i class="fas fa-book"></i> Usage</Link>
+            <Link class="nav-link" to="/integrate">Usage</Link>
           </div>
           <div class="nav-section">
-            <Link class="nav-link" to="/login"><i class="fas fa-sign-in-alt"></i> Login</Link>
-            <Link class="nav-link" to="/register"><i class="fas fa-user-plus"></i> Register</Link>
+            <Link class="nav-link" to="/login">Login</Link>
+            <span class="dot">•</span>
+            <Link class="nav-link" to="/register">Register</Link>
           </div>
         {/if}
       </div>
@@ -216,6 +219,13 @@
     margin-left: 10px;
   }
 
+  .dot {
+    color: #888;
+    font-size: 1.5rem;
+    line-height: 1;
+    margin: 0 5px;
+  }
+
   nav a {
     text-decoration: none;
     transition: color 0.3s;
@@ -225,7 +235,7 @@
 
   .nav-link {
     color: #663399 !important;
-    width: 120px;
+    /* width: 120px; */
   }
 
   .nav-link:hover {
