@@ -129,7 +129,7 @@ def get_counts_data(
         if search_params.ip_address:
             query = query.filter(APILog.ip_address.ilike(f'{search_params.ip_address}%'))
         if search_params.user_agent:
-            query = query.filter(APILog.user_agent.ilike(f'{search_params.user_agent}%'))
+            query = query.filter(APILog.user_agent.ilike(f'%{search_params.user_agent}%'))
         if search_params.location:
             query = query.filter(APILog.location.ilike(f'{search_params.location}%'))
         if search_params.response_code:
@@ -272,7 +272,7 @@ def get_apilogs(
         if search_params.ip_address:
             query = query.where(APILog.ip_address.ilike(f'{search_params.ip_address}%'))
         if search_params.user_agent:
-            query = query.where(APILog.user_agent.ilike(f'{search_params.user_agent}%'))
+            query = query.where(APILog.user_agent.ilike(f'%{search_params.user_agent}%'))
         if search_params.location:
             query = query.where(APILog.location.ilike(f'{search_params.location}%'))
         if search_params.response_code:
@@ -378,7 +378,7 @@ def get_apilogs_stats(
         if search_params.ip_address:
             query = query.filter(APILog.ip_address.ilike(f'{search_params.ip_address}%'))
         if search_params.user_agent:
-            query = query.filter(APILog.user_agent.ilike(f'{search_params.user_agent}%'))
+            query = query.filter(APILog.user_agent.ilike(f'%{search_params.user_agent}%'))
         if search_params.location:
             query = query.filter(APILog.location.ilike(f'{search_params.location}%'))
         if search_params.response_code:

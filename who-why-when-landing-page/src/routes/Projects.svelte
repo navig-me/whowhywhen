@@ -273,11 +273,11 @@
                                 <span class={key.show ? 'unblurred' : 'blurred'}>{blurApiKey(key.key, key.show)}</span>
                             </div>
                             <div class="api-key-actions">
-                                <a href="javascript:void(0);" class="btn-secondary" on:click={() => confirmDeleteApiKey(key.id)}>Delete</a>
                                 <a href="javascript:void(0);" class="btn-secondary" on:click={() => key.show = !key.show}>{key.show ? 'Hide' : 'Show'}</a>
-                                <a href="javascript:void(0);" class="btn-secondary" on:click={() => testApiKey(key.key)}>Test API</a>
-                                <a href="javascript:void(0);" class="btn-secondary" on:click={() => showIntegrationSnippetModal(key.key)}>Integrate</a>
                                 <a href="javascript:void(0);" class="btn-secondary" on:click={() => openCurlModal(key.key, clientIp, userAgent)}>cURL Command</a>
+                                <a href="javascript:void(0);" class="btn-secondary" on:click={() => showIntegrationSnippetModal(key.key)}>Integrate</a>
+                                <a href="javascript:void(0);" class="btn-secondary" on:click={() => testApiKey(key.key)}>Test API</a>
+                                <a href="javascript:void(0);" class="btn-secondary" on:click={() => confirmDeleteApiKey(key.id)}>Delete</a>
                             </div>
                         </li>
                     {/each}

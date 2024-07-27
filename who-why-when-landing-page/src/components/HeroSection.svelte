@@ -4,7 +4,7 @@
 
 	function changeView(view) {
 	  navigate(view);
-	}
+}
 </script>
   
 <section class="hero-section">

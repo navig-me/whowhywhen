@@ -31,13 +31,19 @@
         datasets: [
           {
             ...data.datasets[0],
-            data: sortedValues
+            data: sortedValues,
+            backgroundColor: data.datasets[0].backgroundColor
           }
         ]
       };
     }
 
     return data;
+  }
+
+  // Function to truncate text with ellipses
+  function truncateText(text, maxLength) {
+    return text.length > maxLength ? text.substring(0, maxLength - 3) + '...' : text;
   }
 
   // Sort the pie chart data
@@ -57,7 +63,7 @@
         maintainAspectRatio: false,
         plugins: {
           legend: {
-            position: 'right',
+            position: 'bottom',
             labels: {
               color: '#666',
               font: {
@@ -67,6 +73,28 @@
               boxWidth: 20,
               padding: 15,
               usePointStyle: true,
+              generateLabels: (chart) => {
+                const data = chart.data;
+                if (data.labels.length && data.datasets.length) {
+                  return data.labels.map((label, i) => {
+                    const value = data.datasets[0].data[i];
+                    const backgroundColor = data.datasets[0].backgroundColor[i];
+                    return {
+                      text: truncateText(label, 30), // Truncate label text to 15 characters
+                      fillStyle: backgroundColor,
+                      hidden: isNaN(data.datasets[0].data[i]) || chart.getDatasetMeta(0).data[i].hidden,
+                      lineCap: 'butt',
+                      lineDash: [],
+                      lineDashOffset: 0,
+                      lineJoin: 'miter',
+                      strokeStyle: 'transparent',
+                      pointStyle: 'circle',
+                      rotation: 0
+                    };
+                  });
+                }
+                return [];
+              }
             }
           },
           title: {
@@ -119,10 +147,12 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
   }
 
   .chart-container canvas {
-    max-width: 60%;
+    max-width: 100%;
+    max-height: 70%;
   }
 
   p {
@@ -134,10 +164,5 @@
     text-align: center;
     font-size: 1.2em;
     color: #663399;
-  }
-
-  .chartjs-legend {
-    max-height: 400px;
-    overflow-y: auto;
   }
 </style>
