@@ -171,9 +171,11 @@
       <hr>
       <div class="plan-info">
         <h3>Subscription Plan</h3>
-        <p><strong>Plan:</strong> {user.subscription_plan.toUpperCase()}</p>
-        <p><strong>Requests Used:</strong> {userRequestCount}/{user.monthly_credit_limit}</p>
-        <p><strong>Plan Renews In:</strong> {daysUntilRenewal} days</p>
+        <div class={`subscription-card ${user.subscription_plan}`}>
+          <h4>{user.subscription_plan.toUpperCase()} Plan</h4>
+          <p>Requests Used: {userRequestCount}/{user.monthly_credit_limit}</p>
+          <p>Renews In: {daysUntilRenewal} days</p>
+        </div>
         {#if user.subscription_plan !== 'pro'}
           <a href={upgradeLink} class="btn-link" target="_blank" rel="noopener noreferrer">Upgrade to {getNextPlan(user.subscription_plan).toUpperCase()}</a>
         {/if}
@@ -187,19 +189,19 @@
           <div class="accordion">
             <div class="accordion-content">
               <div class="plans">
-                <div class="plan">
+                <div class="plan free-plan">
                   <h3>FREE</h3>
                   <p>20,000 monthly calls</p>
                   <p>All Analytics</p>
                   <p class="price">$0</p>
                 </div>
-                <div class="plan best-value">
+                <div class="plan starter-plan">
                   <h3>STARTER</h3>
                   <p>250,000 monthly calls</p>
                   <p>All Analytics</p>
                   <p class="price">$9</p>
                 </div>
-                <div class="plan">
+                <div class="plan pro-plan">
                   <h3>PRO</h3>
                   <p>5,000,000 monthly calls</p>
                   <p>All Analytics</p>
@@ -323,7 +325,7 @@ hr {
 
 .manage-subscription {
   display: block;
-  margin-top: 10px;
+  margin-top: 20px;
 }
 
 .accordion-toggle {
@@ -399,7 +401,6 @@ hr {
   background: #f9f9f9;
   border-radius: 10px;
   border: 1px solid #ddd;
-  /* width: 100%; */
 }
 
 .plans {
@@ -410,12 +411,24 @@ hr {
 }
 
 .plan {
-  flex: 1 1 20%; /* Adjust the width to fit 3 cards in a row */
+  flex: 1 1 calc(33.33% - 20px); /* Adjust the width to fit 3 cards in a row */
   background: #fff;
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   text-align: center;
+}
+
+.plan.free-plan {
+  border-left: 5px solid #043d16; 
+}
+
+.plan.starter-plan {
+  border-left: 5px solid #663399; 
+}
+
+.plan.pro-plan {
+  border-left: 5px solid #ff4500; 
 }
 
 .plan h3 {
@@ -435,6 +448,39 @@ hr {
   font-size: 1.5rem;
   color: #333;
   font-weight: bold;
+}
+
+/* Subscription Card */
+.subscription-card {
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  color: #fff;
+  text-align: center;
+}
+
+.subscription-card.free {
+  background-color: #043d16; 
+}
+
+.subscription-card.starter {
+  background-color: #663399; 
+}
+
+.subscription-card.pro {
+  background-color: #ff4500; 
+}
+
+.subscription-card h4 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.subscription-card p {
+  margin: 10px 0 0;
+  font-size: 1rem;
+  color: #fff;
 }
 
 /* Responsive adjustments */
