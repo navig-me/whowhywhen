@@ -1,9 +1,11 @@
 from sqlmodel import Session, select
 from app.models.apilog import APILog, APILogQueryParam
 from app.schemas.apilog import APILogCreate, APILogSearch
+from app.models.botinfo import BotInfo
 from datetime import datetime, timedelta
 from sqlalchemy import select, func, case
 from typing import List, Optional
+import re
 from sqlmodel import or_
 import uuid
 import httpx
@@ -69,6 +71,20 @@ def parse_user_agent(apilog: APILog):
         traceback.print_exc()
     return apilog
 
+bot_infos = []
+
+def get_bot_id(user_agent: str, session: Session):
+    global bot_infos
+    if not bot_infos:
+        bot_infos = session.query(BotInfo).all()
+    # Check if any of botinfo.pattern matches the user agent
+    for botinfo in bot_infos:
+        if botinfo.pattern:
+            compiled_pattern = re.compile(botinfo.pattern)
+            if compiled_pattern.search(user_agent):
+                return botinfo.id
+    return None
+
 async def create_apilog(db: Session, user_project_id: uuid.UUID, apilog: APILogCreate, update_location: bool = False):
     db_apilog = APILog( **apilog.dict())
     db_apilog.user_project_id = user_project_id
@@ -87,6 +103,7 @@ async def create_apilog(db: Session, user_project_id: uuid.UUID, apilog: APILogC
     
     if apilog.user_agent:
         db_apilog = parse_user_agent(db_apilog)
+        db_apilog.bot_id = get_bot_id(apilog.user_agent, db)
     
     db.add(db_apilog)
     db.commit()
@@ -333,6 +350,12 @@ def get_apilogs(
         if log_dict["response_time"]:
             log_dict["response_time"] = round(log_dict["response_time"], 5)
         log_dict["query_params"] = params_by_log_id.get(log.id, [])
+
+        if log.bot_id:
+            log_dict["bot_id"] = log.bot_id
+            if bot_info := db.query(BotInfo).filter(BotInfo.id == log.bot_id).first():
+                log_dict["bot_data"] = bot_info.dict()
+
         logs_with_params.append(log_dict)
     
     return {"logs": logs_with_params, "total": total}

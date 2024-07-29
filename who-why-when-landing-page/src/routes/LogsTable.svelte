@@ -11,6 +11,7 @@
     let modalTitle = "";
     let showBlockModal = false;
     let blockContent = "";
+    let botData = null;
 
     function handleCellClick(field, value) {
         dispatch('cellClick', { field, value });
@@ -22,12 +23,13 @@
         }
     }
 
-    function showModalContent(title, content) {
+    function showModalContent(title, content, bot) {
         modalTitle = title;
         if (!content) {
             content = "No data available";
         }
         modalContent = content;
+        botData = bot || null;
         showModal = true;
     }
 
@@ -35,6 +37,7 @@
         showModal = false;
         modalContent = [];
         modalTitle = "";
+        botData = null;
     }
 
     function showBlockUserAgentModal(userAgent) {
@@ -48,7 +51,10 @@
     }
 
     function getDeviceIcon(log) {
-        if (log.is_bot) {
+        if (log.bot_data && log.bot_data.website) {
+            const favicon = getFavicon(log.bot_data.website);
+            return favicon;
+        } else if (log.is_bot) {
             return "fa-robot";
         } else if (log.is_mobile || log.is_tablet) {
             return "fa-mobile";
@@ -73,6 +79,11 @@
             return 'status-red';
         }
         return '';
+    }
+
+    function getFavicon(url) {
+        const hostname = new URL(url).hostname;
+        return `https://www.google.com/s2/favicons?sz=64&domain=${hostname}`;
     }
 </script>
 
@@ -114,7 +125,11 @@
                                     <i class="fa fa-filter filter-icon" aria-hidden="true" on:click={() => handleFilterClick('ip_address', log.ip_address)}></i>
                                 </td>
                                 <td>
-                                    <i class={`fa ${getDeviceIcon(log)} device-icon`} aria-hidden="true"></i>
+                                    {#if log.bot_data && log.bot_data.website}
+                                        <img src={getDeviceIcon(log)} class="device-icon" alt="Bot favicon" />
+                                    {:else}
+                                        <i class={`fa ${getDeviceIcon(log)} device-icon`} aria-hidden="true"></i>
+                                    {/if}
                                     {log.user_agent}
                                     <i class="fa fa-info-circle info-icon" aria-hidden="true" on:click={() => showModalContent("User Agent Details", [
                                         { key: "Browser Family", value: log.user_agent_browser_family },
@@ -129,7 +144,7 @@
                                         { key: "Is PC", value: log.is_pc },
                                         { key: "Is Touch Capable", value: log.is_touch_capable },
                                         { key: "Is Bot", value: log.is_bot },
-                                    ])}></i>
+                                    ], log.bot_data)}></i>
                                     <i class="fa fa-filter filter-icon" aria-hidden="true" on:click={() => handleFilterClick('user_agent', log.user_agent)}></i>
                                     <i class="fa fa-ban block-icon" aria-hidden="true" on:click={() => showBlockUserAgentModal(log.user_agent)}></i>
                                 </td>
@@ -165,6 +180,15 @@
         <div class="modal-content">
             <span class="close" on:click={closeModal}>&times;</span>
             <h3>{modalTitle}</h3>
+            {#if botData}
+                <div class="bot-data-card">
+                    <img src={getFavicon(botData.website)} alt="Bot favicon" />
+                    <div>
+                        <strong>{botData.bot_name}</strong>
+                        <a href={botData.website} target="_blank">{botData.website}</a>
+                    </div>
+                </div>
+            {/if}
             {#if modalTitle === "Query Parameters"}
                 {#if modalContent.length === 0}
                     <p>No query parameters available</p>
@@ -386,6 +410,7 @@
 
     .device-icon {
         margin-right: 5px;
+        max-height: 20px;
     }
 
     .filter-icon {
@@ -478,6 +503,32 @@
     .status-red {
         background-color: #f44336;
         width: 4px;
+    }
+
+    .bot-data-card {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+    }
+
+    .bot-data-card img {
+        width: 32px;
+        height: 32px;
+        margin-right: 10px;
+    }
+
+    .bot-data-card div {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .bot-data-card a {
+        color: #663399;
+        text-decoration: none;
     }
 </style>
 

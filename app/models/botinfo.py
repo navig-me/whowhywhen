@@ -16,8 +16,9 @@ class BotInfo(SQLModel, table=True):
     id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
     bot_name: str = Field(index=True)
     website: Optional[str] = Field(default=None)
-    bot_type: BotType = Field(default=BotType.search_engine)
-    bot_details: Optional[str]
+    bot_type: Optional[BotType] = Field(default=None, nullable=True)
+    bot_details: Optional[str] = Field(default=None, nullable=True)
+    pattern: Optional[str] = Field(default=None, nullable=True)
     created: datetime = Field(default_factory=datetime.now)
     modified: datetime = Field(default_factory=datetime.now)
     api_logs: List["APILog"] = Relationship(back_populates="botinfo")
