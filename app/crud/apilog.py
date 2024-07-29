@@ -83,7 +83,7 @@ def get_bot_id(user_agent: str, session: Session):
         if pattern := botinfo.get('pattern'):
             compiled_pattern = re.compile(pattern)
             if compiled_pattern.search(user_agent):
-                return botinfo.id
+                return botinfo.get("id")
     return None
 
 async def create_apilog(db: Session, user_project_id: uuid.UUID, apilog: APILogCreate, update_location: bool = False):
