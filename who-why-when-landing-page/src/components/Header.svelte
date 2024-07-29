@@ -4,6 +4,7 @@
   import { clearToken, isLoggedIn } from '../stores/userStore';
   import { DASH_API_BASE_URL } from '../config';
   import { navigate } from 'svelte-routing';
+  import { get } from 'svelte/store';
 
   let loggedIn;
   let user = null;
@@ -83,18 +84,18 @@
     return 'bar-green';
   }
 
-  function calculateDaysUntilRenewal(resetDate) {
-    const reset = new Date(resetDate);
-    const now = new Date();
-    const timeDiff = Math.abs(reset.getTime() - now.getTime());
-    const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
-    return 30 - diffDays;
+  function conditionalChangeView() {
+    if (get(isLoggedIn)) {
+      changeView('/dashboard');
+    } else {
+      changeView('/');
+    }
   }
 </script>
 
 <header class="header">
   <div class="container">
-    <h1 on:click={() => changeView('/')}>WhoWhyWhen</h1>
+    <h1 on:click={() => conditionalChangeView()}>WhoWhyWhen</h1>
     <nav>
       <div class="menu-toggle" on:click={() => menuOpen = !menuOpen}>
         <div class="bar"></div>
