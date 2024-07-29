@@ -76,11 +76,12 @@ bot_infos = []
 def get_bot_id(user_agent: str, session: Session):
     global bot_infos
     if not bot_infos:
-        bot_infos = session.query(BotInfo).all()
+        bot_infos_query = session.query(BotInfo).all()
+        bot_infos = [bot_info.dict() for bot_info in bot_infos_query]
     # Check if any of botinfo.pattern matches the user agent
     for botinfo in bot_infos:
-        if botinfo.pattern:
-            compiled_pattern = re.compile(botinfo.pattern)
+        if pattern := botinfo.get('pattern'):
+            compiled_pattern = re.compile(pattern)
             if compiled_pattern.search(user_agent):
                 return botinfo.id
     return None
