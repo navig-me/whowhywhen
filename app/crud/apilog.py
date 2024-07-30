@@ -143,13 +143,12 @@ def get_bot_logs_stats_data(
     if project_id:
         query = query.filter(APILog.user_project_id == project_id)
     
-    # Get top 10 bot_id by count
     top_bots = (
         query.with_entities(APILog.bot_id, func.count(APILog.bot_id).label('count'))
         .filter(APILog.is_bot == True)
         .group_by(APILog.bot_id)
         .order_by(func.count(APILog.bot_id).desc())
-        .limit(10)
+        .limit(20)
         .all()
     )
     
@@ -171,8 +170,8 @@ def get_bot_logs_stats_data(
             .first()
         )
 
-        # Last 10 endpoints called
-        last_10_endpoints = (
+        # Top 10 endpoints called
+        top_10_endpoints = (
             query.with_entities(APILog.path, func.count(APILog.path).label('count'))
             .filter(APILog.bot_id == bot_id)
             .group_by(APILog.path)
@@ -180,7 +179,7 @@ def get_bot_logs_stats_data(
             .limit(10)
             .all()
         )
-        last_10_endpoints = [{'path': endpoint.path, 'count': endpoint.count} for endpoint in last_10_endpoints]
+        top_10_endpoints = [{'path': endpoint.path, 'count': endpoint.count} for endpoint in top_10_endpoints]
 
         # Top 10 response statuses
         top_response_statuses = (
@@ -206,7 +205,7 @@ def get_bot_logs_stats_data(
                 'tablet': device_stats.tablet_count,
                 'pc': device_stats.pc_count
             },
-            'last_10_endpoints': last_10_endpoints,
+            'top_10_endpoints': top_10_endpoints,
             'top_response_statuses': top_response_statuses,
             'last_seen': last_seen,
             'last_seen_text': f"{relative_time} ago"

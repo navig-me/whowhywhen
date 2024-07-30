@@ -221,6 +221,11 @@
           <a href="javascript:void(0);" class="btn-link" on:click={disable2FA}>Disable 2FA</a>
         {/if}
       </div>
+      <hr>
+      <div class="support-info">
+          <h3>Have Feedback or Need Help?</h3>
+          <p>Click here to <a href="mailto:support@whowhywhen.com">contact support</a> at support@whowhywhen.com</p>
+      </div>
     </div>
   {/if}
 </section>
@@ -269,7 +274,7 @@ h2 {
   text-align: left;
 }
 
-.user-info, .plan-info, .security-info {
+.user-info, .plan-info, .security-info, .support-info {
   margin-bottom: 20px;
 }
 

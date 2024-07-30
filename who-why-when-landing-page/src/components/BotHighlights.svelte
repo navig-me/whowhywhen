@@ -72,7 +72,7 @@
 {:else}
     <div class="bot-highlights">
         <h3 on:click={toggleCollapse} class="collapsible-header">
-            Top 10 Bots
+            Top Bot Visits
             <span class="arrow">{isCollapsed ? '▼' : '▲'}</span>
         </h3>
         {#if !isCollapsed}
@@ -95,7 +95,7 @@
                         <div class="bot-details">
                             <p>Top Endpoints:</p>
                             <div class="bar-chart-container">
-                                <Bar data={createBarChartData(bot.last_10_endpoints)} options={{
+                                <Bar data={createBarChartData(bot.top_10_endpoints)} options={{
                                     indexAxis: 'y',
                                     responsive: true,
                                     maintainAspectRatio: false,
