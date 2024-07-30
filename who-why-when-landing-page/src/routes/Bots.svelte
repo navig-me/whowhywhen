@@ -474,7 +474,6 @@
       <p>Not enough data for the selected filters. Visit the <a href="/projects">Projects</a> page to test your API keys and see data on this chart. Click on <strong>Integrate</strong> to view the steps to integrate with your API.</p>
     </div>
   {/if}
-  <BotHighlights {topBotsData} {isBotDataLoading} />
   <div class="dashboard-content">
     <div class="left-column">
       <div class="project-selector-container">
@@ -516,6 +515,7 @@
       <div class="filters-icon-container">
         <i class="fa fa-filter" aria-hidden="true" on:click={openFiltersModal}></i>
       </div>
+      <BotHighlights {topBotsData} {isBotDataLoading} />
       <div class="charts-container">
         <RequestsChart {barChartData} {frequency} {isChartLoading} on:frequencyChange={handleFrequencyChange} class="full-width-chart"/>
       </div>

@@ -208,7 +208,8 @@ def get_bot_logs_stats_data(
             'top_10_endpoints': top_10_endpoints,
             'top_response_statuses': top_response_statuses,
             'last_seen': last_seen,
-            'last_seen_text': f"{relative_time} ago"
+            'last_seen_text': f"{relative_time} ago",
+            'pattern': bot_info.pattern
         })
 
     return {'bot_stats': bot_stats}

@@ -8,9 +8,9 @@
 		},
 		{
 			title: "Track Bots and AI Scrapers",
-			description: "Track bots and AI Scrapers if you want to block them from accessing your data. WhoWhyWhen suggests robots.txt updates to block them.",
+			description: "Track which bots and AI scrapers are accessing your data and how. WhoWhyWhen also suggests robots.txt updates to block them.",
 			icon: "fas fa-robot",
-			img: "/bots.png"
+			img: "/bot.png"
 		},
 		{
 			title: "Performance Monitoring",

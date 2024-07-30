@@ -9,9 +9,9 @@
   
 <section class="hero-section">
 	<div class="container">
-		<h2><span class="supercharge">Supercharge</span> Your APIs</h2>
-		<p>Unlock detailed insights, optimize resources, and take control of your API performance with lightweight and flexible analytics.</p>
-		<button class="btn-primary" on:click={() => changeView('/register')}>Get Started</button>
+		<h2><span class="supercharge">Supercharge</span> Your APIs, Protect Your Data</h2>
+		<p>Get real-time analytics, track bots and AI scrapers, and optimize your resources with our comprehensive API management platform.</p>
+		<button class="btn-primary" on:click={() => changeView('/register')}>Get Started for Free</button>
 	</div>
 </section>
   

@@ -7,6 +7,9 @@
     export let topBotsData = [];
     export let isBotDataLoading = false;
     let isCollapsed = true;
+    let showBlockModal = false;
+    let blockContent = "";
+    let botData = null;
 
     function toggleCollapse() {
         isCollapsed = !isCollapsed;
@@ -65,6 +68,16 @@
         if (minutes > 0) return `${minutes} minutes ago`;
         return `just now`;
     }
+
+    function showBlockBot(pattern) {
+        blockContent = `User-agent: ${pattern}\nDisallow: /`;
+        showBlockModal = true;
+    }
+
+    function closeBlockModal() {
+        showBlockModal = false;
+        blockContent = "";
+    }
 </script>
 
 {#if isBotDataLoading}
@@ -72,7 +85,7 @@
 {:else}
     <div class="bot-highlights">
         <h3 on:click={toggleCollapse} class="collapsible-header">
-            Top Bot Visits
+            <span class="icon"><i class="fa fa-robot bot" aria-hidden="true" title="Bot"></i></span> Top Bot Visits
             <span class="arrow">{isCollapsed ? '▼' : '▲'}</span>
         </h3>
         {#if !isCollapsed}
@@ -80,6 +93,9 @@
                 {#each topBotsData as bot}
                     <div class="bot-card">
                         <div class="bot-header">
+                            <div class="block-icon" on:click={() => showBlockBot(bot.pattern)} title="Block Bot">
+                                <i class="fa fa-ban"></i>
+                            </div>
                             <img src={getFavicon(bot.bot_website)} alt="Favicon" />
                             <div class="bot-info">
                                 <h4>{bot.bot_name} <br/><small style="font-size: x-small;">
@@ -124,6 +140,17 @@
     </div>
 {/if}
 
+{#if showBlockModal}
+    <div class="modal">
+        <div class="modal-content">
+            <span class="close" on:click={closeBlockModal}>&times;</span>
+            <h3>Block Bot</h3>
+            <p>To block this bot, add the following line to your robots.txt file:</p>
+            <pre>{blockContent}</pre>
+        </div>
+    </div>
+{/if}
+
 <style>
     .bot-highlights {
         text-align: center;
@@ -141,6 +168,10 @@
         background-color: #e0e0e0; /* Light background for the header */
         padding: 10px;
         border-radius: 5px;
+    }
+
+    .icon {
+        margin-right: 10px; /* Add space between the icon and the text */
     }
 
     .arrow {
@@ -170,6 +201,7 @@
         display: flex;
         align-items: center;
         gap: 10px;
+        position: relative;
     }
 
     .bot-info {
@@ -217,4 +249,57 @@
         height: 100px;
         flex-shrink: 0;
     }
+
+    .block-icon {
+        position: absolute;
+        top: 0;
+        right: 0;
+        font-size: 1.2em;
+        color: #ff0000; /* Red color */
+        cursor: pointer;
+    }
+
+    .block-icon:hover {
+        color: #cc0000; /* Darker red on hover */
+    }
+
+    .modal {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-content {
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        width: 50%;
+        max-height: 80%;
+        overflow-y: auto;
+        text-align: left;
+    }
+
+    .close {
+        float: right;
+        font-size: 1.5em;
+        cursor: pointer;
+    }
+
+    pre {
+        background: #f5f5f5;
+        padding: 10px;
+        border-radius: 5px;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        margin: 10px 0;
+    }
 </style>
+
+<!-- Font Awesome CDN for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
