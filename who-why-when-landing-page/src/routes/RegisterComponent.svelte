@@ -68,7 +68,7 @@
       showToast('Registration successful! Redirecting to login...', 'success');
       setTimeout(() => {
         dispatch('register', data);
-        navigate('/projects');
+        navigate('/login');
       }, 2000); // Delay to show success message before redirecting
     } else {
       const errorData = await response.json();
