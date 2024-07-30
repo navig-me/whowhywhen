@@ -9,7 +9,7 @@ python-dotenv
 python-jose
 psycopg2
 httpx
-# fastapi-utils
+relative-datetime
 greenlet
 typing_inspect
 user-agents

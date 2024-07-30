@@ -3,7 +3,7 @@ from typing import Optional, List
 from typing import Optional
 from sqlmodel import Session
 from app.database import get_session
-from app.crud.apilog import create_apilog, get_apilogs, get_apilogs_stats, create_apilog_bulk, get_counts_data
+from app.crud.apilog import create_apilog, get_apilogs, get_apilogs_stats, create_apilog_bulk, get_counts_data, get_bot_logs_stats_data
 from app.schemas.apilog import APILogCreate, APILogSearch
 from app.dependencies.apikey import get_api_key
 from app.dependencies.auth import get_current_user
@@ -91,3 +91,14 @@ def get_counts(
 ):
     counts_data = get_counts_data(session, current_user.id, project_id, search_params, start_datetime, end_datetime, bots_only)
     return {"counts": counts_data}
+
+
+@router_dash.post("/logs/project/bot-stats/{project_id}")
+def get_bot_logs_stats(
+    project_id: uuid.UUID,
+    start_datetime: Optional[datetime] = None,
+    end_datetime: Optional[datetime] = None,
+    current_user: User = Depends(get_current_user),
+    session: Session = Depends(get_session)
+):
+    return get_bot_logs_stats_data(session, current_user.id, project_id, start_datetime, end_datetime)

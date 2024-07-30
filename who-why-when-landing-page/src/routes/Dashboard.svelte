@@ -190,8 +190,10 @@
 
   function updateChartData() {
     const labels = hourlyRequestsData.map(data => data.period);
-    const successCounts = hourlyRequestsData.map(data => data.success_count);
-    const errorCounts = hourlyRequestsData.map(data => data.error_count);
+    const successCounts = hourlyRequestsData.map(data => data['2xx_count']);
+    const redirectCounts = hourlyRequestsData.map(data => data['3xx_count']);
+    const clientErrorCounts = hourlyRequestsData.map(data => data['4xx_count']);
+    const serverErrorCounts = hourlyRequestsData.map(data => data['5xx_count']);
     const avgResponseTimes = hourlyRequestsData.map(data => data.avg_response_time);
 
     const data = {
@@ -199,7 +201,7 @@
       datasets: [
         {
           type: 'bar',
-          label: 'Success Count',
+          label: '2xx Success',
           data: successCounts,
           backgroundColor: 'rgba(75, 192, 192, 0.2)',
           borderColor: 'rgba(75, 192, 192, 1)',
@@ -209,8 +211,28 @@
         },
         {
           type: 'bar',
-          label: 'Error Count',
-          data: errorCounts,
+          label: '3xx Redirects',
+          data: redirectCounts,
+          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+          borderColor: 'rgba(54, 162, 235, 1)',
+          borderWidth: 1,
+          stack: 'combined',
+          yAxisID: 'y'
+        },
+        {
+          type: 'bar',
+          label: '4xx Client Errors',
+          data: clientErrorCounts,
+          backgroundColor: 'rgba(255, 206, 86, 0.2)',
+          borderColor: 'rgba(255, 206, 86, 1)',
+          borderWidth: 1,
+          stack: 'combined',
+          yAxisID: 'y'
+        },
+        {
+          type: 'bar',
+          label: '5xx Server Errors',
+          data: serverErrorCounts,
           backgroundColor: 'rgba(255, 99, 132, 0.2)',
           borderColor: 'rgba(255, 99, 132, 1)',
           borderWidth: 1,
@@ -221,9 +243,9 @@
           type: 'line',
           label: 'Avg Response Time',
           data: avgResponseTimes,
-          backgroundColor: 'rgba(54, 162, 235, 0.2)',
-          borderColor: 'rgba(54, 162, 235, 1)',
-          borderWidth: 1,
+          backgroundColor: 'rgba(153, 102, 255, 0.2)',
+          borderColor: 'rgba(153, 102, 255, 1)',
+          borderWidth: 2,
           yAxisID: 'y1'
         }
       ]

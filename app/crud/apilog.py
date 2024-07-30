@@ -2,6 +2,7 @@ from sqlmodel import Session, select
 from app.models.apilog import APILog, APILogQueryParam
 from app.schemas.apilog import APILogCreate, APILogSearch
 from app.models.botinfo import BotInfo
+from app.models.user import UserProject
 from datetime import datetime, timedelta
 from sqlalchemy import select, func, case
 from typing import List, Optional
@@ -15,6 +16,7 @@ from http.client import responses
 from user_agents import parse
 from sqlalchemy.sql import case
 from sqlalchemy import func, or_
+from relative_datetime import DateTimeUtils
 
 async def get_geolocation(ip: str):
     if ip and ',' in ip:
@@ -121,7 +123,99 @@ async def create_apilog_bulk(db: Session, user_project_id: uuid.UUID, apilogs: L
             db_apilogs.append(ca)
     return db_apilogs
 
+def get_bot_logs_stats_data(
+    db: Session, 
+    user_id: uuid.UUID, 
+    project_id: uuid.UUID = None, 
+    start_datetime: Optional[datetime] = None,
+    end_datetime: Optional[datetime] = None,
+):
+    print("Getting bot logs stats data...", user_id, project_id, start_datetime, end_datetime)
+    end_date = end_datetime if end_datetime else datetime.now()
+    start_date = start_datetime if start_datetime else end_date - timedelta(days=30)
 
+    # Initial query to filter based on user, project, and date range
+    query = db.query(APILog).filter(
+        APILog.user_project_id == project_id,
+        APILog.created_at >= start_date,
+        APILog.created_at <= end_date
+    )
+    if project_id:
+        query = query.filter(APILog.user_project_id == project_id)
+    
+    # Get top 10 bot_id by count
+    top_bots = (
+        query.with_entities(APILog.bot_id, func.count(APILog.bot_id).label('count'))
+        .filter(APILog.is_bot == True)
+        .group_by(APILog.bot_id)
+        .order_by(func.count(APILog.bot_id).desc())
+        .limit(10)
+        .all()
+    )
+    
+    # Collect bot stats
+    bot_stats = []
+    for bot_id, count in top_bots:
+        bot_info = db.query(BotInfo).filter(BotInfo.id == bot_id).first()
+        if not bot_info:
+            continue
+        
+        # Device stats
+        device_stats = (
+            query.with_entities(
+                func.count(case((APILog.is_mobile == True, 1))).label('mobile_count'),
+                func.count(case((APILog.is_tablet == True, 1))).label('tablet_count'),
+                func.count(case((APILog.is_pc == True, 1))).label('pc_count')
+            )
+            .filter(APILog.bot_id == bot_id)
+            .first()
+        )
+
+        # Last 10 endpoints called
+        last_10_endpoints = (
+            query.with_entities(APILog.path, func.count(APILog.path).label('count'))
+            .filter(APILog.bot_id == bot_id)
+            .group_by(APILog.path)
+            .order_by(func.count(APILog.path).desc())
+            .limit(10)
+            .all()
+        )
+        last_10_endpoints = [{'path': endpoint.path, 'count': endpoint.count} for endpoint in last_10_endpoints]
+
+        # Top 10 response statuses
+        top_response_statuses = (
+            query.with_entities(APILog.response_code, func.count(APILog.response_code).label('count'))
+            .filter(APILog.bot_id == bot_id)
+            .group_by(APILog.response_code)
+            .order_by(func.count(APILog.response_code).desc())
+            .limit(10)
+            .all()
+        )
+        top_response_statuses = {status: count for status, count in top_response_statuses}
+
+        last_seen = query.filter(APILog.bot_id == bot_id).order_by(APILog.created_at.desc()).first().created_at
+        relative_time, direction = DateTimeUtils.relative_datetime(last_seen)
+
+        bot_stats.append({
+            'bot_id': bot_id,
+            'bot_name': bot_info.bot_name,
+            'bot_website': bot_info.website,
+            'total_api_calls': count,
+            'device_stats': {
+                'mobile': device_stats.mobile_count,
+                'tablet': device_stats.tablet_count,
+                'pc': device_stats.pc_count
+            },
+            'last_10_endpoints': last_10_endpoints,
+            'top_response_statuses': top_response_statuses,
+            'last_seen': last_seen,
+            'last_seen_text': f"{relative_time} ago"
+        })
+
+    return {'bot_stats': bot_stats}
+
+def coalesce_to_other(column):
+    return func.coalesce(column, 'Other')
 
 def get_counts_data(
     db: Session, 
@@ -155,9 +249,6 @@ def get_counts_data(
 
     if bots_only:
         query = query.filter(APILog.is_bot == True)  # Add the bots_only filter
-
-    def coalesce_to_other(column):
-        return func.coalesce(column, 'Other')
 
     browser_family_counts = (
         query.with_entities(
@@ -423,8 +514,10 @@ def get_apilogs_stats(
     stats_query = (
         query.with_entities(
             date_trunc.label('period'),
-            func.count(case((APILog.response_code.between(200, 399), 1), else_=None)).label('success_count'),
-            func.count(case((APILog.response_code < 200, 1), (APILog.response_code >= 400, 1), else_=None)).label('error_count'),
+            func.count(case((APILog.response_code.between(200, 299), 1), else_=None)).label('2xx_count'),
+            func.count(case((APILog.response_code.between(300, 399), 1), else_=None)).label('3xx_count'),
+            func.count(case((APILog.response_code.between(400, 499), 1), else_=None)).label('4xx_count'),
+            func.count(case((APILog.response_code.between(500, 599), 1), else_=None)).label('5xx_count'),
             func.coalesce(func.avg(APILog.response_time), 0).label('avg_response_time')
         )
         .group_by(date_trunc)
@@ -444,7 +537,7 @@ def get_apilogs_stats(
         else:
             current_period += timedelta(hours=1)
     
-    counts = {result[0].strftime(period_fmt): {"success_count": result[1], "error_count": result[2], "avg_response_time": result[3]} for result in results}
-    full_results = [{"period": period, "success_count": counts.get(period, {}).get("success_count", 0), "error_count": counts.get(period, {}).get("error_count", 0), "avg_response_time": counts.get(period, {}).get("avg_response_time", 0)} for period in full_periods]
+    counts = {result[0].strftime(period_fmt): {"2xx_count": result[1], "3xx_count": result[2], "4xx_count": result[3], "5xx_count": result[4], "avg_response_time": result[5]} for result in results}
+    full_results = [{"period": period, "2xx_count": counts.get(period, {}).get("2xx_count", 0), "3xx_count": counts.get(period, {}).get("3xx_count", 0), "4xx_count": counts.get(period, {}).get("4xx_count", 0), "5xx_count": counts.get(period, {}).get("5xx_count", 0), "avg_response_time": counts.get(period, {}).get("avg_response_time", 0)} for period in full_periods]
     
     return full_results
