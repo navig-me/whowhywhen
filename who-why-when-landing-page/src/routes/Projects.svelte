@@ -230,24 +230,24 @@
 
 <div class="projects-container">
     <h2>Your Projects</h2>
-    <ul class="project-list">
+    <div class="project-grid">
         {#each projects as project}
-            <li class="project-item">
-                <div class="project-details">
+            <div class="project-card">
+                <div class="project-header">
                     <span class="project-name">{project.name}</span>
                     {#if project.is_default}
                         <span class="default-star">★</span>
                     {/if}
                 </div>
                 <div class="project-actions">
-                    <a href="javascript:void(0);" class="btn-primary" on:click={() => fetchApiKeys(project.id, project.name)}>View API Keys</a>
-                    <Link to="/dashboard" class="btn-primary" on:click={() => handleProjectSelection(project.id)}>View Dashboard</Link>
-                    <Link to="/bots" class="btn-primary" on:click={() => handleProjectSelection(project.id)}>Bot Requests</Link>
+                    <button class="btn-action" on:click={() => fetchApiKeys(project.id, project.name)}><i class="fas fa-key"></i> API Keys</button>
+                    <Link to="/dashboard" class="btn-action" on:click={() => handleProjectSelection(project.id)}><i class="fas fa-tachometer-alt"></i> Dashboard</Link>
+                    <Link to="/bots" class="btn-action" on:click={() => handleProjectSelection(project.id)}><i class="fas fa-robot"></i> Bot Requests</Link>
                 </div>
-            </li>
+            </div>
         {/each}
-    </ul>
-    <button class="btn-new-project" on:click={() => showNewProjectModal = true}>+ New Project</button>
+    </div>
+    <button class="btn-new-project" on:click={() => showNewProjectModal = true}><i class="fas fa-plus"></i> New Project</button>
 
     {#if showNewProjectModal}
         <div class="modal">
@@ -255,14 +255,14 @@
                 <span class="close" on:click={() => showNewProjectModal = false}>&times;</span>
                 <h3>Create New Project</h3>
                 <input type="text" bind:value={newProjectName} placeholder="Project Name" class="input-field" />
-                <a href="javascript:void(0);" class="btn-primary" on:click={createProject}>Create Project</a>
+                <button class="btn-primary" on:click={createProject}><i class="fas fa-check"></i> Create Project</button>
             </div>
         </div>
     {/if}
 
     {#if showApiKeysModal}
         <div class="modal">
-            <div class="modal-content wide">
+            <div class="modal-content">
                 <span class="close" on:click={() => showApiKeysModal = false}>&times;</span>
                 <h3>API Keys for {selectedProjectName}</h3>
                 <ul class="api-keys-list">
@@ -273,11 +273,11 @@
                                 <span class={key.show ? 'unblurred' : 'blurred'}>{blurApiKey(key.key, key.show)}</span>
                             </div>
                             <div class="api-key-actions">
-                                <a href="javascript:void(0);" class="btn-secondary" on:click={() => key.show = !key.show}>{key.show ? 'Hide' : 'Show'}</a>
-                                <a href="javascript:void(0);" class="btn-secondary" on:click={() => openCurlModal(key.key, clientIp, userAgent)}>cURL Command</a>
-                                <a href="javascript:void(0);" class="btn-secondary" on:click={() => showIntegrationSnippetModal(key.key)}>Integrate</a>
-                                <a href="javascript:void(0);" class="btn-secondary" on:click={() => testApiKey(key.key)}>Test API</a>
-                                <a href="javascript:void(0);" class="btn-secondary" on:click={() => confirmDeleteApiKey(key.id)}>Delete</a>
+                                <button class="btn-secondary" on:click={() => key.show = !key.show}>{key.show ? 'Hide' : 'Show'}</button>
+                                <button class="btn-secondary" on:click={() => openCurlModal(key.key, clientIp, userAgent)}>cURL Command</button>
+                                <button class="btn-secondary" on:click={() => showIntegrationSnippetModal(key.key)}>Integrate</button>
+                                <button class="btn-secondary" on:click={() => testApiKey(key.key)}>Test API</button>
+                                <button class="btn-secondary" on:click={() => confirmDeleteApiKey(key.id)}>Delete</button>
                             </div>
                         </li>
                     {/each}
@@ -296,7 +296,7 @@
                 <span class="close" on:click={() => showNewApiKeyModal = false}>&times;</span>
                 <h3>Create New API Key</h3>
                 <input type="text" bind:value={newApiKeyName} placeholder="API Key Name" class="input-field" />
-                <a href="javascript:void(0);" class="btn-primary" on:click={createApiKey}>Create API Key</a>
+                <button class="btn-primary" on:click={createApiKey}><i class="fas fa-check"></i> Create API Key</button>
             </div>
         </div>
     {/if}
@@ -311,7 +311,7 @@
                 <span class="close" on:click={closeCurlModal}>&times;</span>
                 <h3>cURL Command</h3>
                 <pre>{curlCommand}</pre>
-                <a href="javascript:void(0);" class="btn-primary" on:click={closeCurlModal}>Close</a>
+                <button class="btn-primary" on:click={closeCurlModal}><i class="fas fa-check"></i> Close</button>
             </div>
         </div>
     {/if}
@@ -322,8 +322,8 @@
                 <span class="close" on:click={() => showDeleteConfirm = false}>&times;</span>
                 <h3>Confirm Deletion</h3>
                 <p>Are you sure you want to delete this API key?</p>
-                <a href="javascript:void(0);" class="btn-secondary" on:click={deleteApiKey}>Yes, Delete</a>
-                <a href="javascript:void(0);" class="btn-primary" on:click={() => showDeleteConfirm = false}>Cancel</a>
+                <button class="btn-secondary" on:click={deleteApiKey}><i class="fas fa-trash"></i> Yes, Delete</button>
+                <button class="btn-primary" on:click={() => showDeleteConfirm = false}><i class="fas fa-times"></i> Cancel</button>
             </div>
         </div>
     {/if}
@@ -336,7 +336,7 @@
 <style>
 .projects-container {
     padding: 40px 20px;
-    max-width: 900px;
+    max-width: 1200px;
     margin: 0 auto;
     background-color: #f9f9f9;
     border-radius: 10px;
@@ -349,52 +349,35 @@ h2, h3 {
     margin-bottom: 20px;
 }
 
-.btn-back {
-    background-color: #ff4000;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-bottom: 30px;
-    transition: background-color 0.3s ease;
-    text-decoration: none;
-}
-
-.btn-back:hover {
-    background-color: #e63900;
-}
-
-.project-list, .api-keys-list {
-    list-style: none;
-    padding: 0;
+.project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
     margin-bottom: 30px;
 }
 
-.project-item, .api-key-item {
+.project-card {
     background-color: #fff;
     padding: 20px;
     border-radius: 10px;
-    margin-bottom: 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.project-item:hover, .api-key-item:hover {
+.project-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
 }
 
-.project-details {
+.project-header {
     display: flex;
     align-items: center;
+    justify-content: space-between;
 }
 
 .project-name {
     font-weight: bold;
+    font-size: 1.2rem;
     margin-right: 10px;
 }
 
@@ -405,7 +388,29 @@ h2, h3 {
 
 .project-actions {
     display: flex;
+    flex-direction: column;
     gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-action {
+    background-color: #663399;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.btn-action:hover {
+    background-color: #552288;
 }
 
 .input-field {
@@ -417,7 +422,7 @@ h2, h3 {
 }
 
 .btn-new-project {
-    background-color: #663399;
+    background-color: #ff4000;
     color: #fff;
     padding: 10px 20px;
     border: none;
@@ -425,14 +430,18 @@ h2, h3 {
     cursor: pointer;
     margin-bottom: 20px;
     transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 1rem;
 }
 
 .btn-new-project:hover {
-    background-color: #552288;
+    background-color: #e63900;
 }
 
 .btn-new-api-key {
-    background-color: #663399;
+    background-color: #ff4000;
     color: #fff;
     padding: 10px 20px;
     border: none;
@@ -440,10 +449,14 @@ h2, h3 {
     cursor: pointer;
     margin-top: 20px;
     transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 1rem;
 }
 
 .btn-new-api-key:hover {
-    background-color: #552288;
+    background-color: #e63900;
 }
 
 .modal {
@@ -501,16 +514,19 @@ h2, h3 {
 .api-key-details {
     display: flex;
     align-items: center;
-}
-
-.api-key-name {
-    margin-right: 10px;
-    font-weight: bold;
+    justify-content: space-between;
+    width: 100%;
 }
 
 .api-key-actions {
     display: flex;
-    gap: 10px;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 10px;
+}
+.api-key-name {
+    margin-right: 10px;
+    font-weight: bold;
 }
 
 .create-api-key {
@@ -524,5 +540,42 @@ pre {
     white-space: pre-wrap;
     word-wrap: break-word;
     text-align: left;
+}
+
+.btn-primary {
+    background-color: #663399;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 1rem;
+}
+
+.btn-primary:hover {
+    background-color: #552288;
+}
+
+.btn-secondary {
+    background-color: #ddd;
+    color: #333;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 1rem;
+}
+
+.btn-secondary:hover {
+    background-color: #ccc;
 }
 </style>

@@ -157,14 +157,15 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
   }
 
   .header h1 {
     margin: 0;
-    font-size: 1.5rem;
+    font-size: 2rem;
     font-weight: bold;
-    letter-spacing: 1px;
     background: linear-gradient(135deg, #663399, #ff4000);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -223,7 +224,8 @@
   }
 
   .nav-link {
-    color: #663399 !important;
+    color: #663399;
+    font-weight: 500;
   }
 
   .nav-link:hover {
@@ -231,7 +233,7 @@
   }
 
   .logout-link {
-    color: #ff4500 !important;
+    color: #ff4500;
   }
 
   .logout-link:hover {
@@ -239,24 +241,19 @@
   }
 
   .request-bar-container {
-    width: 100%;
-    max-width: 120px;
-    min-width: 100px;
-    cursor: pointer;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    position: relative;
-    margin-left: 10px; /* Add some margin to the left to align with the Settings link */
+    cursor: pointer;
   }
 
   .request-bar {
-    width: 100%;
+    width: 100px;
     height: 12px;
     background-color: #ddd;
     border-radius: 5px;
     overflow: hidden;
-    transition: width 0.3s;
+    margin-right: 10px;
+    position: relative;
   }
 
   .request-bar-inner {
@@ -272,13 +269,8 @@
   }
 
   .request-count {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 0.6rem;
-    color: #fff;
-    font-weight: bold;
+    font-size: 0.8rem;
+    color: #333;
   }
 
   @media (max-width: 768px) {

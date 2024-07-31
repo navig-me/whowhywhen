@@ -16,6 +16,7 @@ from app.config import TURNSTILE_SECRET_KEY
 from app.crud.user import get_password_hash
 from app.services.stripe_service import get_payment_link, refresh_user_subscription, get_customer_portal_url
 from app.services.fa_service import generate_totp_secret, generate_totp_uri, verify_totp_token
+from app.services.email_service import send_password_reset_email
 import pyotp
 
 router = APIRouter()
@@ -37,6 +38,27 @@ def register(user: UserCreate, session: Session = Depends(get_session)):
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     return create_user(session, user)
+
+@router.post("/forgot-password")
+def forgot_password(email: str, cf_turnstile_response: str, session: Session = Depends(get_session)):
+    verify_turnstile_token(cf_turnstile_response, TURNSTILE_SECRET_KEY)
+
+    user = get_user_by_email(session, email)
+    if not user:
+        raise HTTPException(status_code=400, detail="Email not registered")
+
+    # Generate a temporary password
+    temp_password = pyotp.random_base32()[:8]  # Generate an 8-character temporary password
+    user.password_hash = get_password_hash(temp_password)
+    
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+
+    # Send the email with the temporary password
+    send_password_reset_email(user.email, temp_password)
+    
+    return {"message": "Password reset email sent"}
 
 @router.post("/change-password")
 def change_password(form_data: ChangePasswordForm, current_user: User = Depends(get_current_user),  session: Session = Depends(get_session)):

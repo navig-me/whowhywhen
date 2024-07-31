@@ -42,6 +42,16 @@ def send_password_reset_email(email):
     # Send the email
     send_email(email, "Reset Your Password", html)
 
+def send_password_reset_email(email, temp_password):
+    # Load the HTML template
+    with open(f"{TEMPLATES_DIR}/password_reset_email.html", "r") as f:
+        html = f.read()
+        html = html.replace("[temp_password]", temp_password)
+
+    # Send the email
+    send_email(email, "Reset Your Password", html)
+
+
 def send_email(to, subject, html):
     # Create a secure SSL context for the SMTP connection
     context = ssl.create_default_context()

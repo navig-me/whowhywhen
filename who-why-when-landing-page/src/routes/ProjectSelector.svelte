@@ -15,6 +15,7 @@
 </script>
 
 <div class="project-selector">
+  <p class="utc-message">Note: All times are displayed in UTC.</p>
   <label for="project">Select Project:</label>
   <select id="project" bind:value={selectedProjectId} on:change={handleProjectChange}>
       {#each projects as project}
@@ -33,6 +34,12 @@
       padding: 15px;
       border-radius: 10px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .utc-message {
+      font-size: 0.9em;
+      color: #888;
+      margin-bottom: 5px;
   }
 
   label {
