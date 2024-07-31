@@ -1,11 +1,7 @@
 <script>
+	import { onMount, onDestroy } from 'svelte';
+
 	let features = [
-		{
-			title: "Real-time Analytics",
-			description: "Access real-time analytics and see how your APIs are being used, enabling you to make informed decisions and optimize your services.",
-			icon: "fas fa-chart-line",
-			img: "/analytics.png"
-		},
 		{
 			title: "Track Bots and AI Scrapers",
 			description: "Track which bots and AI scrapers are accessing your data and how. WhoWhyWhen also suggests robots.txt updates to block them.",
@@ -19,10 +15,10 @@
 			img: "/monitoring.png"
 		},
 		{
-			title: "Customizable Reports",
-			description: "View detailed, customizable reports that provide insights into API usage trends, helping you optimize your services.",
-			icon: "fas fa-file-alt",
-			"img": "/reports.png"
+			title: "Real-time Analytics",
+			description: "Access real-time analytics and see how your APIs are being used, enabling you to make informed decisions and optimize your services.",
+			icon: "fas fa-chart-line",
+			img: "/analytics.png"
 		},
 		{
 			title: "Understand Your Users",
@@ -33,188 +29,222 @@
 	];
 
 	let selectedFeature = features[0];
+
+	// Auto-scroll timer
+	let interval;
+	let currentIndex = 0;
+
+	const startAutoScroll = () => {
+		interval = setInterval(() => {
+			currentIndex = (currentIndex + 1) % features.length;
+			selectedFeature = features[currentIndex];
+		}, 4000); 
+	};
+
+	const stopAutoScroll = () => {
+		clearInterval(interval);
+	};
+
+	onMount(() => {
+		startAutoScroll();
+	});
+
+	onDestroy(() => {
+		stopAutoScroll();
+	});
 </script>
 
 <section class="feature-section">
 	<div class="container">
 		<h2>Powerful Features</h2>
-		<p>Built by developers, for developers. </p>
-		<div class="content">
+		<p>Built by developers, for developers.</p>
+		<div class="features">
 			<div class="feature-list">
 				{#each features as feature}
-					<div class="feature-item" on:mouseover={() => selectedFeature = feature}>
-						<div class="icon">
-							<i class="{feature.icon}"></i>
-						</div>
+					<div 
+						class="feature-item {feature === selectedFeature ? 'active' : ''}" 
+						on:click={() => { selectedFeature = feature; currentIndex = features.indexOf(feature); stopAutoScroll(); startAutoScroll(); }}
+					>
+						<i class="{feature.icon}"></i>
 						<h3>{feature.title}</h3>
 					</div>
 				{/each}
 			</div>
 			<div class="feature-detail">
-				<div class="icon">
-					<i class="{selectedFeature.icon}"></i>
-				</div>
+				<img src="{selectedFeature.img}" alt="{selectedFeature.title}" class="feature-img"/>
 				<h3>{selectedFeature.title}</h3>
 				<p>{selectedFeature.description}</p>
-				{#if selectedFeature.img}
-					<img src="{selectedFeature.img}" alt="{selectedFeature.title}">
-				{/if}
 			</div>
 		</div>
 	</div>
 </section>
 
 <style>
-.feature-section {
-	position: relative;
-	overflow: hidden;
-	color: #333;
-	padding: 50px 20px;
-}
-
-.container {
-	position: relative;
-	z-index: 2;
-	padding: 50px 20px;
-	background: rgba(255, 255, 255, 0.8);
-	border-radius: 10px;
-	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-}
-
-.feature-section h2 {
-	font-size: 2.5rem;
-	margin-bottom: 10px;
-	color: #663399;
-}
-
-.feature-section p {
-	font-size: 1.2rem;
-	margin-bottom: 40px;
-}
-
-.content {
-	display: flex;
-	justify-content: space-between;
-	gap: 20px;
-}
-
-.feature-list {
-	display: flex;
-	flex-direction: column;
-	gap: 10px;
-	width: 30%;
-}
-
-.feature-item {
-	flex: 1;
-	background: #fff;
-	padding: 15px;
-	border-radius: 10px;
-	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-	cursor: pointer;
-	transition: transform 0.3s, box-shadow 0.3s;
-	text-align: left;
-}
-
-.feature-item:hover {
-	transform: translateX(10px);
-	box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2);
-}
-
-.feature-item .icon {
-	margin-bottom: 10px;
-	color: #663399;
-}
-
-.feature-item h3 {
-	font-size: 1.2rem;
-	color: #333;
-}
-
-.feature-detail {
-	width: 68%;
-	height: 700px;
-	padding: 30px;
-	background: #fff;
-	border-radius: 10px;
-	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-	transition: opacity 0.3s;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	text-align: center;
-}
-
-.feature-detail .icon {
-	margin-bottom: 20px;
-	color: #663399;
-}
-
-.feature-detail h3 {
-	font-size: 1.8rem;
-	margin-bottom: 15px;
-	color: #333;
-}
-
-.feature-detail p {
-	font-size: 1.2rem;
-	color: #555;
-	margin-bottom: 20px;
-}
-
-.feature-detail img {
-	max-width: 70%;
-	border-radius: 10px;
-	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-}
-
-@media (max-width: 768px) {
-	.content {
-		flex-direction: column;
+	.feature-section {
+		padding: 60px 20px;
+		background-color: #f9f9f9; /* Light gray background for separation */
+		color: #333;
 	}
 
-	.feature-list, .feature-detail {
-		width: 100%;
-	}
-
-	.feature-detail {
-		margin-top: 20px;
-	}
-}
-
-@media (max-width: 480px) {
 	.container {
-		padding: 50px 10px;
+		max-width: 1200px;
+		margin: 0 auto;
+		text-align: center;
+		padding: 0 20px;
 	}
 
-	.feature-section h2 {
-		font-size: 2rem;
-	}
-
-	.feature-section p {
-		font-size: 1rem;
+	h2 {
+		font-size: 2.5rem;
+		color: #663399;
 		margin-bottom: 20px;
 	}
 
+	p {
+		font-size: 1.2rem;
+		margin-bottom: 40px;
+	}
+
+	.features {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 40px;
+		flex-wrap: wrap;
+	}
+
+	.feature-list {
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+		width: 200px;
+	}
+
 	.feature-item {
-		padding: 10px;
+		background: #fff; /* White background for feature items */
+		padding: 20px;
+		border-radius: 10px;
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+		cursor: pointer;
+		transition: transform 0.3s, box-shadow 0.3s;
+		text-align: center;
+	}
+
+	.feature-item.active,
+	.feature-item:hover {
+		background: #663399;
+		color: #fff;
+		transform: translateY(-5px);
+		box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2);
+	}
+
+	.feature-item i {
+		font-size: 1.4rem;
+		margin-bottom: 10px;
 	}
 
 	.feature-item h3 {
-		font-size: 1rem;
+		font-size: 1.2rem;
+		margin: 0;
 	}
 
 	.feature-detail {
-		padding: 20px;
+		flex: 1;
+		text-align: center; /* Center-align the text */
+		padding: 20px; /* Padding around the detail section */
+		background: #fff; /* White background for detail section */
+		border-radius: 10px;
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+	}
+
+	.feature-detail img.feature-img {
+		display: block; /* Make the image a block element */
+		margin: 0 auto; /* Center the image */
+		max-width: 80%;
+		max-height: 300px; /* Reduced max-height for better layout */
+		height: auto;
+		border-radius: 10px;
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+		margin-bottom: 20px;
 	}
 
 	.feature-detail h3 {
-		font-size: 1.5rem;
+		font-size: 1.8rem;
+		margin-bottom: 15px;
+		color: #333;
 	}
 
 	.feature-detail p {
 		font-size: 1rem;
+		color: #555;
+		margin: 0 20px; /* Add margin for better text spacing */
 	}
-}
+
+	@media (max-width: 768px) {
+		.features {
+			flex-direction: column;
+			align-items: center;
+		}
+
+		.feature-item {
+			width: 150px;
+			padding: 15px;
+		}
+
+		.feature-item i {
+			font-size: 1.5rem;
+		}
+
+		.feature-item h3 {
+			font-size: 1rem;
+		}
+
+		.feature-detail {
+			text-align: center;
+		}
+
+		.feature-detail img.feature-img {
+			max-width: 100%;
+			max-height: 200px;
+			margin-bottom: 20px;
+		}
+
+		.feature-detail h3 {
+			font-size: 1.5rem;
+			margin-bottom: 10px;
+		}
+
+		.feature-detail p {
+			font-size: 0.9rem;
+			margin: 0 10px; /* Adjust margin for smaller screens */
+		}
+	}
+
+	@media (max-width: 480px) {
+		.feature-item {
+			width: 120px;
+			padding: 10px;
+		}
+
+		.feature-item i {
+			font-size: 1.2rem;
+		}
+
+		.feature-item h3 {
+			font-size: 0.8rem;
+		}
+
+		.feature-detail img.feature-img {
+			max-width: 100%;
+			max-height: 200px;
+		}
+
+		.feature-detail h3 {
+			font-size: 1.2rem;
+		}
+
+		.feature-detail p {
+			font-size: 0.8rem;
+			margin: 0 5px; /* Adjust margin for smaller screens */
+		}
+	}
 </style>

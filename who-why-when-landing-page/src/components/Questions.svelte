@@ -22,7 +22,7 @@
 <style>
 	.scrolling-questions {
 		background: linear-gradient(to bottom, #f0f0f0, #e0e0e0);
-		padding: 50px 0;
+		padding: 30px 0;
 		overflow: hidden;
 	}
 
@@ -35,25 +35,25 @@
 
 	.question-row:nth-child(1) { 
 		color: #ff4000; 
-		font-size: 1.4em; 
+		font-size: 1em; 
 		font-weight: bold;
 		animation-duration: 35s; 
 	}
 	.question-row:nth-child(2) { 
 		color: #ff7300; 
-		font-size: 1.6em; 
+		font-size: 1.2em; 
 		font-weight: bold;
 		animation-duration: 45s; 
 	}
 	.question-row:nth-child(3) { 
 		color: #7700ff; 
-		font-size: 1.8em; 
+		font-size: 1.4em; 
 		font-weight: bold;
 		animation-duration: 55s; 
 	}
 	.question-row:nth-child(4) { 
 		color: #663399; 
-		font-size: 2em; 
+		font-size: 1.6em; 
 		font-weight: bold;
 		animation-duration: 65s; 
 	}
