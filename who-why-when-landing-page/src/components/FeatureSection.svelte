@@ -41,7 +41,7 @@
 
 <style>
 	.feature-section {
-		padding: 60px 20px;
+		padding: 80px 20px;
 		/* background-color: #f9f9f9; Light gray background for separation */
 		color: #333;
 	}

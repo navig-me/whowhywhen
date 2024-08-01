@@ -29,14 +29,13 @@
 		"How can I improve my APIs?"
 	];
 
-	const gifUrl = '/screencapture.gif'; // Update the path to your GIF
 </script>
 
 <div class="parallax-wrapper">
 	<div class="parallax"></div>
 	<div class="content-wrapper">
 		<HeroSection />
-		<ScrollingImage {gifUrl} />
+		<ScrollingImage />
 		<FeatureSection />
 	</div>
 </div>
