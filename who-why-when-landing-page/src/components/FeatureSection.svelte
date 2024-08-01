@@ -4,25 +4,25 @@
 	let features = [
 		{
 			title: "Track Bots and AI Scrapers",
-			description: "Track which bots and AI scrapers are accessing your data and how. WhoWhyWhen also suggests robots.txt updates to block them.",
+			description: "Know which bots and AI scrapers are accessing your data and how to block them.",
 			icon: "fas fa-robot",
 			img: "/bot.png"
 		},
 		{
 			title: "Performance Monitoring",
-			description: "Monitor the performance of your APIs and ensure they are meeting your SLAs.",
+			description: "Ensure they are meeting your performance SLAs.",
 			icon: "fas fa-tachometer-alt",
 			img: "/monitoring.png"
 		},
 		{
 			title: "Real-time Analytics",
-			description: "Access real-time analytics and see how your APIs are being used, enabling you to make informed decisions and optimize your services.",
+			description: "Optimize your services by knowing how your APIs are being used.",
 			icon: "fas fa-chart-line",
 			img: "/analytics.png"
 		},
 		{
 			title: "Understand Your Users",
-			description: "Gain insights into your users' behavior and preferences, enabling you to personalize your services and improve user experience.",
+			description: "Gain insights into your users' behavior and preferences.",
 			icon: "fas fa-user-friends",
 			img: "/users.png"
 		}
@@ -159,12 +159,12 @@
 	.feature-detail img.feature-img {
 		display: block; /* Make the image a block element */
 		margin: 0 auto; /* Center the image */
-		max-width: 80%;
-		max-height: 300px; /* Reduced max-height for better layout */
-		height: auto;
+		width: 600px; /* Fixed width */
+		height: 400px; /* Fixed height */
 		border-radius: 10px;
 		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 		margin-bottom: 20px;
+		object-fit: cover; /* Ensure the image fits the container */
 	}
 
 	.feature-detail h3 {
@@ -204,7 +204,7 @@
 
 		.feature-detail img.feature-img {
 			max-width: 100%;
-			max-height: 200px;
+			height: 200px;
 			margin-bottom: 20px;
 		}
 
@@ -235,7 +235,7 @@
 
 		.feature-detail img.feature-img {
 			max-width: 100%;
-			max-height: 200px;
+			height: 150px;
 		}
 
 		.feature-detail h3 {

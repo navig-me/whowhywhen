@@ -15,6 +15,7 @@
 				<h3>FREE</h3>
 				<p><i class="fas fa-check"></i> 20,000 monthly calls</p>
 				<p><i class="fas fa-check"></i> All Analytics</p>
+				<p><i class="fas fa-check"></i> Ideal for small projects and personal use</p>
 				<p class="price">$0</p>
 				<button class="btn-primary" on:click={() => changeView('/register')}>Get Started</button>
 			</div>
@@ -22,6 +23,7 @@
 				<h3>STARTER</h3>
 				<p><i class="fas fa-check"></i> 250,000 monthly calls</p>
 				<p><i class="fas fa-check"></i> All Analytics</p>
+				<p><i class="fas fa-check"></i> Perfect for growing startups</p>
 				<p class="price">$9</p>
 				<button class="btn-primary" on:click={() => changeView('/register')}>Get Started</button>
 			</div>
@@ -29,6 +31,7 @@
 				<h3>PRO</h3>
 				<p><i class="fas fa-check"></i> 5,000,000 monthly calls</p>
 				<p><i class="fas fa-check"></i> All Analytics</p>
+				<p><i class="fas fa-check"></i> Best for larger-scale applications</p>
 				<p class="price">$39</p>
 				<button class="btn-primary" on:click={() => changeView('/register')}>Get Started</button>
 			</div>
