@@ -10,7 +10,7 @@
 	<div class="container">
 		<h1><span class="supercharge">Supercharge</span> Your APIs, Protect Your Data</h1>
 		<p>Get real-time analytics, track bots and AI scrapers, and optimize your resources with our comprehensive API management platform.</p>
-		<button class="btn-primary" on:click={() => changeView('/register')}>Get Started for Free</button>
+		<button class="btn-primary" on:click={() => changeView('/register')}>START FOR FREE</button>
 	</div>
 </section>
 
