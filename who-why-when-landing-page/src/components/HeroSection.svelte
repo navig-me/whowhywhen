@@ -60,6 +60,12 @@
 		animation: gradient 5s ease infinite;
 	}
 
+	@keyframes gradient {
+		0% { background-position: 0% 50%; }
+		50% { background-position: 100% 50%; }
+		100% { background-position: 0% 50%; }
+	}
+
 	@media (max-width: 768px) {
 		h1 {
 			font-size: 2.5rem;

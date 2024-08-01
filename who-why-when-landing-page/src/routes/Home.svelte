@@ -4,7 +4,7 @@
 	import PricingSection from '../components/PricingSection.svelte';
 	import Questions from '../components/Questions.svelte';
 	import Footer from '../components/Footer.svelte';
-    import ScrollingImage from '../components/ScrollingImage.svelte';
+	import ScrollingImage from '../components/ScrollingImage.svelte';
 
 	const questions = [
 		"Why is my endpoint failing?", 
@@ -58,7 +58,6 @@
 		left: 0;
 		width: 100%;
 		height: 100%;
-		/* background: url('/supercharge.jpg') no-repeat center center/cover; */
 		background-attachment: fixed;
 		background-position: center;
 		background-repeat: no-repeat;
