@@ -121,7 +121,6 @@
                 <div class="request-bar">
                   <div class="request-bar-inner {getRequestBarClass(userRequestCount, monthlyCreditLimit)}" style="width: {getRequestBarWidth(userRequestCount, monthlyCreditLimit)}%"></div>
                 </div>
-                <span class="request-count">{userRequestCount}/{monthlyCreditLimit}</span>
               </div>
             </div>
             <div class="nav-section">
@@ -247,7 +246,7 @@
   }
 
   .request-bar {
-    width: 100px;
+    width: 80px;
     height: 12px;
     background-color: #ddd;
     border-radius: 5px;

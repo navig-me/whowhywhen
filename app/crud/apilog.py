@@ -17,6 +17,8 @@ from user_agents import parse
 from sqlalchemy.sql import case
 from sqlalchemy import func, or_
 from relative_datetime import DateTimeUtils
+from sqlalchemy.sql import func, exists
+from sqlalchemy import and_, or_
 
 async def get_geolocation(ip: str):
     if ip and ',' in ip:
@@ -541,3 +543,131 @@ def get_apilogs_stats(
     full_results = [{"period": period, "2xx_count": counts.get(period, {}).get("2xx_count", 0), "3xx_count": counts.get(period, {}).get("3xx_count", 0), "4xx_count": counts.get(period, {}).get("4xx_count", 0), "5xx_count": counts.get(period, {}).get("5xx_count", 0), "avg_response_time": counts.get(period, {}).get("avg_response_time", 0)} for period in full_periods]
     
     return full_results
+
+
+def get_events(session: Session, type_filter: str, offset: int = 0, limit: int = 10) -> List[APILog]:
+    # Subqueries to get the first occurrence of each new endpoint or bot
+    subquery_endpoints = (
+        session.query(
+            APILog.path,
+            func.min(APILog.created).label("first_seen")
+        )
+        .filter(APILog.response_code.between(200, 299))
+        .group_by(APILog.path)
+        .subquery()
+    )
+
+    subquery_bots = (
+        session.query(
+            APILog.bot_id,
+            func.min(APILog.created).label("first_seen")
+        )
+        .filter(APILog.response_code.between(200, 299))
+        .group_by(APILog.bot_id)
+        .subquery()
+    )
+
+    events_query = session.query(APILog)
+
+    if type_filter == "endpoints":
+        events_query = events_query.filter(
+            exists().where(
+                and_(
+                    APILog.path == subquery_endpoints.c.path,
+                    APILog.created == subquery_endpoints.c.first_seen
+                )
+            )
+        )
+    elif type_filter == "bots":
+        events_query = events_query.filter(
+            exists().where(
+                and_(
+                    APILog.bot_id == subquery_bots.c.bot_id,
+                    APILog.created == subquery_bots.c.first_seen
+                )
+            )
+        )
+    else:
+        events_query = events_query.filter(
+            or_(
+                exists().where(
+                    and_(
+                        APILog.path == subquery_endpoints.c.path,
+                        APILog.created == subquery_endpoints.c.first_seen
+                    )
+                ),
+                exists().where(
+                    and_(
+                        APILog.bot_id == subquery_bots.c.bot_id,
+                        APILog.created == subquery_bots.c.first_seen
+                    )
+                )
+            )
+        )
+
+    events_query = events_query.order_by(APILog.created).offset(offset).limit(limit)
+
+    return events_query.all()
+
+
+def count_events(session: Session, type_filter: str) -> int:
+    # Subqueries to get the first occurrence of each new endpoint or bot
+    subquery_endpoints = (
+        session.query(
+            APILog.path,
+            func.min(APILog.created).label("first_seen")
+        )
+        .filter(APILog.response_code.between(200, 299))
+        .group_by(APILog.path)
+        .subquery()
+    )
+
+    subquery_bots = (
+        session.query(
+            APILog.bot_id,
+            func.min(APILog.created).label("first_seen")
+        )
+        .filter(APILog.response_code.between(200, 299))
+        .group_by(APILog.bot_id)
+        .subquery()
+    )
+
+    count_query = session.query(APILog.id)
+
+    if type_filter == "endpoints":
+        count_query = count_query.filter(
+            exists().where(
+                and_(
+                    APILog.path == subquery_endpoints.c.path,
+                    APILog.created == subquery_endpoints.c.first_seen
+                )
+            )
+        )
+    elif type_filter == "bots":
+        count_query = count_query.filter(
+            exists().where(
+                and_(
+                    APILog.bot_id == subquery_bots.c.bot_id,
+                    APILog.created == subquery_bots.c.first_seen
+                )
+            )
+        )
+    else:
+        count_query = count_query.filter(
+            or_(
+                exists().where(
+                    and_(
+                        APILog.path == subquery_endpoints.c.path,
+                        APILog.created == subquery_endpoints.c.first_seen
+                    )
+                ),
+                exists().where(
+                    and_(
+                        APILog.bot_id == subquery_bots.c.bot_id,
+                        APILog.created == subquery_bots.c.first_seen
+                    )
+                )
+            )
+        )
+
+    return count_query.count()

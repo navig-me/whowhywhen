@@ -45,3 +45,6 @@ class APILogQueryParam(SQLModel, table=True):
     key: str
     value: str
     api_log: "APILog" = Relationship(back_populates="query_params")
+
+class APILogNotification(SQLModel, table=True):
+    id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, primary_key=True)

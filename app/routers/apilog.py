@@ -14,6 +14,7 @@ import uuid
 router_api = APIRouter()
 router_dash = APIRouter()
 
+
 @router_api.post("/log", summary="Save a single API log", description="Save a single API log entry.")
 async def save_api_log(
     apilog: APILogCreate, 
