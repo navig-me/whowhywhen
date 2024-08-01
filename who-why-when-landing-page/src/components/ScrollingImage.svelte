@@ -4,7 +4,7 @@
 
 <div class="gif-frame-wrapper">
 	<div class="gif-frame">
-		<img src={gifUrl} alt="Demo GIF" />
+		<img src={gifUrl} alt="Demo GIF" loading="lazy" />
 	</div>
 </div>
 
@@ -21,7 +21,7 @@
 		height: auto;
 		position: relative;
 		background: #000; /* Optional: background color for the frame */
-		margin-top: -100px; /* Adjust to overlap the Hero section */
+		margin-top: -50px; /* Adjust to overlap the Hero section */
 		margin-bottom: -50px; /* Adjust to overlap the Feature section */
 		z-index: 2;
 		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);

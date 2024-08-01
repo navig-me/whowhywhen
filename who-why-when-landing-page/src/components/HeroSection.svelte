@@ -16,9 +16,9 @@
 
 <style>
 	.hero-section {
-		background: url('/supercharge.jpg') no-repeat center center/cover;
+		background: url('/supercharge.jpg') no-repeat center calc(100% + 60px) / cover;
 		color: #fff;
-		padding: 180px 20px;
+		padding: 200px 20px;
 		text-align: center;
 		display: flex;
 		justify-content: center;
