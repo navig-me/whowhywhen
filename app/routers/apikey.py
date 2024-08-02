@@ -1,13 +1,14 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import Session
-from app.database import get_session
-from app.crud.apikey import create_api_key, delete_api_key
-from app.dependencies.auth import get_current_user
-from app.models.user import User
 import uuid
 from typing import Optional
-from sqlmodel import select
+
+from fastapi import APIRouter, Depends, HTTPException
+from sqlmodel import Session, select
+
+from app.crud.apikey import create_api_key, delete_api_key
+from app.database import get_session
+from app.dependencies.auth import get_current_user
 from app.models.apikey import APIKey
+from app.models.user import User
 
 router = APIRouter()
 

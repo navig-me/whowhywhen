@@ -1,15 +1,18 @@
+import uuid
+from datetime import datetime, timedelta
+from typing import List, Optional
+
 from fastapi import APIRouter, Depends
-from typing import Optional, List
-from typing import Optional
 from sqlmodel import Session
+
+from app.crud.apilog import (create_apilog, create_apilog_bulk, get_apilogs,
+                             get_apilogs_stats, get_bot_logs_stats_data,
+                             get_counts_data)
 from app.database import get_session
-from app.crud.apilog import create_apilog, get_apilogs, get_apilogs_stats, create_apilog_bulk, get_counts_data, get_bot_logs_stats_data
-from app.schemas.apilog import APILogCreate, APILogSearch
 from app.dependencies.apikey import get_api_key
 from app.dependencies.auth import get_current_user
-from app.models.user import UserProject, User
-from datetime import datetime, timedelta
-import uuid
+from app.models.user import User, UserProject
+from app.schemas.apilog import APILogCreate, APILogSearch
 
 router_api = APIRouter()
 router_dash = APIRouter()

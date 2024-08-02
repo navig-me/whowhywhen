@@ -1,11 +1,12 @@
+import bcrypt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from sqlmodel import Session
-from app.config import SECRET_KEY, ALGORITHM
-from app.database import get_session
+
+from app.config import ALGORITHM, SECRET_KEY
 from app.crud.user import get_user_by_email
-import bcrypt
+from app.database import get_session
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/dashauth/token")
 

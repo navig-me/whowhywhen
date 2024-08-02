@@ -1,23 +1,29 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Request
-from fastapi.security import OAuth2PasswordRequestForm
-from sqlmodel import Session
-from datetime import timedelta, datetime
+from datetime import datetime, timedelta
 from typing import Optional
-from jose import jwt
-from app.config import ACCESS_TOKEN_EXPIRE_MINUTES, SECRET_KEY, ALGORITHM
-from app.database import get_session
-from app.crud.user import create_user, get_user_by_email, User, save_user_project, get_user_projects, verify_turnstile_token
-from app.schemas.user import UserCreate, UserRead, UserStatusRead, ChangePasswordForm
-from app.dependencies.auth import get_current_user
-from app.models.user import User, SubscriptionPlan
-from app.models.apilog import APILog
-from app.dependencies.auth import verify_password
-from app.config import TURNSTILE_SECRET_KEY
-from app.crud.user import get_password_hash
-from app.services.stripe_service import get_payment_link, refresh_user_subscription, get_customer_portal_url
-from app.services.fa_service import generate_totp_secret, generate_totp_uri, verify_totp_token
-from app.services.email_service import send_password_reset_email
+
 import pyotp
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi.security import OAuth2PasswordRequestForm
+from jose import jwt
+from sqlmodel import Session
+
+from app.config import (ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, SECRET_KEY,
+                        TURNSTILE_SECRET_KEY)
+from app.crud.user import (User, create_user, get_password_hash,
+                           get_user_by_email, get_user_projects,
+                           save_user_project, verify_turnstile_token)
+from app.database import get_session
+from app.dependencies.auth import get_current_user, verify_password
+from app.models.apilog import APILog
+from app.models.user import SubscriptionPlan, User
+from app.schemas.user import (ChangePasswordForm, UserCreate, UserRead,
+                              UserStatusRead)
+from app.services.email_service import send_password_reset_email
+from app.services.fa_service import (generate_totp_secret, generate_totp_uri,
+                                     verify_totp_token)
+from app.services.stripe_service import (get_customer_portal_url,
+                                         get_payment_link,
+                                         refresh_user_subscription)
 
 router = APIRouter()
 
@@ -172,3 +178,6 @@ def create_user_project(project_name: str, current_user: User = Depends(get_curr
 def read_user_projects(current_user: User = Depends(get_current_user), session: Session = Depends(get_session)):
     return get_user_projects(session, current_user.id)
     
+@router.post("/users/me/alerts")
+def create_user_alert_config(current_user: User = Depends(get_current_user), session: Session = Depends(get_session)):
+    return save_user_alert_config(session, current_user.id)

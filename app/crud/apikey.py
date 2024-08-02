@@ -1,8 +1,11 @@
-from sqlmodel import Session
-from app.models.apikey import APIKey
-from uuid import uuid4
-from fastapi import HTTPException
 import uuid
+from uuid import uuid4
+
+from fastapi import HTTPException
+from sqlmodel import Session
+
+from app.models.apikey import APIKey
+
 
 def create_api_key(db: Session, user_id: uuid.UUID, name: str = None, user_project_id: uuid.UUID = None):
     # Check if the project has reached the maximum number of API keys

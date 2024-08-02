@@ -1,21 +1,43 @@
 import asyncio
-import uuid
 import logging
+import uuid
+from contextlib import asynccontextmanager
 from datetime import datetime, timedelta
 
-from fastapi import FastAPI, Request, BackgroundTasks
-from starlette.middleware.base import BaseHTTPMiddleware
+from fastapi import BackgroundTasks, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from contextlib import asynccontextmanager
+from starlette.middleware.base import BaseHTTPMiddleware
 
-from app.database import create_db_and_tables, get_session
-from app.routers import auth, apikey, apilog, botinfo
-from app.models.user import User
-from app.models.apilog import APILog
 from app.crud.apilog import create_apilog
+from app.database import create_db_and_tables, get_session
+from app.models.apilog import APILog
+from app.models.user import User, UserAlertConfig
+from app.routers import apikey, apilog, auth, botinfo, event
+from app.services.monitoring_service import check_services
 from app.services.stripe_service import get_subscription_end_date
 
 logger = logging.getLogger(__name__)
+
+async def check_alerts():
+    while True:
+        print("Checking alerts...")
+        db = next(get_session())
+        try:
+            for user in db.query(User).all():
+                # Check if alert config exists for the user. If not, create one.
+                alert_config = db.query(UserAlertConfig).filter(UserAlertConfig.user_id == user.id).first()
+                if not alert_config:
+                    alert_config = UserAlertConfig(user_id=user.id)
+                    db.add(alert_config)
+                    db.commit()
+                    db.refresh(alert_config)
+                print(f"Checking alert config for user {alert_config.user_id}...")
+                check_services(alert_config, db)
+        except Exception as e:
+            logger.error(f"Error in check_alerts: {e}")
+        finally:
+            db.close()
+        await asyncio.sleep(300)  # 5 minutes
 
 async def check_monthly_credit_limit():
     while True:
@@ -55,15 +77,17 @@ async def lifespan(app: FastAPI):
     create_db_and_tables()  # Ensure this is uncommented if you want to create DB and tables on startup
     app.state.db = next(get_session())
     task = asyncio.create_task(check_monthly_credit_limit())
+    task2 = asyncio.create_task(check_alerts())
     yield
     task.cancel()
+    task2.cancel()
     app.state.db.close()
 
 app = FastAPI(
     title="WhoWhyWhen Dashboard",
     description="Dashboard for WhoWhyWhen",
     version="0.1.0",
-    docs_url=None,
+    docs_url="/docs",
     redoc_url=None,
     lifespan=lifespan
 )
@@ -148,3 +172,4 @@ app.include_router(auth.router, prefix="/dashauth", tags=["auth"])
 app.include_router(apikey.router, prefix="/dashapi", tags=["apikey"])
 app.include_router(apilog.router_dash, prefix="/dashapi", tags=["apilog"])
 app.include_router(botinfo.router, prefix="/dashapi", tags=["botinfo"])
+app.include_router(event.router_event, prefix="/dashapi", tags=["event"])

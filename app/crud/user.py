@@ -1,13 +1,18 @@
+import uuid
+from typing import List
+
+import bcrypt
+import pyotp
+import requests
 from fastapi import HTTPException
 from sqlmodel import Session, select
-from app.models.user import User, UserProject
-from app.schemas.user import UserCreate
-import bcrypt
-import requests
+
+from app.models.user import User, UserAlertConfig, UserProject
+from app.schemas.user import (UserAlertConfigCreate, UserAlertConfigRead,
+                              UserCreate)
+from app.services.email_service import (send_new_user_notification_email,
+                                        send_welcome_email)
 from app.services.stripe_service import create_stripe_customer
-import uuid
-import pyotp
-from app.services.email_service import send_welcome_email, send_new_user_notification_email
 
 
 def verify_turnstile_token(token: str, secret_key: str):
@@ -76,3 +81,13 @@ def save_user_project(db: Session, user_id: uuid.UUID, project_name: str):
     db.commit()
     db.refresh(project)
     return project
+
+def create_user_alert_config(db: Session, user_id: uuid.UUID, alert_config: UserAlertConfigCreate) -> UserAlertConfig:
+    db_alert_config = UserAlertConfig(user_id=user_id, **alert_config.dict())
+    db.add(db_alert_config)
+    db.commit()
+    db.refresh(db_alert_config)
+    return db_alert_config
+
+def get_user_alert_configs(db: Session, user_id: uuid.UUID) -> List[UserAlertConfig]:
+    return db.exec(select(UserAlertConfig).where(UserAlertConfig.user_id == user_id)).all()

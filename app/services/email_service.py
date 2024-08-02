@@ -5,14 +5,12 @@ SMTP_PORT = 587
 IMAP_SERVER = "imap.purelymail.com"
 IMAP_PORT = 993
 
-import ssl
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from email.utils import formatdate
 import smtplib
-from email.utils import formatdate, formataddr
+import ssl
 from email.header import Header
-
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.utils import formataddr, formatdate
 
 TEMPLATES_DIR = "./email_templates"
 

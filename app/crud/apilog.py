@@ -1,24 +1,23 @@
-from sqlmodel import Session, select
+import re
+import traceback
+import uuid
+from datetime import datetime, timedelta
+from http.client import responses
+from typing import List, Optional
+from urllib.parse import parse_qs, urlparse
+
+import httpx
+from relative_datetime import DateTimeUtils
+from sqlalchemy import and_, case, func, or_, select
+from sqlalchemy.sql import case, exists, func
+from sqlmodel import Session, or_, select
+from user_agents import parse
+
 from app.models.apilog import APILog, APILogQueryParam
-from app.schemas.apilog import APILogCreate, APILogSearch
 from app.models.botinfo import BotInfo
 from app.models.user import UserProject
-from datetime import datetime, timedelta
-from sqlalchemy import select, func, case
-from typing import List, Optional
-import re
-from sqlmodel import or_
-import uuid
-import httpx
-import traceback
-from urllib.parse import urlparse, parse_qs
-from http.client import responses
-from user_agents import parse
-from sqlalchemy.sql import case
-from sqlalchemy import func, or_
-from relative_datetime import DateTimeUtils
-from sqlalchemy.sql import func, exists
-from sqlalchemy import and_, or_
+from app.schemas.apilog import APILogCreate, APILogSearch
+
 
 async def get_geolocation(ip: str):
     if ip and ',' in ip:

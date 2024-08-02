@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends
 from sqlmodel import Session
-from app.database import get_session
+
 from app.crud.botinfo import create_botinfo
+from app.database import get_session
 from app.schemas.botinfo import BotInfoCreate
 
 router = APIRouter()

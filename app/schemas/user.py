@@ -1,8 +1,11 @@
-from pydantic import BaseModel, EmailStr
-from typing import Optional
-from datetime import datetime
-from app.models.user import SubscriptionPlan
 import uuid
+from datetime import datetime
+from typing import Optional
+
+from pydantic import BaseModel, EmailStr
+
+from app.models.user import SubscriptionPlan
+
 
 class UserCreate(BaseModel):
     name: str
@@ -40,3 +43,23 @@ class UserStatusRead(BaseModel):
     user_request_count: int
     user: UserRead
 
+class UserAlertConfigCreate(BaseModel):
+    server_error_interval: Optional[int]
+    server_error_threshold_minutes: int
+    client_error_threshold: Optional[int]
+    client_error_threshold_interval: int
+    slow_threshold: Optional[int]
+    slow_threshold_interval: int
+    notification_interval: int
+
+class UserAlertConfigRead(BaseModel):
+    id: uuid.UUID
+    user_id: uuid.UUID
+    server_error_interval: Optional[int]
+    server_error_threshold_minutes: int
+    client_error_threshold: Optional[int]
+    client_error_threshold_interval: int
+    slow_threshold: Optional[int]
+    slow_threshold_interval: int
+    notification_interval: int
+    created: datetime

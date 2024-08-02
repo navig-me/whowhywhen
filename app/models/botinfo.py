@@ -1,8 +1,9 @@
-from sqlmodel import SQLModel, Field, Relationship
-from typing import Optional, List
+import uuid
 from datetime import datetime
 from enum import Enum
-import uuid
+from typing import List, Optional
+
+from sqlmodel import Field, Relationship, SQLModel
 
 
 class BotType(str, Enum):

@@ -1,8 +1,9 @@
-from sqlmodel import SQLModel, Field, Relationship
-from typing import Optional
-from datetime import datetime
 import uuid
-from typing import List
+from datetime import datetime
+from typing import List, Optional
+
+from sqlmodel import Field, Relationship, SQLModel
+
 
 class APILog(SQLModel, table=True):
     id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, primary_key=True)

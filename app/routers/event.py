@@ -1,10 +1,12 @@
 # routers/event.py
+from typing import List, Optional
+
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
-from typing import List, Optional
+
+from app.crud.apilog import count_events, get_events
 from app.database import get_session
 from app.models.apilog import APILog
-from app.crud.apilog import get_events, count_events
 
 router_event = APIRouter()
 
