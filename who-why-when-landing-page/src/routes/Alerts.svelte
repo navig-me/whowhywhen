@@ -8,9 +8,11 @@
     let currentPage = 1;
     let totalPages = 1;
     let isLoading = true;
+    let isFetchingNextPage = false;
 
     async function fetchAlerts(page = 1) {
-        isLoading = true;
+        if (isFetchingNextPage) return;
+        isFetchingNextPage = true;
         const token = localStorage.getItem('token');
         const response = await fetch(`${DASH_API_BASE_URL}/dashapi/alerts?page=${page}&limit=10`, {
             headers: {
@@ -19,11 +21,12 @@
         });
         if (response.ok) {
             const data = await response.json();
-            alerts = data.results;
+            alerts = [...alerts, ...data.results];
             totalPages = Math.ceil(data.total / 10);
         } else if (response.status === 401) {
             navigate('/login');
         }
+        isFetchingNextPage = false;
         isLoading = false;
     }
 
