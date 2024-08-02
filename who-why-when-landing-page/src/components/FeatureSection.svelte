@@ -16,6 +16,11 @@
 			icon: "fas fa-chart-line"
 		},
 		{
+			title: "Anomaly Alerts",
+			description: "Get notified when your APIs are behaving unexpectedly.",
+			icon: "fas fa-exclamation-triangle"
+		},
+		{
 			title: "Understand Your Users",
 			description: "Gain insights into your users' behavior and preferences.",
 			icon: "fas fa-user-friends"
