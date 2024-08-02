@@ -1,5 +1,5 @@
 <script>
-	import { Router, Route, Link } from 'svelte-routing';
+	import { Router, Route } from 'svelte-routing';
 	import Home from './routes/Home.svelte';
 	import LoginComponent from './routes/LoginComponent.svelte';
 	import RegisterComponent from './routes/RegisterComponent.svelte';
@@ -10,11 +10,12 @@
 	import Projects from './routes/Projects.svelte';
 	import Integrate from './routes/Integrate.svelte';
 	import UserSettings from './routes/UserSettings.svelte';
+	import GDPRModal from './components/GDPRModal.svelte';
 	import { isLoggedIn } from './stores/userStore';
 	import { onMount } from 'svelte';
-  
+	
 	let loggedIn = false;
-  
+	
 	onMount(() => {
 	  const token = localStorage.getItem('token');
 	  if (token) {
@@ -41,8 +42,6 @@
 	<Route path="/projects" component={Projects} />
 	<Route path="/integrate" component={Integrate} />
 	<Route path="/user-settings" component={UserSettings} />
-	{#if !loggedIn}
-	  <Footer />
-	{/if}
+	<GDPRModal />
   </Router>
   
