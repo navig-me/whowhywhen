@@ -43,10 +43,10 @@ class UserProject(SQLModel, table=True):
 
 class UserAlertConfig(SQLModel, table=True):
     __tablename__ = "useralertconfig"
-    __table_args__ = (UniqueConstraint("user_id", name="unique_user_id"),)
+    __table_args__ = (UniqueConstraint("user_project_id", name="unique_user_project_id"),)
 
     id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
-    user_id: uuid.UUID = Field(foreign_key="user.id")
+    user_project_id: uuid.UUID = Field(foreign_key="userproject.id")
     server_error_threshold: Optional[int] = Field(default=10) # Number of 5xx errors
     client_error_threshold: Optional[int] = Field(default=20) # Number of 4xx errors
     slow_threshold: Optional[int] = Field(default=1000) # Slow response threshold in milliseconds
@@ -56,14 +56,14 @@ class UserAlertConfig(SQLModel, table=True):
 
 class UserAlertNotificationEmail(SQLModel, table=True):
     id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
-    user_id: uuid.UUID = Field(foreign_key="user.id")
+    user_project_id: uuid.UUID = Field(foreign_key="userproject.id")
     email_subject: str = Field(default="")
     email_body: str = Field(default="")
     created: datetime = Field(default_factory=datetime.now)
     
 class UserAlertNotification(SQLModel, table=True):
     id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
-    user_id: uuid.UUID = Field(foreign_key="user.id")
+    user_project_id: uuid.UUID = Field(foreign_key="userproject.id")
     user_alert_notification_email_id: Optional[uuid.UUID] = Field(foreign_key="useralertnotificationemail.id", default=None)
     description: str = Field(default="")
     

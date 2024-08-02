@@ -41,6 +41,7 @@ class UserRead(BaseModel):
 
 class UserStatusRead(BaseModel):
     user_request_count: int
+    unread_alert_count: int
     user: UserRead
 
 class UserAlertConfigCreate(BaseModel):

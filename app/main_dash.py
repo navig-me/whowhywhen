@@ -11,8 +11,8 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from app.crud.apilog import create_apilog
 from app.database import create_db_and_tables, get_session
 from app.models.apilog import APILog
-from app.models.user import User, UserAlertConfig
-from app.routers import apikey, apilog, auth, botinfo, event
+from app.models.user import User, UserAlertConfig, UserProject
+from app.routers import apikey, apilog, auth, botinfo, event, alert
 from app.services.monitoring_service import check_services
 from app.services.stripe_service import get_subscription_end_date
 
@@ -23,15 +23,15 @@ async def check_alerts():
         print("Checking alerts...")
         db = next(get_session())
         try:
-            for user in db.query(User).all():
+            for user_project in db.query(UserProject).all():
                 # Check if alert config exists for the user. If not, create one.
-                alert_config = db.query(UserAlertConfig).filter(UserAlertConfig.user_id == user.id).first()
+                alert_config = db.query(UserAlertConfig).filter(UserAlertConfig.user_project_id == user_project.id).first()
                 if not alert_config:
-                    alert_config = UserAlertConfig(user_id=user.id)
+                    alert_config = UserAlertConfig(user_project_id=user_project.id)
                     db.add(alert_config)
                     db.commit()
                     db.refresh(alert_config)
-                print(f"Checking alert config for user {alert_config.user_id}...")
+                print("Checking alert config for ...", user_project)
                 check_services(alert_config, db)
         except Exception as e:
             logger.error(f"Error in check_alerts: {e}")
@@ -87,7 +87,7 @@ app = FastAPI(
     title="WhoWhyWhen Dashboard",
     description="Dashboard for WhoWhyWhen",
     version="0.1.0",
-    docs_url="/docs",
+    docs_url=None,
     redoc_url=None,
     lifespan=lifespan
 )
@@ -173,3 +173,4 @@ app.include_router(apikey.router, prefix="/dashapi", tags=["apikey"])
 app.include_router(apilog.router_dash, prefix="/dashapi", tags=["apilog"])
 app.include_router(botinfo.router, prefix="/dashapi", tags=["botinfo"])
 app.include_router(event.router_event, prefix="/dashapi", tags=["event"])
+app.include_router(alert.router, prefix="/dashapi", tags=["alert"])

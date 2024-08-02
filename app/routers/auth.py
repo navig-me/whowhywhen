@@ -15,8 +15,8 @@ from app.crud.user import (User, create_user, get_password_hash,
 from app.database import get_session
 from app.dependencies.auth import get_current_user, verify_password
 from app.models.apilog import APILog
-from app.models.user import SubscriptionPlan, User
-from app.schemas.user import (ChangePasswordForm, UserCreate, UserRead,
+from app.models.user import SubscriptionPlan, User, UserAlertNotification
+from app.schemas.user import (ChangePasswordForm, UserCreate, UserRead, 
                               UserStatusRead)
 from app.services.email_service import send_password_reset_email
 from app.services.fa_service import (generate_totp_secret, generate_totp_uri,
@@ -162,12 +162,14 @@ def read_users_me(current_user: User = Depends(get_current_user), session: Sessi
     user_request_count = 0
     for project in user_projects:
         user_request_count += session.query(APILog).filter(APILog.user_project_id == project.id).filter(APILog.created_at >= current_user.monthly_credit_limit_reset).count()
-    print(user_request_count)
-    print(current_user)
+    
+    user_project_ids = [project.id for project in user_projects]
+    unread_alert_count = session.query(UserAlertNotification).filter(UserAlertNotification.user_project_id.in_(user_project_ids)).filter(UserAlertNotification.read_at == None).count()
     
     return {
         "user": current_user,
-        "user_request_count": user_request_count
+        "user_request_count": user_request_count,
+        "unread_alert_count": unread_alert_count
     }
 
 @router.post("/users/me/projects")
@@ -177,7 +179,3 @@ def create_user_project(project_name: str, current_user: User = Depends(get_curr
 @router.get("/users/me/projects")
 def read_user_projects(current_user: User = Depends(get_current_user), session: Session = Depends(get_session)):
     return get_user_projects(session, current_user.id)
-    
-@router.post("/users/me/alerts")
-def create_user_alert_config(current_user: User = Depends(get_current_user), session: Session = Depends(get_session)):
-    return save_user_alert_config(session, current_user.id)

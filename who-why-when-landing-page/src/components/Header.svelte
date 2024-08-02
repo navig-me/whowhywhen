@@ -11,6 +11,7 @@
   let userRequestCount = 0;
   let monthlyCreditLimit = 0;
   let monthlyCreditUsageCrossed = false;
+  let unreadAlertCount = 0;
   let upgradeLink = '';
   let menuOpen = false;
 
@@ -45,6 +46,8 @@
       userRequestCount = data.user_request_count;
       monthlyCreditLimit = data.user.monthly_credit_limit;
       monthlyCreditUsageCrossed = data.user.monthly_credit_usage_crossed;
+      unreadAlertCount = data.unread_alert_count;
+      console.log("Unread alert count:", unreadAlertCount); // Debugging log
       const nextPlan = getNextPlan(user.subscription_plan);
       if (nextPlan) {
         upgradeLink = await fetchUpgradeLink(nextPlan, token);
@@ -114,6 +117,15 @@
               <Link class="nav-link" to="/projects">Projects</Link>
               <span class="dot">•</span>
               <Link class="nav-link" to="/integrate">Usage</Link>
+              <span class="dot">•</span>
+              <div class="alerts-link">
+                <Link class="nav-link" to="/alerts">
+                  Alerts
+                  {#if unreadAlertCount > 0}
+                    <span class="alert-dot"></span>
+                  {/if}
+                </Link>
+              </div>
             </div>
             <div class="nav-section">
               <Link class="nav-link" to="/user-settings">Settings</Link>
@@ -192,14 +204,14 @@
 
   .menu {
     display: flex;
-    gap: 20px;
+    gap: 10px;
     align-items: center;
   }
 
   .nav-section {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 5px;
   }
 
   .nav-section + .nav-section {
@@ -220,6 +232,7 @@
     transition: color 0.3s;
     cursor: pointer;
     font-size: 1.1rem;
+    position: relative;
   }
 
   .nav-link {
@@ -270,6 +283,20 @@
   .request-count {
     font-size: 0.8rem;
     color: #333;
+  }
+
+  .alerts-link {
+    position: relative;
+  }
+
+  .alert-dot {
+    position: absolute;
+    top: -2px;
+    right: -5px;
+    width: 5px;
+    height: 5px;
+    background-color: #ff4000;
+    border-radius: 50%;
   }
 
   @media (max-width: 768px) {

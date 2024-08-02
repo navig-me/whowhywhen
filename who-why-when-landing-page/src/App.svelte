@@ -9,6 +9,7 @@
 	import Bots from './routes/Bots.svelte';
 	import Projects from './routes/Projects.svelte';
 	import Integrate from './routes/Integrate.svelte';
+	import Alerts from './routes/Alerts.svelte';
 	import UserSettings from './routes/UserSettings.svelte';
 	import GDPRModal from './components/GDPRModal.svelte';
 	import { isLoggedIn } from './stores/userStore';
@@ -42,6 +43,7 @@
 	<Route path="/projects" component={Projects} />
 	<Route path="/integrate" component={Integrate} />
 	<Route path="/user-settings" component={UserSettings} />
+	<Route path="/alerts" component={Alerts} />
 	<GDPRModal />
   </Router>
   
