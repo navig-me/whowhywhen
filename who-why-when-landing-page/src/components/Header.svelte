@@ -121,7 +121,7 @@
             <div class="nav-section">
               <Link class="nav-link" to="/projects">Projects</Link>
               <span class="dot">•</span>
-              <Link class="nav-link" to="/integrate">Usage</Link>
+              <Link class="nav-link" to="/integrate">Setup & Integration</Link>
               <span class="dot">•</span>
               <div class="alerts-link">
                 <Link class="nav-link" to="/alerts">
@@ -148,7 +148,7 @@
           {/if}
         {:else}
           <div class="nav-section">
-            <Link class="nav-link" to="/integrate">Usage</Link>
+            <Link class="nav-link" to="/integrate">Setup & Integration</Link>
           </div>
           <div class="nav-section">
             <Link class="nav-link" to="/login">Login</Link>

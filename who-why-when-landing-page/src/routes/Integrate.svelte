@@ -131,29 +131,63 @@ backend mybackend
 
 <div class="integrate-page">
     <h2>Integrate WhoWhyWhen with Your APIs</h2>
+    <button class="btn-open-snippet" on:click={openIntegrationSnippet}>
+        <i class="fas fa-code"></i> Sample Code Snippets
+    </button>
     <p>Follow these steps to integrate WhoWhyWhen analytics into your APIs:</p>
-    <ol>
-        <li>Go to <Link to="/projects">your projects</Link> and create a new project or view an existing project that you want to enable analytics for.</li>
-        <li>Click on "View API Keys" and either copy the API Key or create a new one.</li>
-        <li>
-            Add a middleware to your application to send logs to the URL 
-            <code>https://api.whowhywhen.com/api/log</code> 
-            with the appropriate headers and request body. It is recommended to do this asynchronously to ensure that it does not affect the performance and latency of your application, and to handle all errors gracefully. The middleware should capture details of each request, including the URL, IP address, user agent, response code, and response time. The following request body parameters are required:
-            <ol>
-                <li>url: The URL of the request.</li>
-                <li>ip_address: The IP address of the request.</li>
-                <li>user_agent: The user agent of the request.</li>
-                <li>response_code: The response code of the request.</li>
-                <li>response_time: The response time of the request in milliseconds.</li>
-            </ol>
-            The middleware should make a POST request with this data to the WhoWhyWhen API.
-        </li>
-        <li>If you are using a reverse proxy, ensure that the middleware is configured correctly to capture and forward the required headers and body.</li>
-    </ol>
-    <button class="btn-open-snippet" on:click={openIntegrationSnippet}>Sample Code Snippets</button>
+    <div class="steps">
+        <div class="card">
+            <div class="icon-title">
+                <i class="fas fa-project-diagram fa-3x"></i>
+                <h3>Create a Project</h3>
+            </div>
+            <div class="card-content">
+                <p>Go to <Link to="/projects">your projects</Link> and create a new project or view an existing project that you want to enable analytics for.</p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="icon-title">
+                <i class="fas fa-key fa-3x"></i>
+                <h3>Create an API Key</h3>
+            </div>
+            <div class="card-content">
+                <p>Click on "View API Keys" and either copy the API Key or create a new one.</p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="icon-title">
+                <i class="fas fa-code fa-3x"></i>
+                <h3>Add a Middleware in your Code</h3>
+            </div>
+            <div class="card-content">
+                <p>Add a middleware to your application to send logs to the URL <code>https://api.whowhywhen.com/api/log</code> with the appropriate headers and request body. It is recommended to do this asynchronously to ensure that it does not affect the performance and latency of your application, and to handle all errors gracefully. The middleware should capture details of each request, including the URL, IP address, user agent, response code, and response time.</p>
+                <ul>
+                    <li>url: The URL of the request.</li>
+                    <li>ip_address: The IP address of the request.</li>
+                    <li>user_agent: The user agent of the request.</li>
+                    <li>response_code: The response code of the request.</li>
+                    <li>response_time: The response time of the request in milliseconds.</li>
+                </ul>
+                <p>The middleware should make a POST request with this data to the WhoWhyWhen API.</p>
+                <button class="btn-open-snippet" on:click={openIntegrationSnippet}>
+                    <i class="fas fa-code"></i> Sample Code Snippets
+                </button>
+            </div>
+        </div>
+        <div class="card">
+            <div class="icon-title">
+                <i class="fas fa-tachometer-alt fa-3x"></i>
+                <h3>Start Using WhoWhyWhen!</h3>
+            </div>
+            <div class="card-content">
+                <p>Start using WhoWhyWhen and view your data in the <Link to="/dashboard">Dashboard</Link>, the <Link to="/bots">Bots</Link> page, or the <Link to="/projects">Projects</Link> page.</p>
+                <p> You can view alerts or unusual traffic by clicking on the <Link to="/alerts">Alerts</Link> tab.</p>
+            </div>
+        </div>
+    </div>
 
     <h3>Using a Proxy?</h3>
-    <p>Select your reverse proxy service to view the additional configuration steps to ensure that the IP address is captured correctly.</p>
+    <p>If you are using a reverse proxy, ensure that the middleware is configured correctly to capture and forward the required headers and body.</p>
     <select bind:value={selectedProxy}>
         <option value="" disabled>Select a proxy</option>
         <option value="traefik">Traefik</option>
@@ -192,29 +226,49 @@ backend mybackend
         margin-bottom: 20px;
     }
 
-    ol {
-        text-align: left;
+    p {
         margin-bottom: 20px;
-        padding-left: 20px;
     }
 
-    li {
-        margin-bottom: 10px;
+    .steps {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
     }
 
-    .btn-open-snippet {
-        background-color: #663399;
-        color: #fff;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
+    .card {
+        flex: 1 1 calc(40% - 20px);
+        background: #f9f9f9;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
         cursor: pointer;
-        transition: background-color 0.3s ease;
-        margin-top: 10px;
+        text-align: left;
+        padding: 20px;
     }
 
-    .btn-open-snippet:hover {
-        background-color: #7d42a6;
+    .icon-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .card i {
+        color: #663399;
+    }
+
+    .btn-open-snippet i {
+        color: #fff;
+    }
+
+    .card-content {
+        padding: 0 20px;
     }
 
     code {
@@ -264,7 +318,7 @@ backend mybackend
         text-align: left;
     }
 
-    .btn-copy {
+    .btn-open-snippet, .btn-copy {
         background-color: #663399;
         color: #fff;
         padding: 10px 20px;
@@ -275,7 +329,7 @@ backend mybackend
         margin-top: 10px;
     }
 
-    .btn-copy:hover {
+    .btn-open-snippet:hover, .btn-copy:hover {
         background-color: #7d42a6;
     }
 </style>
