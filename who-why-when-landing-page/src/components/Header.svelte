@@ -87,6 +87,11 @@
     return 'bar-green';
   }
 
+  function shouldShowRequestBar(used, limit) {
+    const percentage = (used / limit) * 100;
+    return percentage > 80;
+  }
+
   function conditionalChangeView() {
     if (get(isLoggedIn)) {
       changeView('/dashboard');
@@ -129,11 +134,13 @@
             </div>
             <div class="nav-section">
               <Link class="nav-link" to="/user-settings">Settings</Link>
-              <div class="request-bar-container" on:click={() => changeView('/user-settings')}>
-                <div class="request-bar">
-                  <div class="request-bar-inner {getRequestBarClass(userRequestCount, monthlyCreditLimit)}" style="width: {getRequestBarWidth(userRequestCount, monthlyCreditLimit)}%"></div>
+              {#if shouldShowRequestBar(userRequestCount, monthlyCreditLimit)}
+                <div class="request-bar-container" on:click={() => changeView('/user-settings')}>
+                  <div class="request-bar">
+                    <div class="request-bar-inner {getRequestBarClass(userRequestCount, monthlyCreditLimit)}" style="width: {getRequestBarWidth(userRequestCount, monthlyCreditLimit)}%"></div>
+                  </div>
                 </div>
-              </div>
+              {/if}
             </div>
             <div class="nav-section">
               <a class="nav-link logout-link" on:click={logout}>Logout</a>

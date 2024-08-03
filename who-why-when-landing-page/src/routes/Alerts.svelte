@@ -53,22 +53,26 @@
     <section class="alerts-section">
         <div class="container">
             <h2>Alerts</h2>
-            <div class="timeline">
-                {#each alerts as alert}
-                    <div class="timeline-item" on:click={() => handleNotificationClick(alert.user_project_id)}>
-                        <div class="timeline-marker">
-                            <span class="date">{alert.created_text}</span>
-                            <div class="dot"></div>
+            {#if alerts.length > 0}
+                <div class="timeline">
+                    {#each alerts as alert}
+                        <div class="timeline-item" on:click={() => handleNotificationClick(alert.user_project_id)}>
+                            <div class="timeline-marker">
+                                <span class="date">{alert.created_text}</span>
+                                <div class="dot"></div>
+                            </div>
+                            <div class="timeline-content">
+                                <h3>{alert.user_project_name}</h3>
+                                <p>{alert.description}</p>
+                            </div>
                         </div>
-                        <div class="timeline-content">
-                            <h3>{alert.user_project_name}</h3>
-                            <p>{alert.description}</p>
-                        </div>
-                    </div>
-                {/each}
-            </div>
-            {#if currentPage < totalPages}
-                <button on:click={nextPage} class="next-button">Next</button>
+                    {/each}
+                </div>
+                {#if currentPage < totalPages}
+                    <button on:click={nextPage} class="next-button">Next</button>
+                {/if}
+            {:else}
+                <p>No alerts yet. Check back later.</p>
             {/if}
         </div>
     </section>
