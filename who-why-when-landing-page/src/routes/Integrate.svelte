@@ -1,14 +1,31 @@
 <script>
     import { Link } from 'svelte-routing';
     import IntegrationSnippet from '../components/IntegrationSnippet.svelte';
+    import { API_BASE_URL } from '../config';
 
     let apiKey = 'YOUR_API_KEY_HERE';
     let clientIp = 'YOUR_CLIENT_IP_HERE';
     let userAgent = 'YOUR_USER_AGENT_HERE';
     let showSnippetModal = false;
+    let showCurlModal = false;
+    let curlCommand = '';
     let selectedProxy = '';
     let proxyConfigDescription = '';
     let proxyConfigSnippet = '';
+
+    let requestCode = `
+POST /api/log HTTP/1.1
+Host: api.whowhywhen.com
+X-Api-Key: YOUR_API_KEY
+Content-Type: application/json
+
+{
+  "url": "URL of the request",
+  "ip_address": "IP address of the request",
+  "user_agent": "User agent of the request",
+  "response_code": "Response code of the request",
+  "response_time": "Response time of the request in milliseconds"
+}`;
 
     function openIntegrationSnippet() {
         showSnippetModal = true;
@@ -16,6 +33,20 @@
 
     function closeModal() {
         showSnippetModal = false;
+        showCurlModal = false;
+    }
+
+    function openCurlModal() {
+        curlCommand = `curl -X POST ${API_BASE_URL}/api/log \\
+-H "Content-Type: application/json" \\
+-H "X-API-KEY: ${apiKey}" \\
+-d '{
+  "url": "www.whowhywhen.com/whowhywhen-test?q=test",
+  "ip_address": "${clientIp}",
+  "user_agent": "${userAgent}",
+  "response_code": 200
+}'`;
+        showCurlModal = true;
     }
 
     function copyToClipboard(content) {
@@ -160,18 +191,19 @@ backend mybackend
                 <h3>Add a Middleware in your Code</h3>
             </div>
             <div class="card-content">
-                <p>Add a middleware to your application to send logs to the URL <code>https://api.whowhywhen.com/api/log</code> with the appropriate headers and request body. It is recommended to do this asynchronously to ensure that it does not affect the performance and latency of your application, and to handle all errors gracefully. The middleware should capture details of each request, including the URL, IP address, user agent, response code, and response time.</p>
-                <ul>
-                    <li>url: The URL of the request.</li>
-                    <li>ip_address: The IP address of the request.</li>
-                    <li>user_agent: The user agent of the request.</li>
-                    <li>response_code: The response code of the request.</li>
-                    <li>response_time: The response time of the request in milliseconds.</li>
-                </ul>
-                <p>The middleware should make a POST request with this data to the WhoWhyWhen API.</p>
-                <button class="btn-open-snippet" on:click={openIntegrationSnippet}>
-                    <i class="fas fa-code"></i> Sample Code Snippets
-                </button>
+                <p>
+                    To send logs to WhoWhyWhen, add a middleware to your application. The middleware should make a POST request to <code>https://api.whowhywhen.com/api/log</code> with the following headers and body:
+                </p>
+                <pre><code>{requestCode}</code></pre>
+                <p>It's recommended to do this asynchronously to ensure it doesn't affect your application's performance and latency, and to handle all errors gracefully.</p>
+                <div class="button-group">
+                    <button class="btn-open-snippet" on:click={openIntegrationSnippet}>
+                        <i class="fas fa-code"></i> Sample Code Snippets
+                    </button>
+                    <button class="btn-open-curl" on:click={openCurlModal}>
+                        <i class="fas fa-terminal"></i> Sample cURL Request
+                    </button>
+                </div>
             </div>
         </div>
         <div class="card">
@@ -181,7 +213,7 @@ backend mybackend
             </div>
             <div class="card-content">
                 <p>Start using WhoWhyWhen and view your data in the <Link to="/dashboard">Dashboard</Link>, the <Link to="/bots">Bots</Link> page, or the <Link to="/projects">Projects</Link> page.</p>
-                <p> You can view alerts or unusual traffic by clicking on the <Link to="/alerts">Alerts</Link> tab.</p>
+                <p>You can view alerts or unusual traffic by clicking on the <Link to="/alerts">Alerts</Link> tab.</p>
             </div>
         </div>
     </div>
@@ -208,6 +240,17 @@ backend mybackend
 
 {#if showSnippetModal}
     <IntegrationSnippet {apiKey} {clientIp} {userAgent} close={closeModal} />
+{/if}
+
+{#if showCurlModal}
+    <div class="modal">
+        <div class="modal-content">
+            <span class="close" on:click={closeModal}>&times;</span>
+            <h4>Sample cURL Request</h4>
+            <pre>{curlCommand}</pre>
+            <button class="btn-copy" on:click={() => copyToClipboard(curlCommand)}>Copy to Clipboard</button>
+        </div>
+    </div>
 {/if}
 
 <style>
@@ -263,7 +306,7 @@ backend mybackend
         color: #663399;
     }
 
-    .btn-open-snippet i {
+    .btn-open-snippet i, .btn-open-curl i {
         color: #fff;
     }
 
@@ -288,6 +331,11 @@ backend mybackend
         overflow-x: auto;
         margin: 10px 0;
         max-height: 300px;
+    }
+
+    .button-group {
+        display: flex;
+        gap: 10px;
     }
 
     select {
@@ -318,7 +366,7 @@ backend mybackend
         text-align: left;
     }
 
-    .btn-open-snippet, .btn-copy {
+    .btn-open-snippet, .btn-copy, .btn-open-curl {
         background-color: #663399;
         color: #fff;
         padding: 10px 20px;
@@ -329,7 +377,46 @@ backend mybackend
         margin-top: 10px;
     }
 
-    .btn-open-snippet:hover, .btn-copy:hover {
+    .btn-open-snippet:hover, .btn-copy:hover, .btn-open-curl:hover {
         background-color: #7d42a6;
+    }
+
+    .modal {
+        display: block;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-content {
+        background-color: #fff;
+        margin: 10% auto;
+        padding: 30px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 800px;
+        border-radius: 10px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        position: relative;
+    }
+
+    .close {
+        color: #aaa;
+        position: absolute;
+        top: 15px;
+        right: 20px;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .close:hover, .close:focus {
+        color: black;
+        text-decoration: none;
     }
 </style>
