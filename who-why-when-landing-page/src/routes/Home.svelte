@@ -5,6 +5,7 @@
 	import Questions from '../components/Questions.svelte';
 	import Footer from '../components/Footer.svelte';
 	import ScrollingImage from '../components/ScrollingImage.svelte';
+	import IntegrationSteps from '../components/IntegrationSteps.svelte';
 
 	const questions = [
 		"Why is my endpoint failing?", 
@@ -28,7 +29,6 @@
 		"Where can I optimize performance?",
 		"How can I improve my APIs?"
 	];
-
 </script>
 
 <div class="parallax-wrapper">
@@ -40,6 +40,7 @@
 	</div>
 </div>
 <Questions {questions} />
+<IntegrationSteps /> 
 <PricingSection />
 <Footer />
 

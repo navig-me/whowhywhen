@@ -47,7 +47,7 @@
       monthlyCreditLimit = data.user.monthly_credit_limit;
       monthlyCreditUsageCrossed = data.user.monthly_credit_usage_crossed;
       unreadAlertCount = data.unread_alert_count;
-      console.log("Unread alert count:", unreadAlertCount); // Debugging log
+
       const nextPlan = getNextPlan(user.subscription_plan);
       if (nextPlan) {
         upgradeLink = await fetchUpgradeLink(nextPlan, token);

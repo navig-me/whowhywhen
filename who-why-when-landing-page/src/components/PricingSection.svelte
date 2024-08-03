@@ -46,7 +46,7 @@
 <style>
 	.pricing-section {
 		padding: 40px 20px;
-		background: #f9f9f9;
+		background: #e0e0e0;
 		text-align: center;
 		color: #333;
 	}
