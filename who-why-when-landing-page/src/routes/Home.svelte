@@ -6,6 +6,7 @@
 	import Footer from '../components/Footer.svelte';
 	import ScrollingImage from '../components/ScrollingImage.svelte';
 	import IntegrationSteps from '../components/IntegrationSteps.svelte';
+    import GetStartedBanner from '../components/GetStartedBanner.svelte';
 
 	const questions = [
 		"Why is my endpoint failing?", 
@@ -41,7 +42,7 @@
 </div>
 <Questions {questions} />
 <IntegrationSteps /> 
-<PricingSection />
+<GetStartedBanner />
 <Footer />
 
 <style>

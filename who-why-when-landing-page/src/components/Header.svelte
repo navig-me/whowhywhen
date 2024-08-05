@@ -121,8 +121,6 @@
             <div class="nav-section">
               <Link class="nav-link" to="/projects">Projects</Link>
               <span class="dot">•</span>
-              <Link class="nav-link" to="/integrate">Setup & Integration</Link>
-              <span class="dot">•</span>
               <div class="alerts-link">
                 <Link class="nav-link" to="/alerts">
                   Alerts
@@ -133,6 +131,8 @@
               </div>
             </div>
             <div class="nav-section">
+              <Link class="nav-link" to="/integrate">Setup & Integration</Link>
+              <span class="dot">•</span>
               <Link class="nav-link" to="/user-settings">Settings</Link>
               {#if shouldShowRequestBar(userRequestCount, monthlyCreditLimit)}
                 <div class="request-bar-container" on:click={() => changeView('/user-settings')}>

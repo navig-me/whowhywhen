@@ -33,7 +33,7 @@
                 <i class="fas fa-code fa-3x"></i>
                 <div>
                     <h3>Step 3</h3>
-                    <h4>Integrate Middleware</h4>
+                    <h4>Add Middleware in your Code</h4>
                 </div>
             </div>
         </div>
@@ -71,7 +71,7 @@
         border-radius: 10px;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         padding: 20px;
-        width: 250px;
+        width: 300px;
         text-align: center;
         position: relative;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
