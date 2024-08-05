@@ -22,7 +22,7 @@
         <div class="content">
             <div class="text-content">
                 <h1><span class="supercharge">Supercharge</span> Your APIs, Protect Your Data</h1>
-                <p>Get real-time analytics, track bots and AI scrapers, and optimize your resources with our comprehensive API management platform.</p>
+                <p>Get real-time analytics, track bots and AI scrapers, and optimize your resources.</p>
                 <button class="btn-primary" on:click={() => changeView('/register')}>START FOR FREE</button>
             </div>
             <div class="video-frame-wrapper">
