@@ -1,8 +1,6 @@
 <script>
     import { onMount } from 'svelte';
-    import UAParser from 'ua-parser-js';
-
-    let error = null;
+    import { DASH_API_BASE_URL } from '../config';
 
     let deviceDetails = {
         browser: 'Unknown',
@@ -16,30 +14,20 @@
         is_bot: false,
     };
 
-    onMount(() => {
+    let error = null;
+
+    onMount(async () => {
         try {
-            const parser = new UAParser();
-            const result = parser.getResult();
-
-            console.log('Parsing user agent:', result);
-
-            const device = result.device.vendor ? `${result.device.vendor} ${result.device.model}` : result.device.model || 'Unknown';
-
-            deviceDetails = {
-                browser: result.browser.name || 'Unknown',
-                browser_version: result.browser.version || 'Unknown',
-                os: result.os.name || 'Unknown',
-                os_version: result.os.version || 'Unknown',
-                device: device.trim(),
-                is_mobile: result.device.type === 'mobile',
-                is_tablet: result.device.type === 'tablet',
-                is_pc: result.device.type === 'desktop',
-                is_bot: result.device.type === 'bot' // Note: UAParser might not have a direct 'bot' type
-            };
-            console.log('Device details:', deviceDetails);  // Log the response to check its content
+            const response = await fetch(`${DASH_API_BASE_URL}/dashapi/device-details`);
+            if (response.ok) {
+                deviceDetails = await response.json();
+                console.log('Device details:', deviceDetails);  // Log the response to check its content
+            } else {
+                error = 'Failed to fetch device details';
+            }
         } catch (err) {
-            error = 'Error parsing device details';
-            console.error('Error parsing device details', err);
+            error = 'Error fetching device details';
+            console.error(err);  // Log the error to check what went wrong
         }
     });
 </script>
@@ -67,7 +55,7 @@
                                 {:else if deviceDetails.is_bot}
                                     <i class="fas fa-robot"></i>
                                 {:else}
-                                    <i class="fas fa-desktop"></i>
+                                    <i class="fas fa-question-circle"></i>
                                 {/if}
                             </div>
                             <p class="device-info">
@@ -86,7 +74,7 @@
 
 <style>
     .ribbon {
-        width: 70%;
+        width:70%;
         background: rgba(0, 0, 0, 0.5); /* Make background semi-transparent to blend with banner */
         color: white;
         padding: 10px 0; /* Adjust padding to fit nicely within the banner */
