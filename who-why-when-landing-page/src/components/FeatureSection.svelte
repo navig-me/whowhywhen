@@ -32,14 +32,19 @@
 	<div class="container">
 		<h2>Powerful Features</h2>
 		<p>Built by developers, for developers.</p>
-		<div class="features-grid">
-			{#each features as feature}
-				<div class="feature-item">
-					<i class="{feature.icon}"></i>
-					<h3>{feature.title}</h3>
-					<p>{feature.description}</p>
-				</div>
-			{/each}
+		<div class="content">
+			<div class="image-container">
+				<img src="/userdemo.png" alt="User Demo" class="demo-image">
+			</div>
+			<div class="features-grid">
+				{#each features as feature}
+					<div class="feature-item">
+						<i class="{feature.icon}"></i>
+						<h3>{feature.title}</h3>
+						<p>{feature.description}</p>
+					</div>
+				{/each}
+			</div>
 		</div>
 	</div>
 </section>
@@ -47,7 +52,6 @@
 <style>
 	.feature-section {
 		padding: 80px 20px;
-		/* background-color: #f9f9f9; Light gray background for separation */
 		color: #333;
 	}
 
@@ -79,10 +83,31 @@
 		margin-bottom: 40px;
 	}
 
+	.content {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 30px;
+	}
+
+	.image-container {
+		flex: 1;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.demo-image {
+		max-width: 100%;
+		height: auto;
+	}
+
 	.features-grid {
+		flex: 2;
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 		gap: 15px;
+		text-align: left;
 	}
 
 	.feature-item {
@@ -112,6 +137,14 @@
 	}
 
 	@media (max-width: 768px) {
+		.content {
+			flex-direction: column;
+		}
+
+		.features-grid {
+			grid-template-columns: 1fr;
+		}
+
 		h2 {
 			font-size: 2rem;
 		}

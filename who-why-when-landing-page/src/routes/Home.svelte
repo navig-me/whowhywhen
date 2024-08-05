@@ -1,44 +1,41 @@
 <script>
-	import HeroSection from '../components/HeroSection.svelte';
-	import FeatureSection from '../components/FeatureSection.svelte';
-	import PricingSection from '../components/PricingSection.svelte';
-	import Questions from '../components/Questions.svelte';
-	import Footer from '../components/Footer.svelte';
-	import ScrollingImage from '../components/ScrollingImage.svelte';
-	import IntegrationSteps from '../components/IntegrationSteps.svelte';
+    import MainBanner from '../components/MainBanner.svelte';
+    import FeatureSection from '../components/FeatureSection.svelte';
+    import Questions from '../components/Questions.svelte';
+    import Footer from '../components/Footer.svelte';
+    import IntegrationSteps from '../components/IntegrationSteps.svelte';
     import GetStartedBanner from '../components/GetStartedBanner.svelte';
 
 	const questions = [
-		"Why is my endpoint failing?", 
-		"Why high bot traffic?", 
-		"Who visited my app?", 
-		"Where are my visitors located?", 
-		"When does my API fail more?", 
-		"When do people visit the most?", 
-		"What browsers do my users use?", 
-		"Who uses my API the most?", 
-		"What time of day is busiest?", 
-		"When do I get the most errors?", 
-		"What is the average response time?", 
-		"Why monitor API performance?", 
-		"Who are my top users?", 
-		"What devices do users prefer?", 
-		"Who experiences the most errors?", 
-		"Why do I need real-time analytics?", 
-		"What endpoints are most popular?", 
-		"Why track API usage?", 
-		"Where can I optimize performance?",
-		"How can I improve my APIs?"
+		"Why is my endpoint failing so frequently?",
+		"How can I reduce high bot traffic?",
+		"Who are the visitors on my app?",
+		"Where are my visitors located geographically?",
+		"When does my API experience the most failures?",
+		"At what times do people visit the most?",
+		"Which browsers do my users prefer?",
+		"Who are the most active users of my API?",
+		"What times of day are the busiest for my API?",
+		"When do I get the most error responses?",
+		"What is the average response time for my API?",
+		"Why should I monitor API performance?",
+		"Who are the top users of my service?",
+		"What devices are my users using?",
+		"Who experiences the most errors on my API?",
+		"Why do I need real-time analytics for my API?",
+		"Which endpoints are the most popular?",
+		"How can I detect and block bots and AI scrapers?",
+		"How is bot traffic affecting my API performance?",
+		"What strategies can I use to mitigate bot and AI scraper activity?"
 	];
 </script>
 
-<div class="parallax-wrapper">
-	<div class="parallax"></div>
-	<div class="content-wrapper">
-		<HeroSection />
-		<ScrollingImage />
-		<FeatureSection />
-	</div>
+<div class="page-wrapper">
+    <div class="parallax-wrapper">
+        <div class="parallax"></div>
+		<MainBanner />
+    </div>
+    <FeatureSection />
 </div>
 <Questions {questions} />
 <IntegrationSteps /> 
@@ -46,58 +43,55 @@
 <Footer />
 
 <style>
-	@import '../styles/global.css';
+    @import '../styles/global.css';
 
-	.parallax-wrapper {
-		position: relative;
-		overflow: hidden;
-	}
+    .page-wrapper {
+        position: relative;
+    }
 
-	.parallax {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		background-attachment: fixed;
-		background-position: center;
-		background-repeat: no-repeat;
-		background-size: cover;
-		z-index: -1;
-	}
+    .parallax-wrapper {
+        position: relative;
+        overflow: hidden;
+        background: url('/supercharge.jpg') no-repeat center / cover;
+    }
 
-	.content-wrapper {
-		position: relative;
-		z-index: 1;
-	}
+    .parallax {
+        display: none;
+    }
 
-	.overlay {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		background-color: rgba(0, 0, 0, 0.6); /* Dark overlay */
-	}
+    .content-wrapper {
+        position: relative;
+        z-index: 1;
+        padding: 50px 20px;
+    }
 
-	.container {
-		position: relative;
-		z-index: 2;
-		padding: 50px 20px;
-		background: rgba(255, 255, 255, 0.8);
-		border-radius: 10px;
-		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-	}
+    .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6); /* Dark overlay */
+    }
 
-	@media (max-width: 768px) {
-		.container {
-			padding: 20px;
-		}
-	}
+    .container {
+        position: relative;
+        z-index: 2;
+        padding: 50px 20px;
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
 
-	@media (max-width: 480px) {
-		.container {
-			padding: 10px;
-		}
-	}
+    @media (max-width: 768px) {
+        .container {
+            padding: 20px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .container {
+            padding: 10px;
+        }
+    }
 </style>

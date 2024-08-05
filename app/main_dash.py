@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from fastapi import BackgroundTasks, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
+from user_agents import parse
 
 from app.crud.apilog import create_apilog
 from app.database import create_db_and_tables, get_session
@@ -15,28 +16,40 @@ from app.models.user import User, UserAlertConfig, UserProject
 from app.routers import apikey, apilog, auth, botinfo, event, alert
 from app.services.monitoring_service import check_services
 from app.services.stripe_service import get_subscription_end_date
+from contextlib import contextmanager
 
 logger = logging.getLogger(__name__)
+
+@contextmanager
+def session_scope():
+    """Provide a transactional scope around a series of operations."""
+    session = next(get_session())
+    try:
+        yield session
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        raise
+    finally:
+        session.close()
 
 async def check_alerts():
     while True:
         print("Checking alerts...")
-        db = next(get_session())
-        try:
-            for user_project in db.query(UserProject).all():
-                # Check if alert config exists for the user. If not, create one.
-                alert_config = db.query(UserAlertConfig).filter(UserAlertConfig.user_project_id == user_project.id).first()
-                if not alert_config:
-                    alert_config = UserAlertConfig(user_project_id=user_project.id)
-                    db.add(alert_config)
-                    db.commit()
-                    db.refresh(alert_config)
-                print("Checking alert config for ...", user_project)
-                check_services(alert_config, db)
-        except Exception as e:
-            logger.error(f"Error in check_alerts: {e}")
-        finally:
-            db.close()
+        with session_scope() as db:
+            try:
+                user_projects = db.query(UserProject).all()
+                for user_project in user_projects:
+                    alert_config = db.query(UserAlertConfig).filter(UserAlertConfig.user_project_id == user_project.id).first()
+                    if not alert_config:
+                        alert_config = UserAlertConfig(user_project_id=user_project.id)
+                        db.add(alert_config)
+                        db.commit()
+                        db.refresh(alert_config)
+                    print("Checking alert config for ...", user_project)
+                    check_services(alert_config, db)
+            except Exception as e:
+                logger.error(f"Error in check_alerts: {e}")
         await asyncio.sleep(300)  # 5 minutes
 
 async def check_monthly_credit_limit():
@@ -87,7 +100,7 @@ app = FastAPI(
     title="WhoWhyWhen Dashboard",
     description="Dashboard for WhoWhyWhen",
     version="0.1.0",
-    docs_url=None,
+    docs_url="/docs",
     redoc_url=None,
     lifespan=lifespan
 )
@@ -167,6 +180,26 @@ async def add_background_tasks(request: Request, call_next):
 async def get_ip_location(request: Request):
     ip = request.state.ip
     return {"ip": ip}
+
+@app.get("/dashapi/device-details")
+async def get_device_details(request: Request):
+    user_agent_str = request.headers.get("User-Agent")
+    if not user_agent_str:
+        return {"error": "User-Agent header not found"}
+    
+    user_agent = parse(user_agent_str)
+    device_details = {
+        "browser": user_agent.browser.family,
+        "browser_version": user_agent.browser.version_string,
+        "os": user_agent.os.family,
+        "os_version": user_agent.os.version_string,
+        "device": user_agent.device.family,
+        "is_mobile": user_agent.is_mobile,
+        "is_tablet": user_agent.is_tablet,
+        "is_pc": user_agent.is_pc,
+        "is_bot": user_agent.is_bot,
+    }
+    return device_details
 
 app.include_router(auth.router, prefix="/dashauth", tags=["auth"])
 app.include_router(apikey.router, prefix="/dashapi", tags=["apikey"])

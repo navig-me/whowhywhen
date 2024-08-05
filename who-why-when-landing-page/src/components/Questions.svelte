@@ -48,12 +48,13 @@
 		font-weight: 700;
 		color: #333;
 		padding: 10px 20px;
-		transition: transform 0.3s;
+		transition: transform 0.3s, background-color 0.3s;
 		display: inline-block;
 	}
 
 	.question:hover {
 		transform: scale(1.05);
+		/* background-color: #e0e0e0; */
 	}
 
 	@keyframes scroll {
