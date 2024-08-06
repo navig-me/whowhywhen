@@ -52,9 +52,10 @@ def create_user(session: Session, user: UserCreate) -> User:
     session.commit()
     session.refresh(db_user)
 
-    default_project = UserProject(name=user.project_name, user_id=db_user.id, is_default=True)
-    session.add(default_project)
-    session.commit()
+    if user.project_name:
+        default_project = UserProject(name=user.project_name, user_id=db_user.id, is_default=True)
+        session.add(default_project)
+        session.commit()
 
     send_welcome_email(db_user.email, db_user.name)
     send_new_user_notification_email(db_user.email, db_user.name)

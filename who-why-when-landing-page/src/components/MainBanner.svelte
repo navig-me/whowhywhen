@@ -33,6 +33,9 @@
                     </video>
                 </div>
             </div>
+            <div class="image-wrapper">
+                <img src="/devthree.png" alt="Description of image" />
+            </div>
         </div>
     </div>
 </section>
@@ -43,11 +46,14 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        background: url('/supercharge.jpg') no-repeat center / cover;
-        color: #fff;
+        background: #f8f8f8;
+        color: #333;
         padding: 20px 20px;
         text-align: left;
         position: relative;
+        background-image: url('https://www.transparenttextures.com/patterns/gplay.png'); /* Light pattern background */
+        background-size: 200px 200px; /* Adjust the size to make the pattern more visible */
+        opacity: 0.9; /* Adjust the opacity to make the pattern subtle but visible */
     }
 
     .container {
@@ -68,12 +74,14 @@
     }
 
     .text-content {
-        max-width: 35%;
+        flex: 1;
+        max-width: 25%;
     }
 
     .video-frame-wrapper {
-        max-width: 65%; /* Increase the maximum width of the video frame */
-        margin-left: 20px;
+        flex: 1;
+        max-width: 50%; /* Adjust the width to balance the layout */
+        margin: 0 20px;
     }
 
     .video-frame {
@@ -87,6 +95,18 @@
     }
 
     .video-content {
+        width: 100%;
+        height: auto;
+        border-radius: 10px;
+    }
+
+    .image-wrapper {
+        flex: 1;
+        max-width: 25%; /* Adjust the width to balance the layout */
+        margin-left: 20px;
+    }
+
+    .image-wrapper img {
         width: 100%;
         height: auto;
         border-radius: 10px;
@@ -114,7 +134,7 @@
     }
 
     .supercharge {
-        background: linear-gradient(90deg, #ff4000, #ff7300, #ffd700, #73ff00, #00ffd0, #0073ff, #ff00d0);
+        background: linear-gradient(90deg, #ff4000, #ff7300, #ff00d0, #bb01ff, #0073ff);
         background-size: 600%;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -132,7 +152,7 @@
             flex-direction: column;
         }
 
-        .text-content, .video-frame-wrapper {
+        .text-content, .video-frame-wrapper, .image-wrapper {
             max-width: 100%;
             margin: 0;
             text-align: center;

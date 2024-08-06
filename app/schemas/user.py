@@ -11,8 +11,8 @@ class UserCreate(BaseModel):
     name: str
     email: EmailStr
     password: str
-    project_name: str
-    cf_turnstile_response: str
+    project_name: Optional[str] = None
+    cf_turnstile_response: Optional[str] = None
 
 class ChangePasswordForm(BaseModel):
     old_password: str

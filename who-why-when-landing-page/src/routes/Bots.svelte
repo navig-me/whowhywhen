@@ -213,7 +213,6 @@
     });
     if (response.ok) {
         const data = await response.json();
-        console.log('Fetched Top Bots Data:', data);
         topBotsData = data.bot_stats || [];
     } else if (response.status === 401) {
       clearToken();
@@ -468,73 +467,78 @@
 </script>
 
 <section class="dashboard-section">
-<div class="container">
-  {#if showBanner}
-    <div class="banner">
-      <p>Not enough data for the selected filters. Visit the <a href="/projects">Projects</a> page to test your API keys and see data on this chart. Click on <strong>Integrate</strong> to view the steps to integrate with your API.</p>
+  <div class="container">
+    {#if showBanner}
+      <div class="banner">
+        <p>Not enough data for the selected filters. Visit the <a href="/projects">Projects</a> page to test your API keys and see data on this chart. Click on <strong>Integrate</strong> to view the steps to integrate with your API.</p>
+      </div>
+    {/if}
+    {#if projects.length === 0}
+      <div class="banner">
+        <p>No projects found. Please create a project first.</p>
+      </div>
+    {/if}
+    <div class="dashboard-content">
+      <div class="left-column">
+        <div class="project-selector-container">
+          <ProjectSelector {projects} bind:selectedProjectId on:reset={resetFilters} on:change={async () => { await fetchApiLogs(); await fetchHourlyRequestsData(); await fetchCountsData(); await fetchTopBotsData(); }} />
+        </div>
+        <div class="filters-container">
+          <div class="time-range">
+            <label for="time-range-select">Show:</label>
+            <select id="time-range-select" on:change={handleTimeRangeChange}>
+              <option value="last_hour">Last Hour</option>
+              <option value="last_24_hours">Last 24 Hours</option>
+              <option value="last_7_days">Last 7 Days</option>
+              <option value="last_30_days">Last 30 Days</option>
+              <option value="last_90_days">Last 90 Days</option>
+              <option value="all">All</option>
+            </select>
+          </div>
+          <div class="selected-filters">
+            <p>Selected Filters:</p>
+            <ul>
+              {#if Object.keys(searchParams).length === 0}
+                <li>Select values in the table to filter</li>
+              {:else}
+                {#each Object.entries(searchParams) as [key, value]}
+                  <li>
+                    {formatKey(key)}: {value} <button on:click={() => removeFilter(key)}>✖</button>
+                  </li>
+                {/each}
+              {/if}
+            </ul>
+          </div>
+          <div class="search-container">
+            <input type="text" placeholder="Search..." on:input={handleSearchInput} />
+            <button on:click={triggerSearch}>Search</button>
+          </div>
+        </div>
+      </div>
+      <div class="right-column">
+        <div class="filters-icon-container">
+          <i class="fa fa-filter" aria-hidden="true" on:click={openFiltersModal}></i>
+        </div>
+        <BotHighlights {topBotsData} {isBotDataLoading} />
+        <div class="charts-container">
+          <RequestsChart {barChartData} {frequency} {isChartLoading} on:frequencyChange={handleFrequencyChange} class="full-width-chart"/>
+        </div>
+        <div class="pie-charts-container">
+          <PieChart pieChartData={responseCodeData} {isPieChartLoading} />
+          <PieChart pieChartData={botBrowserFamilyData} {isPieChartLoading} />
+        </div>
+        <LogsTable {apiLogs} {currentPage} {totalPages} {isTableLoading} on:changePage={(e) => changePage(e.detail.page)} on:cellClick={handleCellClick} on:addFilter={handleAddFilter} />
+      </div>
     </div>
-  {/if}
-  <div class="dashboard-content">
-    <div class="left-column">
-      <div class="project-selector-container">
-        <ProjectSelector {projects} bind:selectedProjectId on:reset={resetFilters} on:change={async () => { await fetchApiLogs(); await fetchHourlyRequestsData(); await fetchCountsData(); await fetchTopBotsData(); }} />
-      </div>
-      <div class="filters-container">
-        <div class="time-range">
-          <label for="time-range-select">Show:</label>
-          <select id="time-range-select" on:change={handleTimeRangeChange}>
-            <option value="last_hour">Last Hour</option>
-            <option value="last_24_hours">Last 24 Hours</option>
-            <option value="last_7_days">Last 7 Days</option>
-            <option value="last_30_days">Last 30 Days</option>
-            <option value="last_90_days">Last 90 Days</option>
-            <option value="all">All</option>
-          </select>
-        </div>
-        <div class="selected-filters">
-          <p>Selected Filters:</p>
-          <ul>
-            {#if Object.keys(searchParams).length === 0}
-              <li>Select values in the table to filter</li>
-            {:else}
-              {#each Object.entries(searchParams) as [key, value]}
-                <li>
-                  {formatKey(key)}: {value} <button on:click={() => removeFilter(key)}>✖</button>
-                </li>
-              {/each}
-            {/if}
-          </ul>
-        </div>
-        <div class="search-container">
-          <input type="text" placeholder="Search..." on:input={handleSearchInput} />
-          <button on:click={triggerSearch}>Search</button>
-        </div>
-      </div>
-    </div>
-    <div class="right-column">
-      <div class="filters-icon-container">
-        <i class="fa fa-filter" aria-hidden="true" on:click={openFiltersModal}></i>
-      </div>
-      <BotHighlights {topBotsData} {isBotDataLoading} />
-      <div class="charts-container">
-        <RequestsChart {barChartData} {frequency} {isChartLoading} on:frequencyChange={handleFrequencyChange} class="full-width-chart"/>
-      </div>
-      <div class="pie-charts-container">
-        <PieChart pieChartData={responseCodeData} {isPieChartLoading} />
-        <PieChart pieChartData={botBrowserFamilyData} {isPieChartLoading} />
-      </div>
-      <LogsTable {apiLogs} {currentPage} {totalPages} {isTableLoading} on:changePage={(e) => changePage(e.detail.page)} on:cellClick={handleCellClick} on:addFilter={handleAddFilter} />
-      </div>
   </div>
-</div>
 </section>
 
 {#if showFilterModal}
-<FilterModal title={modalTitle} {statusCodes} {botTypes} on:close={() => (showFilterModal = false)} on:applyFilters={handleApplyFilters} />
+  <FilterModal title={modalTitle} {statusCodes} {botTypes} on:close={() => (showFilterModal = false)} on:applyFilters={handleApplyFilters} />
 {/if}
 
 {#if toastMessage}
-<Toast message={toastMessage} type={toastType} />
+  <Toast message={toastMessage} type={toastType} />
 {/if}
 
 <style>

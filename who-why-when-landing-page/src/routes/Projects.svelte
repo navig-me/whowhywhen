@@ -153,7 +153,6 @@
     }
 
     async function testApiKey(apiKey) {
-        
         const response = await fetch(`${API_BASE_URL}/api/log`, {
             method: 'POST',
             headers: {
@@ -230,6 +229,9 @@
 
 <div class="projects-container">
     <h2>Your Projects</h2>
+    {#if projects.length === 0}
+        <p>No projects found. Create your first project to get started.</p>
+    {/if}
     <div class="project-grid">
         {#each projects as project}
             <div class="project-card">

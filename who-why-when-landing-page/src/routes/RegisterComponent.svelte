@@ -26,11 +26,54 @@
               sitekey: '0x4AAAAAAAelvW7rvAgAqrZ5',
               callback: function(token) {
                   turnstileToken = token;
-                  console.log(`Challenge Success ${token}`);
               },
           });
       };
+
+      initializeGoogleSignIn();
   });
+
+  function initializeGoogleSignIn() {
+    google.accounts.id.initialize({
+      client_id: '209311359644-gj97vlisirrf64jc3cp11fpf2m8ojd61.apps.googleusercontent.com', // Replace with your Google client ID
+      callback: handleGoogleSignIn
+    });
+    google.accounts.id.renderButton(
+      document.getElementById('buttonDiv'),
+      { theme: 'outline', size: 'large' }  // customization attributes
+    );
+    google.accounts.id.prompt(); // also display the One Tap dialog
+  }
+
+  async function handleGoogleSignIn(response) {
+    const idToken = response.credential;
+
+    const googleResponse = await fetch(`${DASH_API_BASE_URL}/dashauth/google-login?id_token=${idToken}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (googleResponse.ok) {
+      const data = await googleResponse.json();
+      setToken(data.access_token);
+      gtag('set', 'user_id', data.user_id); // Set user ID in Google Analytics
+      gtag('event', 'login', { method: 'Google' });
+      showToast('Login successful!', 'success');
+      if (data.new_user) {
+        setTimeout(() => {
+          navigate('/projects');
+        }, 1500); // Add a slight delay before redirecting
+      } else {
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 1500); // Add a slight delay before redirecting
+      }
+    } else {
+      showToast('Google login failed!', 'error');
+    }
+  }
 
   async function handleSubmit() {
       if (!turnstileToken) {
@@ -88,6 +131,7 @@
 <section class="register-section">
   <div class="container">
       <h2>Create Your Account</h2>
+      <div id="buttonDiv" class="google-signin-btn"></div>
       <p class="hint">Fill in the details below to create your account.</p>
       <form on:submit|preventDefault={handleSubmit}>
           <div class="form-group">
@@ -183,17 +227,27 @@
       border-radius: 5px;
       cursor: pointer;
       font-size: 1rem;
-      transition: background-color 0.3s;
+      transition: background-color 0.3s, transform 0.3s;
       margin-top: 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
   }
 
   .btn-primary:hover {
       background-color: #552288;
+      transform: translateY(-2px);
   }
 
   small {
       display: block;
       margin-top: 5px;
       color: #888;
+  }
+
+  .google-signin-btn {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
   }
 </style>

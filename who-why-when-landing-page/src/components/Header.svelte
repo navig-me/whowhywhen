@@ -1,7 +1,8 @@
 <script>
   import { Link } from 'svelte-routing';
+  import { onMount } from 'svelte';
   import { currentView } from '../stores/viewStore';
-  import { clearToken, isLoggedIn } from '../stores/userStore';
+  import { clearToken, isLoggedIn, setToken } from '../stores/userStore';
   import { DASH_API_BASE_URL } from '../config';
   import { navigate } from 'svelte-routing';
   import { get } from 'svelte/store';
@@ -99,6 +100,49 @@
       changeView('/');
     }
   }
+
+  // Initialize Google Sign-In when the component is mounted
+  onMount(() => {
+    initializeGoogleSignIn();
+  });
+
+  function initializeGoogleSignIn() {
+    google.accounts.id.initialize({
+      client_id: '209311359644-gj97vlisirrf64jc3cp11fpf2m8ojd61.apps.googleusercontent.com', // Replace with your Google client ID
+      callback: handleGoogleSignIn
+    });
+    google.accounts.id.renderButton(
+      document.getElementById('googleButton'),
+      { theme: 'outline', size: 'large' }  // customization attributes
+    );
+  }
+
+  async function handleGoogleSignIn(response) {
+    const idToken = response.credential;
+
+    const googleResponse = await fetch(`${DASH_API_BASE_URL}/dashauth/google-login?id_token=${idToken}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (googleResponse.ok) {
+      const data = await googleResponse.json();
+      setToken(data.access_token);
+      gtag('set', 'user_id', data.user_id); // Set user ID in Google Analytics
+      gtag('event', 'login', { method: 'Google' });
+      if (data.new_user) {
+        setTimeout(() => {
+          navigate('/projects');
+        }, 1500); // Add a slight delay before redirecting
+      } else {
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 1500); // Add a slight delay before redirecting
+      }
+    }
+  }
 </script>
 
 <header class="header">
@@ -154,6 +198,7 @@
             <Link class="nav-link" to="/login">Login</Link>
             <span class="dot">•</span>
             <Link class="nav-link" to="/register">Register</Link>
+            <div id="googleButton" class="google-signin-btn"></div>
           </div>
         {/if}
       </div>
@@ -304,6 +349,11 @@
     height: 5px;
     background-color: #ff4000;
     border-radius: 50%;
+  }
+
+  .google-signin-btn {
+    display: inline-block;
+    margin-left: 10px;
   }
 
   @media (max-width: 768px) {

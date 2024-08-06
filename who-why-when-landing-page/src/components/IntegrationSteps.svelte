@@ -57,6 +57,15 @@
         position: relative;
         animation: slideIn 1s ease-out forwards;
     }
+	
+	h2::after {
+		content: '';
+		display: block;
+		width: 50px;
+		height: 4px;
+		background: #663399;
+		margin: 10px auto;
+	}
 
     .steps-container {
         display: flex;

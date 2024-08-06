@@ -21,8 +21,6 @@
             const parser = new UAParser();
             const result = parser.getResult();
 
-            console.log('Parsing user agent:', result);
-
             const device = result.device.vendor ? `${result.device.vendor} ${result.device.model}` : result.device.model || 'Unknown';
 
             deviceDetails = {
@@ -36,7 +34,6 @@
                 is_pc: result.device.type === 'desktop',
                 is_bot: result.device.type === 'bot' // Note: UAParser might not have a direct 'bot' type
             };
-            console.log('Device details:', deviceDetails);  // Log the response to check its content
         } catch (err) {
             error = 'Error parsing device details';
             console.error('Error parsing device details', err);
@@ -86,11 +83,11 @@
 
 <style>
     .ribbon {
-        width: 70%;
+        width: 80%;
         background: rgba(0, 0, 0, 0.5); /* Make background semi-transparent to blend with banner */
         color: white;
-        padding: 10px 0; /* Adjust padding to fit nicely within the banner */
-        font-size: 14px;
+        padding: 8px 0; /* Adjust padding to fit nicely within the banner */
+        font-size: 12px;
         position: relative;
         display: flex;
         align-items: center;
@@ -99,7 +96,7 @@
     .container {
         max-width: 1200px;
         margin: 0 auto;
-        padding: 0 20px;
+        padding: 0 14px;
         display: flex;
         align-items: center;
     }
@@ -128,10 +125,10 @@
         position: relative;
     }
     .icon-container i {
-        font-size: 16px;
+        font-size: 12px;
     }
     .device-info {
-        font-size: 16px;
+        font-size: 12px;
         font-weight: 600;
     }
     .description {
@@ -143,9 +140,6 @@
     .highlight {
         color: #ffd700;
         font-weight: 700;
-    }
-    .highlight.big {
-        font-size: 1.2em;
     }
     .error {
         color: #ff4000;

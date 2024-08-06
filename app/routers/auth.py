@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from typing import Optional
 
+import requests
 import pyotp
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordRequestForm
@@ -24,8 +25,86 @@ from app.services.fa_service import (generate_totp_secret, generate_totp_uri,
 from app.services.stripe_service import (get_customer_portal_url,
                                          get_payment_link,
                                          refresh_user_subscription)
+from app.config import GOOGLE_CLIENT_ID, REDIRECT_URI, GOOGLE_CLIENT_SECRET
 
 router = APIRouter()
+
+@router.post("/google-login")
+def google_login(id_token: str, db: Session = Depends(get_session)):
+    print("Google login request")
+
+    # Verify the id_token with Google
+    response = requests.get(f"https://oauth2.googleapis.com/tokeninfo?id_token={id_token}")
+
+    if response.status_code != 200:
+        raise HTTPException(status_code=400, detail="Invalid token")
+
+    user_info = response.json()
+
+    email = user_info["email"]
+    user = get_user_by_email(db, email)
+
+    new_user = False
+
+    if not user:
+        user_create = UserCreate(
+            email=email,
+            name=user_info["name"],
+            password="google_oauth",  # Set a default password for Google users
+        )
+        user = create_user(db, user_create)
+        new_user = True
+
+    access_token = create_access_token(data={"sub": user.email})
+    return {"access_token": access_token, "token_type": "bearer", "new_user": new_user}
+
+
+@router.get("/oauth2callback")
+def callback(request: Request, db: Session = Depends(get_session)):
+    code = request.query_params.get("code")
+    if not code:
+        raise HTTPException(status_code=400, detail="Code not found")
+
+    google_provider_cfg = requests.get("https://accounts.google.com/.well-known/openid-configuration").json()
+    token_endpoint = google_provider_cfg["token_endpoint"]
+
+    token_url, headers, body = requests.auth.oauth2.client.prepare_token_request(
+        token_endpoint,
+        authorization_response=request.url,
+        redirect_url=request.url_for("callback"),
+        code=code,
+        client_id=GOOGLE_CLIENT_ID,
+        client_secret=GOOGLE_CLIENT_SECRET,
+    )
+    token_response = requests.post(
+        token_url,
+        headers=headers,
+        data=body,
+        auth=(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET),
+    )
+
+    token_response_json = token_response.json()
+    userinfo_endpoint = google_provider_cfg["userinfo_endpoint"]
+    uri, headers, body = requests.auth.oauth2.client.add_token(
+        userinfo_endpoint, token=token_response_json["access_token"]
+    )
+    userinfo_response = requests.get(uri, headers=headers, data=body)
+
+    user_info = userinfo_response.json()
+
+    email = user_info["email"]
+    user = get_user_by_email(db, email)
+
+    if not user:
+        user_create = UserCreate(
+            email=email,
+            name=user_info["name"],
+            password="google_oauth",  # Set a default password for Google users
+        )
+        user = create_user(db, user_create)
+
+    access_token = create_access_token(data={"sub": user.email})
+    return {"access_token": access_token, "token_type": "bearer"}
 
 @router.get("/stripe/payment-link/{plan_name}", response_model=str)
 def get_stripe_payment_link(current_user: User = Depends(get_current_user), plan_name: SubscriptionPlan = SubscriptionPlan.starter, session: Session = Depends(get_session)):

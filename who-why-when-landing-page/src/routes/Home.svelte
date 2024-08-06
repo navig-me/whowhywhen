@@ -52,7 +52,6 @@
     .parallax-wrapper {
         position: relative;
         overflow: hidden;
-        background: url('/supercharge.jpg') no-repeat center / cover;
     }
 
     .parallax {
