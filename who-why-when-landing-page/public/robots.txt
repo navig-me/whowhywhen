@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /api
+Disallow: /dashapi
+Disallow: /api/
+Disallow: /dashapi/
+
+Sitemap: https://whowhywhen.com/sitemap.xml

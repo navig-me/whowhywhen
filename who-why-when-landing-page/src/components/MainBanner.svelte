@@ -17,7 +17,6 @@
 </script>
 
 <section class="combined-section">
-    <DeviceRibbon />
     <div class="container">
         <div class="content">
             <div class="text-content">
@@ -38,6 +37,8 @@
             </div>
         </div>
     </div>
+    <DeviceRibbon />
+
 </section>
 
 <style>

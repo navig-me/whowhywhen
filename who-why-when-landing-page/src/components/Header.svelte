@@ -103,7 +103,12 @@
 
   // Initialize Google Sign-In when the component is mounted
   onMount(() => {
-    initializeGoogleSignIn();
+    const interval = setInterval(() => {
+      if (window.google && window.google.accounts && window.google.accounts.id) {
+        clearInterval(interval);
+        initializeGoogleSignIn();
+      }
+    }, 100);
   });
 
   function initializeGoogleSignIn() {
@@ -175,7 +180,7 @@
               </div>
             </div>
             <div class="nav-section">
-              <Link class="nav-link" to="/integrate">Setup & Integration</Link>
+              <Link class="nav-link" to="/setup-integration">Setup & Integration</Link>
               <span class="dot">•</span>
               <Link class="nav-link" to="/user-settings">Settings</Link>
               {#if shouldShowRequestBar(userRequestCount, monthlyCreditLimit)}
@@ -192,7 +197,7 @@
           {/if}
         {:else}
           <div class="nav-section">
-            <Link class="nav-link" to="/integrate">Setup & Integration</Link>
+            <Link class="nav-link" to="/setup-integration">Setup & Integration</Link>
           </div>
           <div class="nav-section">
             <Link class="nav-link" to="/login">Login</Link>

@@ -2,28 +2,33 @@
 	let features = [
 		{
 			title: "Track Bots and AI Scrapers",
-			description: "Know which bots and AI scrapers are accessing your data and how to block them.",
-			icon: "fas fa-robot"
+			description: "Identify and manage bots and AI scrapers to protect your data effortlessly.",
+			icon: "fas fa-robot",
+			color: "linear-gradient(135deg, #663399, #ff4000)"
 		},
 		{
 			title: "Performance Monitoring",
-			description: "Ensure they are meeting your performance SLAs.",
-			icon: "fas fa-tachometer-alt"
+			description: "Monitor your API performance to ensure they meet your service level agreements.",
+			icon: "fas fa-tachometer-alt",
+			color: "linear-gradient(135deg, #ff4000, #ffa600)"
 		},
 		{
 			title: "Real-time API Analytics",
-			description: "Optimize your services by knowing how your APIs are being used.",
-			icon: "fas fa-chart-line"
+			description: "Gain instant insights into your API usage and optimize your services.",
+			icon: "fas fa-chart-line",
+			color: "linear-gradient(135deg, #ffa600, #bc5090)"
 		},
 		{
 			title: "Anomaly Alerts",
-			description: "Get notified when your APIs are behaving unexpectedly.",
-			icon: "fas fa-exclamation-triangle"
+			description: "Receive immediate notifications when your APIs exhibit unusual behavior.",
+			icon: "fas fa-exclamation-triangle",
+			color: "linear-gradient(135deg, #bc5090, #003f5c)"
 		},
 		{
 			title: "Understand Your Users",
-			description: "Gain insights into your users' behavior and preferences.",
-			icon: "fas fa-user-friends"
+			description: "Discover valuable insights about user behavior and preferences.",
+			icon: "fas fa-user-friends",
+			color: "linear-gradient(135deg, #003f5c, #58508d)"
 		}
 	];
 </script>
@@ -32,33 +37,31 @@
 	<div class="container">
 		<h2>Powerful Features</h2>
 		<p>Built by developers, for developers.</p>
-		<div class="content">
-			<div class="image-container">
-				<img src="/userdemo.png" alt="User Demo" class="demo-image">
-			</div>
-			<div class="features-grid">
-				{#each features as feature}
-					<div class="feature-item">
+		<div class="features-row">
+			{#each features as feature}
+				<div class="feature-item">
+					<div class="feature-header" style="background: {feature.color}">
 						<i class="{feature.icon}"></i>
-						<h3>{feature.title}</h3>
-						<p>{feature.description}</p>
 					</div>
-				{/each}
-			</div>
+					<h3>{feature.title}</h3>
+					<p>{feature.description}</p>
+				</div>
+			{/each}
 		</div>
 	</div>
 </section>
 
 <style>
 	.feature-section {
-		padding: 80px 20px;
+		padding: 60px 20px;
 		color: #333;
+		text-align: center;
+		/* background-color: #f3f3f3; */
 	}
 
 	.container {
 		max-width: 1200px;
 		margin: 0 auto;
-		text-align: center;
 		padding: 0 20px;
 	}
 
@@ -83,45 +86,36 @@
 		margin-bottom: 40px;
 	}
 
-	.content {
+	.features-row {
 		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: 30px;
-	}
-
-	.image-container {
-		flex: 1;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
-	.demo-image {
-		max-width: 100%;
-		height: auto;
-	}
-
-	.features-grid {
-		flex: 2;
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-		gap: 15px;
-		text-align: left;
+		justify-content: space-between;
+		gap: 20px;
+		flex-wrap: wrap;
 	}
 
 	.feature-item {
-		background: #fff; /* White background for feature items */
+		background: #fff;
 		padding: 20px;
 		border-radius: 10px;
 		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 		text-align: center;
+		flex: 1;
+		min-width: 160px;
+	}
+
+	.feature-header {
+		width: 60px;
+		height: 60px;
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin: 0 auto 20px;
 	}
 
 	.feature-item i {
 		font-size: 2rem;
-		margin-bottom: 10px;
-		color: #663399;
+		color: #fff;
 	}
 
 	.feature-item h3 {
@@ -133,18 +127,16 @@
 	.feature-item p {
 		font-size: 1rem;
 		color: #555;
-		margin: 10px 0 0;
+		margin: 10px 0 20px;
 	}
 
 	@media (max-width: 768px) {
-		.content {
+		.features-row {
 			flex-direction: column;
 		}
+	}
 
-		.features-grid {
-			grid-template-columns: 1fr;
-		}
-
+	@media (max-width: 480px) {
 		h2 {
 			font-size: 2rem;
 		}
@@ -167,32 +159,6 @@
 
 		.feature-item p {
 			font-size: 0.9rem;
-		}
-	}
-
-	@media (max-width: 480px) {
-		h2 {
-			font-size: 1.8rem;
-		}
-
-		p {
-			font-size: 0.9rem;
-		}
-
-		.feature-item {
-			padding: 10px;
-		}
-
-		.feature-item i {
-			font-size: 1.2rem;
-		}
-
-		.feature-item h3 {
-			font-size: 1rem;
-		}
-
-		.feature-item p {
-			font-size: 0.8rem;
 		}
 	}
 </style>

@@ -12,9 +12,12 @@
                     <h4>Create a Project</h4>
                 </div>
             </div>
+            <p class="time">1 min</p>
         </div>
         <div class="arrow">
-            <i class="fas fa-chevron-right fa-3x"></i>
+            <svg width="100" height="50">
+                <path d="M0,50 C50,0 50,0 100,50" stroke="#663399" stroke-width="4" stroke-dasharray="5,5" fill="transparent" />
+            </svg>
         </div>
         <div class="step">
             <div class="icon-title">
@@ -24,9 +27,12 @@
                     <h4>Create an API Key</h4>
                 </div>
             </div>
+            <p class="time">1 min</p>
         </div>
         <div class="arrow">
-            <i class="fas fa-chevron-right fa-3x"></i>
+            <svg width="100" height="50">
+                <path d="M0,0 C50,50 50,50 100,0" stroke="#663399" stroke-width="4" stroke-dasharray="5,5" fill="transparent" />
+            </svg>
         </div>
         <div class="step">
             <div class="icon-title">
@@ -36,9 +42,10 @@
                     <h4>Add Middleware in your Code</h4>
                 </div>
             </div>
+            <p class="time">5 min</p>
         </div>
     </div>
-    <a class="learn-more" href="/integrate">Learn More</a>
+    <a class="learn-more" href="/setup-integration">Learn More</a>
 </div>
 
 <style>
@@ -53,37 +60,38 @@
     h2 {
         color: #663399;
         margin-bottom: 40px;
-        font-size: 2.5rem;
+        font-size: 2rem;
         position: relative;
         animation: slideIn 1s ease-out forwards;
     }
-	
-	h2::after {
-		content: '';
-		display: block;
-		width: 50px;
-		height: 4px;
-		background: #663399;
-		margin: 10px auto;
-	}
+    
+    h2::after {
+        content: '';
+        display: block;
+        width: 50px;
+        height: 4px;
+        background: #663399;
+        margin: 10px auto;
+    }
 
     .steps-container {
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 30px;
         position: relative;
+        flex-wrap: wrap;
     }
 
     .step {
         background: #ffffff;
         border-radius: 10px;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        padding: 20px;
-        width: 300px;
+        padding: 15px;
+        width: 250px;
         text-align: center;
         position: relative;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin: 10px;
     }
 
     .step:hover {
@@ -106,13 +114,19 @@
     .icon-title div h3 {
         color: #663399;
         margin: 0;
-        font-size: 1.5rem;
+        font-size: 1.2rem;
     }
 
     .icon-title div h4 {
         color: #ff4000;
         margin: 0;
-        font-size: 1.2rem;
+        font-size: 1rem;
+    }
+
+    .time {
+        color: #999;
+        font-size: 0.9rem;
+        margin-top: 10px;
     }
 
     .arrow {
@@ -121,13 +135,19 @@
         justify-content: center;
     }
 
-    .arrow .fas {
-        color: #ddd;
-        transition: color 0.3s;
+    .arrow svg path {
+        stroke: #663399;
+        stroke-width: 4;
+        stroke-dasharray: 5,5;
+        transition: stroke 0.3s;
     }
 
-    .arrow .fas:hover {
-        color: #ff4000;
+    .arrow svg path:last-child {
+        stroke: #663399;
+    }
+
+    .arrow svg:hover path {
+        stroke: #ff4000;
     }
 
     .learn-more {
@@ -182,7 +202,25 @@
 
     @media (max-width: 480px) {
         h2 {
-            font-size: 2rem;
+            font-size: 1.5rem;
+        }
+
+        .step {
+            padding: 10px;
+            width: 90%;
+        }
+
+        .icon-title div h3 {
+            font-size: 1rem;
+        }
+
+        .icon-title div h4 {
+            font-size: 0.9rem;
+        }
+
+        .learn-more {
+            padding: 8px 16px;
+            font-size: 0.9rem;
         }
     }
 </style>

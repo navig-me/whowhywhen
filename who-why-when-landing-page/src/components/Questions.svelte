@@ -35,11 +35,11 @@
 	}
 
 	.question-row:nth-child(odd) {
-		animation-duration: 120s;
+		animation-duration: 60s;
 	}
 
 	.question-row:nth-child(even) {
-		animation-duration: 160s;
+		animation-duration: 80s;
 	}
 
 	.question {

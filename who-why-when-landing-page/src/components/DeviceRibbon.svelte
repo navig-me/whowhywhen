@@ -92,6 +92,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        margin-top: 40px;
     }
     .container {
         max-width: 1200px;

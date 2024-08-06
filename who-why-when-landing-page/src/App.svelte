@@ -41,7 +41,7 @@
 	<Route path="/dashboard" component={Dashboard} />
 	<Route path="/bots" component={Bots} />
 	<Route path="/projects" component={Projects} />
-	<Route path="/integrate" component={Integrate} />
+	<Route path="/setup-integration" component={Integrate} />
 	<Route path="/user-settings" component={UserSettings} />
 	<Route path="/alerts" component={Alerts} />
 	<GDPRModal />
