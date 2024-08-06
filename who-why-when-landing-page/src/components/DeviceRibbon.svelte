@@ -76,7 +76,7 @@
                         </div>
                     {/if}
                     <p class="description">
-                        Understand your users. Detect <span class="highlight">bots</span>, <span class="highlight">scrapers</span>, <span class="highlight">users</span>, and <span class="highlight">devices</span> accessing your APIs, and <span class="highlight big">answer key questions</span> about <span class="highlight">performance</span>.
+                        Understand your users. Detect <span class="highlight">bots</span>, <span class="highlight">scrapers</span>, <span class="highlight">users</span>, and <span class="highlight">devices</span> accessing your APIs, and <span class="highlight">answer key questions</span> about <span class="highlight">performance</span>.
                     </p>
                 </div>
             {/if}
