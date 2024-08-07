@@ -12,6 +12,7 @@
     let selectedProxy = '';
     let proxyConfigDescription = '';
     let proxyConfigSnippet = '';
+    let selectedAccordion = 1;
 
     let requestCode = `
 POST /api/log HTTP/1.1
@@ -52,6 +53,10 @@ Content-Type: application/json
     function copyToClipboard(content) {
         navigator.clipboard.writeText(content);
         alert('Copied to clipboard');
+    }
+
+    function toggleAccordion(index) {
+        selectedAccordion = selectedAccordion === index ? null : index;
     }
 
     const proxyConfigs = {
@@ -162,59 +167,64 @@ backend mybackend
 
 <div class="integrate-page">
     <h2>Integrate WhoWhyWhen with Your APIs</h2>
-    <button class="btn-open-snippet" on:click={openIntegrationSnippet}>
-        <i class="fas fa-code"></i> Sample Code Snippets
-    </button>
     <p>Follow these steps to integrate WhoWhyWhen analytics into your APIs:</p>
-    <div class="steps">
-        <div class="card">
-            <div class="icon-title">
-                <i class="fas fa-project-diagram fa-3x"></i>
-                <h3>Create a Project</h3>
+    <div class="accordion">
+        <div class="accordion-item">
+            <div class="accordion-header" on:click={() => toggleAccordion(1)}>
+                <i class="fas fa-project-diagram fa-2x"></i>
+                <h3>Step 1: Create a Project</h3>
             </div>
-            <div class="card-content">
-                <p>Go to <Link to="/projects">your projects</Link> and create a new project or view an existing project that you want to enable analytics for.</p>
-            </div>
-        </div>
-        <div class="card">
-            <div class="icon-title">
-                <i class="fas fa-key fa-3x"></i>
-                <h3>Create an API Key</h3>
-            </div>
-            <div class="card-content">
-                <p>Click on "View API Keys" and either copy the API Key or create a new one.</p>
-            </div>
-        </div>
-        <div class="card">
-            <div class="icon-title">
-                <i class="fas fa-code fa-3x"></i>
-                <h3>Add a Middleware in your Code</h3>
-            </div>
-            <div class="card-content">
-                <p>
-                    To send logs to WhoWhyWhen, add a middleware to your application. The middleware should make a POST request to <code>https://api.whowhywhen.com/api/log</code> with the following headers and body:
-                </p>
-                <pre><code>{requestCode}</code></pre>
-                <p>It's recommended to do this asynchronously to ensure it doesn't affect your application's performance and latency, and to handle all errors gracefully.</p>
-                <div class="button-group">
-                    <button class="btn-open-snippet" on:click={openIntegrationSnippet}>
-                        <i class="fas fa-code"></i> Sample Code Snippets
-                    </button>
-                    <button class="btn-open-curl" on:click={openCurlModal}>
-                        <i class="fas fa-terminal"></i> Sample cURL Request
-                    </button>
+            {#if selectedAccordion === 1}
+                <div class="accordion-content">
+                    <p>Go to <Link to="/projects">your projects</Link> and create a new project or view an existing project that you want to enable analytics for.</p>
                 </div>
-            </div>
+            {/if}
         </div>
-        <div class="card">
-            <div class="icon-title">
-                <i class="fas fa-tachometer-alt fa-3x"></i>
-                <h3>Start Using WhoWhyWhen!</h3>
+        <div class="accordion-item">
+            <div class="accordion-header" on:click={() => toggleAccordion(2)}>
+                <i class="fas fa-key fa-2x"></i>
+                <h3>Step 2: Create an API Key</h3>
             </div>
-            <div class="card-content">
-                <p>Start using WhoWhyWhen and view your data in the <Link to="/dashboard">Dashboard</Link>, the <Link to="/bots">Bots</Link> page, or the <Link to="/projects">Projects</Link> page.</p>
-                <p>You can view alerts or unusual traffic by clicking on the <Link to="/alerts">Alerts</Link> tab.</p>
+            {#if selectedAccordion === 2}
+                <div class="accordion-content">
+                    <p>Click on "View API Keys" and either copy the API Key or create a new one.</p>
+                </div>
+            {/if}
+        </div>
+        <div class="accordion-item">
+            <div class="accordion-header" on:click={() => toggleAccordion(3)}>
+                <i class="fas fa-code fa-2x"></i>
+                <h3>Step 3: Add a Middleware in your Code</h3>
             </div>
+            {#if selectedAccordion === 3}
+                <div class="accordion-content">
+                    <p>
+                        To send logs to WhoWhyWhen, add a middleware to your application. The middleware should make a POST request to <code>https://api.whowhywhen.com/api/log</code> with the following headers and body:
+                    </p>
+                    <pre><code>{requestCode}</code></pre>
+                    <p>It's recommended to do this asynchronously to ensure it doesn't affect your application's performance and latency, and to handle all errors gracefully.</p>
+                    <div class="button-group">
+                        <button class="btn-open-snippet" on:click={openIntegrationSnippet}>
+                            <i class="fas fa-code"></i> Sample Code Snippets
+                        </button>
+                        <button class="btn-open-curl" on:click={openCurlModal}>
+                            <i class="fas fa-terminal"></i> Sample cURL Request
+                        </button>
+                    </div>
+                </div>
+            {/if}
+        </div>
+        <div class="accordion-item">
+            <div class="accordion-header" on:click={() => toggleAccordion(4)}>
+                <i class="fas fa-tachometer-alt fa-2x"></i>
+                <h3>Step 4: Start Using WhoWhyWhen!</h3>
+            </div>
+            {#if selectedAccordion === 4}
+                <div class="accordion-content">
+                    <p>Start using WhoWhyWhen and view your data in the <Link to="/dashboard">Dashboard</Link>, the <Link to="/bots">Bots</Link> page, or the <Link to="/projects">Projects</Link> page.</p>
+                    <p>You can view alerts or unusual traffic by clicking on the <Link to="/alerts">Alerts</Link> tab.</p>
+                </div>
+            {/if}
         </div>
     </div>
 
@@ -273,45 +283,40 @@ backend mybackend
         margin-bottom: 20px;
     }
 
-    .steps {
+    .accordion {
         display: flex;
-        flex-wrap: wrap;
-        gap: 20px;
-    }
-
-    .card {
-        flex: 1 1 calc(40% - 20px);
-        background: #f9f9f9;
-        border-radius: 10px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        cursor: pointer;
-        text-align: left;
-        padding: 20px;
-    }
-
-    .icon-title {
-        display: flex;
-        align-items: center;
+        flex-direction: column;
         gap: 10px;
     }
 
-    .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    .accordion-item {
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
     }
 
-    .card i {
+    .accordion-header {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        cursor: pointer;
+        background-color: #f9f9f9;
+        transition: background-color 0.3s ease;
+    }
+
+    .accordion-header:hover {
+        background-color: #f1f1f1;
+    }
+
+    .accordion-header i {
+        margin-right: 10px;
         color: #663399;
     }
 
-    .btn-open-snippet i, .btn-open-curl i {
-        color: #fff;
-    }
-
-    .card-content {
-        padding: 0 20px;
+    .accordion-content {
+        padding: 20px;
+        background-color: #ffffff;
     }
 
     code {
