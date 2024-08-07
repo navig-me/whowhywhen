@@ -6,34 +6,34 @@
     import IntegrationSteps from '../components/IntegrationSteps.svelte';
     import GetStartedBanner from '../components/GetStartedBanner.svelte';
 
-	const questions = [
-		"Why is my endpoint failing so frequently?",
-		"How can I reduce high bot traffic?",
-		"Who are the visitors on my app?",
-		"Where are my visitors located geographically?",
-		"When does my API experience the most failures?",
-		"At what times do people visit the most?",
-		"Which browsers do my users prefer?",
-		"Who are the most active users of my API?",
-		"What times of day are the busiest for my API?",
-		"When do I get the most error responses?",
-		"What is the average response time for my API?",
-		"Why should I monitor API performance?",
-		"Who are the top users of my service?",
-		"What devices are my users using?",
-		"Who experiences the most errors on my API?",
-		"Why do I need real-time analytics for my API?",
-		"Which endpoints are the most popular?",
-		"How can I detect and block bots and AI scrapers?",
-		"How is bot traffic affecting my API performance?",
-		"What strategies can I use to mitigate bot and AI scraper activity?"
-	];
+    const questions = [
+        "Why is my endpoint failing so frequently?",
+        "How can I reduce high bot traffic?",
+        "Who are the visitors on my app?",
+        "Where are my visitors located geographically?",
+        "When does my API experience the most failures?",
+        "At what times do people visit the most?",
+        "Which browsers do my users prefer?",
+        "Who are the most active users of my API?",
+        "What times of day are the busiest for my API?",
+        "When do I get the most error responses?",
+        "What is the average response time for my API?",
+        "Why should I monitor API performance?",
+        "Who are the top users of my service?",
+        "What devices are my users using?",
+        "Who experiences the most errors on my API?",
+        "Why do I need real-time analytics for my API?",
+        "Which endpoints are the most popular?",
+        "How can I detect and block bots and AI scrapers?",
+        "How is bot traffic affecting my API performance?",
+        "What strategies can I use to mitigate bot and AI scraper activity?"
+    ];
 </script>
 
 <div class="page-wrapper">
     <div class="parallax-wrapper">
         <div class="parallax"></div>
-		<MainBanner />
+        <MainBanner />
     </div>
     <FeatureSection />
 </div>

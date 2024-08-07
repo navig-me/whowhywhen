@@ -1,19 +1,10 @@
 <script>
     import { navigate } from 'svelte-routing';
-    import { onMount } from 'svelte';
     import DeviceRibbon from './DeviceRibbon.svelte';
-
-    let videoElement;
 
     function changeView(view) {
         navigate(view);
     }
-
-    onMount(() => {
-        if (videoElement) {
-            videoElement.playbackRate = 0.5; // Adjust the playback rate as needed
-        }
-    });
 </script>
 
 <section class="combined-section">
@@ -24,21 +15,12 @@
                 <p>Get real-time analytics, track bots and AI scrapers, and optimize your resources.</p>
                 <button class="btn-primary" on:click={() => changeView('/register')}>START FOR FREE</button>
             </div>
-            <div class="video-frame-wrapper">
-                <div class="video-frame">
-                    <video bind:this={videoElement} autoplay muted loop playsinline class="video-content" loading="lazy">
-                        <source src='/screencap.mp4' type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
-                </div>
-            </div>
             <div class="image-wrapper">
                 <img src="/devthree.png" alt="Description of image" />
             </div>
         </div>
     </div>
     <DeviceRibbon />
-
 </section>
 
 <style>
@@ -71,40 +53,16 @@
         align-items: center;
         justify-content: space-between;
         width: 100%;
-        margin-top: 20px; /* Add margin to separate content from the ribbon */
     }
 
     .text-content {
-        flex: 1;
-        max-width: 25%;
-    }
-
-    .video-frame-wrapper {
-        flex: 1;
-        max-width: 50%; /* Adjust the width to balance the layout */
-        margin: 0 20px;
-    }
-
-    .video-frame {
-        width: 100%;
-        height: auto;
-        position: relative;
-        background: #000;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        border-radius: 10px;
-        overflow: hidden;
-    }
-
-    .video-content {
-        width: 100%;
-        height: auto;
-        border-radius: 10px;
+        flex: 2;
+        margin-right: 20px;
     }
 
     .image-wrapper {
         flex: 1;
-        max-width: 25%; /* Adjust the width to balance the layout */
-        margin-left: 20px;
+        max-width: 30%;
     }
 
     .image-wrapper img {
@@ -153,7 +111,7 @@
             flex-direction: column;
         }
 
-        .text-content, .video-frame-wrapper, .image-wrapper {
+        .text-content, .image-wrapper {
             max-width: 100%;
             margin: 0;
             text-align: center;

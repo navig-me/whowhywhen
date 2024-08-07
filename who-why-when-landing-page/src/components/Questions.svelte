@@ -22,7 +22,7 @@
 <style>
 	.scrolling-questions {
 		background: linear-gradient(to bottom, #f0f0f0, #e0e0e0);
-		padding: 30px 0;
+		padding: 20px 0;
 		overflow: hidden;
 		text-align: center;
 	}
@@ -44,10 +44,10 @@
 
 	.question {
 		font-family: 'Helvetica Neue', sans-serif;
-		font-size: 1rem;
+		font-size: 0.8rem;
 		font-weight: 700;
 		color: #333;
-		padding: 10px 20px;
+		padding: 5px 10px;
 		transition: transform 0.3s, background-color 0.3s;
 		display: inline-block;
 	}
