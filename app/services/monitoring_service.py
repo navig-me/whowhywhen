@@ -25,7 +25,8 @@ def check_services(alert_config, session):
         if server_error_threshold:
             server_error_count = session.query(APILog).filter(
                 APILog.response_code.between(500, 599),
-                APILog.created_at >= time_threshold
+                APILog.created_at >= time_threshold,
+                APILog.user_project_id == alert_config.user_project_id
             ).count()
             print(f"Server error count: {server_error_count} for threshold: {server_error_threshold}")
 
@@ -48,7 +49,8 @@ def check_services(alert_config, session):
         if client_error_threshold:
             client_error_count = session.query(APILog).filter(
                 APILog.response_code.between(400, 499),
-                APILog.created_at >= time_threshold
+                APILog.created_at >= time_threshold,
+                APILog.user_project_id == alert_config.user_project_id
             ).count()
             print(f"Client error count: {client_error_count} for threshold: {client_error_threshold}")
             
@@ -72,7 +74,8 @@ def check_services(alert_config, session):
             slow_threshold_threshold = alert_config.slow_threshold_threshold
             slow_threshold_actual = session.query(APILog).filter(
                 APILog.response_time > slow_threshold / 1000,
-                APILog.created_at >= time_threshold
+                APILog.created_at >= time_threshold,
+                APILog.user_project_id == alert_config.user_project_id
             ).count()
             print(f"Slow response count: {slow_threshold_actual} for threshold: {slow_threshold_threshold} (> {slow_threshold} ms)")
             

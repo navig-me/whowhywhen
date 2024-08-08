@@ -36,7 +36,7 @@
         position: relative;
         background-image: url('/gplay.png'); /* Light pattern background */
         background-size: 200px 200px; /* Adjust the size to make the pattern more visible */
-        opacity: 0.9; /* Adjust the opacity to make the pattern subtle but visible */
+        opacity: 1; /* Adjust the opacity to make the pattern subtle but visible */
     }
 
     .container {

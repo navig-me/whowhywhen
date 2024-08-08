@@ -13,6 +13,7 @@
     let proxyConfigDescription = '';
     let proxyConfigSnippet = '';
     let selectedAccordion = 1;
+    let showSwaggerUI = true; // Always show Swagger UI
 
     let requestCode = `
 POST /api/log HTTP/1.1
@@ -173,6 +174,7 @@ backend mybackend
             <div class="accordion-header" on:click={() => toggleAccordion(1)}>
                 <i class="fas fa-project-diagram fa-2x"></i>
                 <h3>Step 1: Create a Project</h3>
+                <span class="arrow">{selectedAccordion === 1 ? '▼' : '►'}</span>
             </div>
             {#if selectedAccordion === 1}
                 <div class="accordion-content">
@@ -184,6 +186,7 @@ backend mybackend
             <div class="accordion-header" on:click={() => toggleAccordion(2)}>
                 <i class="fas fa-key fa-2x"></i>
                 <h3>Step 2: Create an API Key</h3>
+                <span class="arrow">{selectedAccordion === 2 ? '▼' : '►'}</span>
             </div>
             {#if selectedAccordion === 2}
                 <div class="accordion-content">
@@ -195,6 +198,7 @@ backend mybackend
             <div class="accordion-header" on:click={() => toggleAccordion(3)}>
                 <i class="fas fa-code fa-2x"></i>
                 <h3>Step 3: Add a Middleware in your Code</h3>
+                <span class="arrow">{selectedAccordion === 3 ? '▼' : '►'}</span>
             </div>
             {#if selectedAccordion === 3}
                 <div class="accordion-content">
@@ -218,6 +222,7 @@ backend mybackend
             <div class="accordion-header" on:click={() => toggleAccordion(4)}>
                 <i class="fas fa-tachometer-alt fa-2x"></i>
                 <h3>Step 4: Start Using WhoWhyWhen!</h3>
+                <span class="arrow">{selectedAccordion === 4 ? '▼' : '►'}</span>
             </div>
             {#if selectedAccordion === 4}
                 <div class="accordion-content">
@@ -228,7 +233,11 @@ backend mybackend
         </div>
     </div>
 
-    <h3>Using a Proxy?</h3>
+    <h2>API Documentation</h2>
+    <iframe id="swagger-ui" src="https://api.whowhywhen.com/docs" class="swagger-ui"></iframe>
+
+
+    <h2>Using a Proxy?</h2>
     <p>If you are using a reverse proxy, ensure that the middleware is configured correctly to capture and forward the required headers and body.</p>
     <select bind:value={selectedProxy}>
         <option value="" disabled>Select a proxy</option>
@@ -299,6 +308,7 @@ backend mybackend
     .accordion-header {
         display: flex;
         align-items: center;
+        justify-content: space-between;
         padding: 10px;
         cursor: pointer;
         background-color: #f9f9f9;
@@ -423,5 +433,19 @@ backend mybackend
     .close:hover, .close:focus {
         color: black;
         text-decoration: none;
+    }
+
+    .swagger-ui {
+        width: 100%;
+        height: 600px;
+        border: none;
+        margin-top: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .arrow {
+        font-size: 1.2rem;
+        color: #663399;
     }
 </style>

@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="WhoWhyWhen API",
-    description="API for WhoWhyWhen - Supercharge your APIs",
+    description="API for WhoWhyWhen - Supercharge your APIsm",
     version="0.1.0",
     docs_url="/docs",
     redoc_url="/redoc"

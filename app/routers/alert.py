@@ -42,7 +42,13 @@ def subscribe_push(subscription: PushSubscriptionCreate, current_user: User = De
     # Check if user_id and endpoint already exist in the database
     user_push_subscription = session.query(UserPushSubscription).filter(UserPushSubscription.user_id == current_user.id, UserPushSubscription.endpoint == subscription.endpoint).first()
     if user_push_subscription:
-        raise HTTPException(status_code=400, detail="User already subscribed to this endpoint")
+        if user_push_subscription.p256dh != subscription.keys.p256dh or user_push_subscription.auth != subscription.keys.auth:
+            user_push_subscription.p256dh = subscription.keys.p256dh
+            user_push_subscription.auth = subscription.keys.auth
+            session.add(user_push_subscription)
+            session.commit()
+
+        return {"message": "Subscription updated successfully"}
     
     push_subscription = UserPushSubscription(
         user_id=current_user.id,
