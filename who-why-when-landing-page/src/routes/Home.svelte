@@ -10,7 +10,7 @@
         "Why is my endpoint failing so frequently?",
         "How can I reduce high bot traffic?",
         "Who are the visitors on my app?",
-        "Where are my visitors located geographically?",
+        "Where are my visitors located?",
         "When does my API experience the most failures?",
         "At what times do people visit the most?",
         "Which browsers do my users prefer?",
@@ -26,7 +26,7 @@
         "Which endpoints are the most popular?",
         "How can I detect and block bots and AI scrapers?",
         "How is bot traffic affecting my API performance?",
-        "What strategies can I use to mitigate bot and AI scraper activity?"
+        "How to mitigate bot and AI scraper activity?"
     ];
 </script>
 

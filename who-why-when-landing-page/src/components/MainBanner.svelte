@@ -34,7 +34,7 @@
         padding: 20px 20px;
         text-align: left;
         position: relative;
-        background-image: url('https://www.transparenttextures.com/patterns/gplay.png'); /* Light pattern background */
+        background-image: url('/gplay.png'); /* Light pattern background */
         background-size: 200px 200px; /* Adjust the size to make the pattern more visible */
         opacity: 0.9; /* Adjust the opacity to make the pattern subtle but visible */
     }
@@ -66,7 +66,7 @@
     }
 
     .image-wrapper img {
-        width: 100%;
+        max-height: 300px;
         height: auto;
         border-radius: 10px;
     }
