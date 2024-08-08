@@ -71,10 +71,9 @@
 
 <style>
     .feature-section {
-        padding: 30px 20px;
+        padding: 60px 20px;
         color: #333;
         text-align: center;
-        /* background-color: #f3f3f3; */
     }
 
     .container {
@@ -171,6 +170,7 @@
     @media (max-width: 768px) {
         .features-row {
             flex-direction: column;
+            align-items: center;
         }
     }
 

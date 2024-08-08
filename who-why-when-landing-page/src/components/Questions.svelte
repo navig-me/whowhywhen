@@ -22,7 +22,7 @@
 <style>
 	.scrolling-questions {
 		background: linear-gradient(to bottom, #f0f0f0, #e0e0e0);
-		padding: 20px 0;
+		padding: 30px 0;
 		overflow: hidden;
 		text-align: center;
 	}

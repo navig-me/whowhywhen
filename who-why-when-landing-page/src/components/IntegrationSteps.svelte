@@ -12,7 +12,7 @@
                     <h4>Create a Project</h4>
                 </div>
             </div>
-            <p class="time">1 min</p>
+            <p class="time"><i class="fas fa-clock"></i> 1 min</p>
         </div>
         <div class="arrow">
             <svg width="100" height="50">
@@ -27,7 +27,7 @@
                     <h4>Create an API Key</h4>
                 </div>
             </div>
-            <p class="time">1 min</p>
+            <p class="time"><i class="fas fa-clock"></i> 1 min</p>
         </div>
         <div class="arrow">
             <svg width="100" height="50">
@@ -42,7 +42,7 @@
                     <h4>Add Middleware in your Code</h4>
                 </div>
             </div>
-            <p class="time">5 min</p>
+            <p class="time"><i class="fas fa-clock"></i> 5 min</p>
         </div>
     </div>
     <a class="learn-more" href="/setup-integration">Learn More</a>
@@ -51,7 +51,7 @@
 <style>
     .integration-steps {
         text-align: center;
-        padding: 50px 20px;
+        padding: 60px 20px;
         background-color: #f9f9f9;
         overflow: hidden;
         position: relative;
@@ -77,9 +77,11 @@
     .steps-container {
         display: flex;
         align-items: center;
-        justify-content: center;
+        justify-content: space-between;
         position: relative;
         flex-wrap: wrap;
+        max-width: 1200px;
+        margin: 0 auto;
     }
 
     .step {
@@ -108,17 +110,19 @@
     }
 
     .icon-title .fas {
-        color: #663399;
+        background: linear-gradient(135deg, #663399, #ff4000);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
 
     .icon-title div h3 {
-        color: #663399;
+        /* color: #663399; */
         margin: 0;
         font-size: 1.2rem;
     }
 
     .icon-title div h4 {
-        color: #ff4000;
+        /* color: #ff4000; */
         margin: 0;
         font-size: 1rem;
     }
@@ -144,10 +148,6 @@
 
     .arrow svg path:last-child {
         stroke: #663399;
-    }
-
-    .arrow svg:hover path {
-        stroke: #ff4000;
     }
 
     .learn-more {
