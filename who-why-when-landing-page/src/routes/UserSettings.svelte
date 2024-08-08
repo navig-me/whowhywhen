@@ -192,19 +192,23 @@
                 <div class="plan free-plan">
                   <h3>FREE</h3>
                   <p>20,000 monthly calls</p>
+                  <p>In-App & Browser Alerts</p>
                   <p>All Analytics</p>
                   <p class="price">$0</p>
                 </div>
                 <div class="plan starter-plan">
                   <h3>STARTER</h3>
                   <p>250,000 monthly calls</p>
+                  <p>In-App, Browser & Email Alerts</p>
                   <p>All Analytics</p>
                   <p class="price">$9</p>
                 </div>
                 <div class="plan pro-plan">
                   <h3>PRO</h3>
                   <p>5,000,000 monthly calls</p>
+                  <p>In-App, Browser & Email Alerts</p>
                   <p>All Analytics</p>
+                  <p>Priority Support</p>
                   <p class="price">$39</p>
                 </div>
               </div>

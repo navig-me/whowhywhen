@@ -8,6 +8,12 @@ from app.models.user import (UserAlertConfig, UserAlertNotification,
 
 from relative_datetime import DateTimeUtils
 
+from app.config import VAPID_PRIVATE_KEY
+from pywebpush import webpush, WebPushException
+from fastapi import HTTPException
+from app.models.user import UserPushSubscription
+import traceback
+
 def check_services(alert_config, session):
     last_checked = alert_config.last_checked
     check_interval = alert_config.check_interval
@@ -33,7 +39,11 @@ def check_services(alert_config, session):
                     created=datetime.now()
                 )
                 session.add(notification)
-        
+                user_project_id = alert_config.user_project_id
+                user_project = session.query(UserProject).filter(UserProject.id == user_project_id).first()
+                alert_message = f"{user_project.name}: {notification.description}"
+                notify_new_alert(user_project.user_id, alert_message, session)
+                
         client_error_threshold = alert_config.client_error_threshold
         if client_error_threshold:
             client_error_count = session.query(APILog).filter(
@@ -52,6 +62,10 @@ def check_services(alert_config, session):
                     created=datetime.now()
                 )
                 session.add(notification)
+                user_project_id = alert_config.user_project_id
+                user_project = session.query(UserProject).filter(UserProject.id == user_project_id).first()
+                alert_message = f"{user_project.name}: {notification.description}"
+                notify_new_alert(user_project.user_id, alert_message, session)
         
         slow_threshold = alert_config.slow_threshold
         if slow_threshold:
@@ -73,10 +87,42 @@ def check_services(alert_config, session):
                     created=datetime.now()
                 )
                 session.add(notification)
+                user_project_id = alert_config.user_project_id
+                user_project = session.query(UserProject).filter(UserProject.id == user_project_id).first()
+                alert_message = f"{user_project.name}: {notification.description}"
+                notify_new_alert(user_project.user_id, alert_message, session)
 
         alert_config.last_checked = datetime.now()
         session.add(alert_config)
         session.commit()
+
+
+# Call this function when a new alert is created
+def notify_new_alert(user_id, alert_message, session):
+    subscriptions = session.query(UserPushSubscription).filter_by(user_id=user_id).all()
+    for subscription in subscriptions:
+        subscription_info = {
+            "endpoint": subscription.endpoint,
+            "keys": {
+                "p256dh": subscription.p256dh,
+                "auth": subscription.auth
+            }
+        }
+        send_push_notification(subscription_info, alert_message)
+
+def send_push_notification(subscription_info, message):
+    try:
+        print(webpush(
+            subscription_info=subscription_info,
+            data=message,
+            vapid_private_key=VAPID_PRIVATE_KEY,
+            vapid_claims={"sub": "mailto:support@whowhywhen.com"}
+        ))
+    except WebPushException as ex:
+        print(f"Push notification failed")
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Push notification failed: {ex}")
+
 
 def fetch_user_alert_config_notifications(session, user_id, page, limit):
     offset = (page - 1) * limit

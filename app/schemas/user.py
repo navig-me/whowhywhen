@@ -64,3 +64,11 @@ class UserAlertConfigRead(BaseModel):
     slow_threshold_interval: int
     notification_interval: int
     created: datetime
+
+class PushSubscriptionKeys(BaseModel):
+    p256dh: str
+    auth: str
+
+class PushSubscriptionCreate(BaseModel):
+    endpoint: str
+    keys: PushSubscriptionKeys

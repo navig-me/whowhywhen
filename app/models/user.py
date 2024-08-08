@@ -81,3 +81,11 @@ class UserAlertNotification(SQLModel, table=True):
 
     created: datetime = Field(default_factory=datetime.now)
     read_at: Optional[datetime] = Field(default=None)
+
+
+class UserPushSubscription(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    user_id: uuid.UUID = Field(foreign_key="user.id")
+    endpoint: str
+    p256dh: str
+    auth: str

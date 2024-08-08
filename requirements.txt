@@ -18,3 +18,4 @@ qrcode
 celery[redis]
 fastapi[celery]
 httpx
+pywebpush

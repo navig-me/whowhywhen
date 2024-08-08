@@ -55,52 +55,51 @@ async def check_alerts():
 async def check_monthly_credit_limit():
     while True:
         print("Checking monthly credit limit...")
-        db = next(get_session())
-        try:
-            for user in db.query(User).all():
-                print(f"Checking user {user.email}...")
-                total_requests_count = 0
-                for project in user.projects:
-                    total_requests_count += db.query(APILog).filter(
-                        APILog.user_project_id == project.id,
-                        APILog.created_at >= user.monthly_credit_limit_reset
-                    ).count()
-                print(f"Total requests count: {total_requests_count}")
-                print(f"Monthly credit limit: {user.monthly_credit_limit}")
-                if total_requests_count > user.monthly_credit_limit:
-                    user.monthly_credit_usage_crossed = True
-                
-                # Get the subscription end date from Stripe
-                subscription_end_date = get_subscription_end_date(user)
-                
-                if subscription_end_date and datetime.now() > subscription_end_date:
-                    user.monthly_credit_usage_crossed = False
-                    user.monthly_credit_limit_reset = datetime.now()
-                db.add(user)
-                db.commit()
-                db.refresh(user)
-        except Exception as e:
-            logger.error(f"Error in check_monthly_credit_limit: {e}")
-        finally:
-            db.close()
+        with session_scope() as db:
+            try:
+                for user in db.query(User).all():
+                    print(f"Checking user {user.email}...")
+                    total_requests_count = 0
+                    for project in user.projects:
+                        total_requests_count += db.query(APILog).filter(
+                            APILog.user_project_id == project.id,
+                            APILog.created_at >= user.monthly_credit_limit_reset
+                        ).count()
+                    print(f"Total requests count: {total_requests_count}")
+                    print(f"Monthly credit limit: {user.monthly_credit_limit}")
+                    if total_requests_count > user.monthly_credit_limit:
+                        user.monthly_credit_usage_crossed = True
+                    
+                    # Get the subscription end date from Stripe
+                    subscription_end_date = get_subscription_end_date(user)
+                    
+                    if subscription_end_date and datetime.now() > subscription_end_date:
+                        user.monthly_credit_usage_crossed = False
+                        user.monthly_credit_limit_reset = datetime.now()
+                    db.add(user)
+                    db.commit()
+                    db.refresh(user)
+            except Exception as e:
+                logger.error(f"Error in check_monthly_credit_limit: {e}")
+
         await asyncio.sleep(600)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    create_db_and_tables()  # Ensure this is uncommented if you want to create DB and tables on startup
-    app.state.db = next(get_session())
+    # create_db_and_tables()  # Ensure this is uncommented if you want to create DB and tables on startup
+    # app.state.db = next(get_session())
     task = asyncio.create_task(check_monthly_credit_limit())
     task2 = asyncio.create_task(check_alerts())
     yield
     task.cancel()
     task2.cancel()
-    app.state.db.close()
+    # app.state.db.close()
 
 app = FastAPI(
     title="WhoWhyWhen Dashboard",
     description="Dashboard for WhoWhyWhen",
     version="0.1.0",
-    docs_url=None,
+    docs_url="/docs",
     redoc_url=None,
     lifespan=lifespan
 )
