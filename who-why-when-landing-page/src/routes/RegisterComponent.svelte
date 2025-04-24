@@ -1,7 +1,7 @@
 <script>
   import { createEventDispatcher, onMount } from 'svelte';
   import Toast from '../components/Toast.svelte';
-  import { DASH_API_BASE_URL, API_BASE_URL } from '../config';
+  import { DASH_API_BASE_URL, API_BASE_URL, GOOGLE_CLIENT_ID } from '../config';
   import { navigate } from 'svelte-routing';
 
   let name = '';
@@ -11,31 +11,15 @@
   let project_name = '';
   let toastMessage = '';
   let toastType = '';
-  let turnstileToken = '';
   const dispatch = createEventDispatcher();
 
   onMount(() => {
-      const script = document.createElement('script');
-      script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback&render=explicit';
-      script.async = true;
-      script.defer = true;
-      document.body.appendChild(script);
-
-      window.onloadTurnstileCallback = function() {
-          turnstile.render('#turnstile-container', {
-              sitekey: '0x4AAAAAAAelvW7rvAgAqrZ5',
-              callback: function(token) {
-                  turnstileToken = token;
-              },
-          });
-      };
-
       initializeGoogleSignIn();
   });
 
   function initializeGoogleSignIn() {
     google.accounts.id.initialize({
-      client_id: '209311359644-gj97vlisirrf64jc3cp11fpf2m8ojd61.apps.googleusercontent.com', // Replace with your Google client ID
+      client_id: GOOGLE_CLIENT_ID, 
       callback: handleGoogleSignIn
     });
     google.accounts.id.renderButton(
@@ -76,10 +60,6 @@
   }
 
   async function handleSubmit() {
-      if (!turnstileToken) {
-          showToast('Please complete the CAPTCHA challenge', 'error');
-          return;
-      }
 
       if (password.length < 8 || !/[0-9]/.test(password)) {
           showToast('Password must be at least 8 characters long and include a number', 'error');
@@ -100,8 +80,7 @@
               name,
               email,
               password,
-              project_name,
-              'cf_turnstile_response': turnstileToken
+              project_name
           })
       });
 
@@ -111,7 +90,7 @@
           setTimeout(() => {
               dispatch('register', data);
               navigate('/login');
-          }, 2000); // Delay to show success message before redirecting
+          }, 2000);
       } else {
           const errorData = await response.json();
           showToast(errorData.detail || 'Registration failed!', 'error');
@@ -124,7 +103,7 @@
       setTimeout(() => {
           toastMessage = '';
           toastType = '';
-      }, 5000); // Clear toast message after 5 seconds
+      }, 5000); 
   }
 </script>
 
@@ -155,7 +134,6 @@
               <label for="project_name">Default Project Name</label>
               <input type="text" id="project_name" bind:value={project_name} placeholder="Enter your default project name" required />
           </div>
-          <div id="turnstile-container" class="cf-turnstile"></div>
           <button type="submit" class="btn-primary">Register</button>
       </form>
   </div>

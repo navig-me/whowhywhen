@@ -1,9 +1,15 @@
-USERNAME = "support@whowhywhen.com"
-PASSWORD = "rMGgSg4$wywNSJ@"
-SMTP_SERVER = "smtp.purelymail.com"
-SMTP_PORT = 587
-IMAP_SERVER = "imap.purelymail.com"
-IMAP_PORT = 993
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
+USERNAME = os.getenv("EMAIL_USERNAME")
+PASSWORD = os.getenv("EMAIL_PASSWORD")
+SMTP_SERVER = os.getenv("EMAIL_SMTP_SERVER")
+SMTP_PORT = int(os.getenv("EMAIL_SMTP_PORT", "587"))
+IMAP_SERVER = os.getenv("EMAIL_IMAP_SERVER")
+IMAP_PORT = int(os.getenv("EMAIL_IMAP_PORT", "993"))
 
 import smtplib
 import ssl
@@ -24,7 +30,7 @@ def send_welcome_email(email, name):
     send_email(email, "Welcome to WhoWhyWhen", html)
 
 def send_new_user_notification_email(email, name):
-    to = 'mihirkhandekar@gmail.com'
+    to = os.getenv("ADMIN_EMAIL", "admin@example.com")
     # Create HTML content
     html = f"""
     New user registered: {name} ({email})

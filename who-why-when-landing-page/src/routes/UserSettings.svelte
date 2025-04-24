@@ -6,16 +6,12 @@
   import QRCode from 'qrcode';
 
   let user = null;
-  let upgradeLink = '';
-  let customerPortalLink = '';
-  let daysUntilRenewal = 0;
   let userRequestCount = 0;
   let showChangePasswordPopup = false;
   let showEnable2FAPopup = false;
   let totpUri = '';
   let qrCodeUrl = '';
   let current2FAToken = '';
-  let showPricing = false; // State to show/hide pricing section
 
   onMount(async () => {
     await fetchUserDetails();
@@ -32,56 +28,9 @@
       const data = await response.json();
       userRequestCount = data.user_request_count;
       user = data.user;
-      const nextPlan = getNextPlan(user.subscription_plan);
-      if (nextPlan) {
-        upgradeLink = await fetchUpgradeLink(nextPlan, token);
-      }
-      customerPortalLink = await fetchCustomerPortalLink(token);
-      daysUntilRenewal = calculateDaysUntilRenewal(user.monthly_credit_limit_reset);
     } else if (response.status === 401) {
       clearToken();
     }
-  }
-
-  function getNextPlan(currentPlan) {
-    if (currentPlan === 'free') return 'starter';
-    if (currentPlan === 'starter') return 'pro';
-    return '';
-  }
-
-  async function fetchCustomerPortalLink(token) {
-    const response = await fetch(`${DASH_API_BASE_URL}/dashauth/stripe/customer-portal`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    });
-    if (response.ok) {
-      const data = await response.json();
-      return data || '';
-    }
-    return '';
-  }
-
-  async function fetchUpgradeLink(planName, token) {
-    if (!planName) return '';
-    const response = await fetch(`${DASH_API_BASE_URL}/dashauth/stripe/payment-link/${planName}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    });
-    if (response.ok) {
-      const data = await response.json();
-      return data || '';
-    }
-    return '';
-  }
-
-  function calculateDaysUntilRenewal(resetDate) {
-    const reset = new Date(resetDate);
-    const now = new Date();
-    const timeDiff = Math.abs(reset.getTime() - now.getTime());
-    const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
-    return 30 - diffDays;
   }
 
   function openChangePasswordPopup() {
@@ -152,9 +101,7 @@
     showEnable2FAPopup = false;
   }
 
-  function togglePricing() {
-    showPricing = !showPricing;
-  }
+// Pricing function removed for open source version
 </script>
 
 <section class="user-settings">
@@ -169,53 +116,6 @@
         <a href="javascript:void(0);" class="btn-link" on:click={openChangePasswordPopup}>Change Password</a>
       </div>
       <hr>
-      <div class="plan-info">
-        <h3>Subscription Plan</h3>
-        <div class={`subscription-card ${user.subscription_plan}`}>
-          <h4>{user.subscription_plan.toUpperCase()} Plan</h4>
-          <p>Requests Used: {userRequestCount}/{user.monthly_credit_limit}</p>
-          <p>Renews In: {daysUntilRenewal} days</p>
-        </div>
-        {#if user.subscription_plan !== 'pro'}
-          <a href={upgradeLink} class="btn-link" target="_blank" rel="noopener noreferrer">Upgrade to {getNextPlan(user.subscription_plan).toUpperCase()}</a>
-        {/if}
-        {#if user.subscription_plan !== 'free'}
-          <a href={customerPortalLink} class="btn-link manage-subscription" target="_blank" rel="noopener noreferrer">Manage Subscription</a>
-        {/if}
-        <button class="accordion-toggle" on:click={togglePricing}>
-          <i class="fas fa-chevron-down"></i> {showPricing ? 'Hide Pricing' : 'Show Pricing'}
-        </button>
-        {#if showPricing}
-          <div class="accordion">
-            <div class="accordion-content">
-              <div class="plans">
-                <div class="plan free-plan">
-                  <h3>FREE</h3>
-                  <p>20,000 monthly calls</p>
-                  <p>In-App & Browser Alerts</p>
-                  <p>All Analytics</p>
-                  <p class="price">$0</p>
-                </div>
-                <div class="plan starter-plan">
-                  <h3>STARTER</h3>
-                  <p>250,000 monthly calls</p>
-                  <p>In-App, Browser & Email Alerts</p>
-                  <p>All Analytics</p>
-                  <p class="price">$9</p>
-                </div>
-                <div class="plan pro-plan">
-                  <h3>PRO</h3>
-                  <p>5,000,000 monthly calls</p>
-                  <p>In-App, Browser & Email Alerts</p>
-                  <p>All Analytics</p>
-                  <p>Priority Support</p>
-                  <p class="price">$39</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        {/if}
-      </div>
       <hr>
       <div class="security-info">
         <h3>Security</h3>
@@ -332,10 +232,6 @@ hr {
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-.manage-subscription {
-  display: block;
-  margin-top: 20px;
-}
 
 .accordion-toggle {
   display: flex;
@@ -412,96 +308,5 @@ hr {
   border: 1px solid #ddd;
 }
 
-.plans {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 20px;
-}
-
-.plan {
-  flex: 1 1 calc(33.33% - 20px); /* Adjust the width to fit 3 cards in a row */
-  background: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  text-align: center;
-}
-
-.plan.free-plan {
-  border-left: 5px solid #043d16; 
-}
-
-.plan.starter-plan {
-  border-left: 5px solid #663399; 
-}
-
-.plan.pro-plan {
-  border-left: 5px solid #ff4500; 
-}
-
-.plan h3 {
-  margin-bottom: 10px;
-  font-size: 1.5rem;
-  color: #333;
-}
-
-.plan p {
-  margin-bottom: 10px;
-  font-size: 1rem;
-  color: #555;
-}
-
-.plan .price {
-  margin-top: 10px;
-  font-size: 1.5rem;
-  color: #333;
-  font-weight: bold;
-}
-
-/* Subscription Card */
-.subscription-card {
-  padding: 20px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  color: #fff;
-  text-align: center;
-}
-
-.subscription-card.free {
-  background-color: #043d16; 
-}
-
-.subscription-card.starter {
-  background-color: #663399; 
-}
-
-.subscription-card.pro {
-  background-color: #ff4500; 
-}
-
-.subscription-card h4 {
-  margin: 0;
-  font-size: 1.5rem;
-  font-weight: bold;
-}
-
-.subscription-card p {
-  margin: 10px 0 0;
-  font-size: 1rem;
-  color: #fff;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .plan {
-    flex: 1 1 100%; /* 100% width on small screens */
-  }
-}
-
-@media (min-width: 769px) and (max-width: 1024px) {
-  .plan {
-    flex: 1 1 calc(50% - 20px); /* 50% width on medium screens */
-  }
-}
+/* Pricing styles removed for open source version */
 </style>

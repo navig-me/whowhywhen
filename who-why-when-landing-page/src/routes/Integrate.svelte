@@ -17,7 +17,7 @@
 
     let requestCode = `
 POST /api/log HTTP/1.1
-Host: api.whowhywhen.com
+Host: ${API_BASE_URL}
 X-Api-Key: YOUR_API_KEY
 Content-Type: application/json
 
@@ -203,7 +203,7 @@ backend mybackend
             {#if selectedAccordion === 3}
                 <div class="accordion-content">
                     <p>
-                        To send logs to WhoWhyWhen, add a middleware to your application. The middleware should make a POST request to <code>https://api.whowhywhen.com/api/log</code> with the following headers and body:
+                        To send logs to WhoWhyWhen, add a middleware to your application. The middleware should make a POST request to <code>${API_BASE_URL}/api/log</code> with the following headers and body:
                     </p>
                     <pre><code>{requestCode}</code></pre>
                     <p>It's recommended to do this asynchronously to ensure it doesn't affect your application's performance and latency, and to handle all errors gracefully.</p>
@@ -232,9 +232,6 @@ backend mybackend
             {/if}
         </div>
     </div>
-
-    <h2>API Documentation</h2>
-    <iframe id="swagger-ui" src="https://api.whowhywhen.com/docs" class="swagger-ui"></iframe>
 
 
     <h2>Using a Proxy?</h2>

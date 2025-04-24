@@ -8,35 +8,17 @@
 
 <section class="pricing-section">
 	<div class="container">
-		<h2>Choose Your Plan</h2>
-		<p>Flexible and affordable pricing plans to suit your needs. Cancel anytime.</p>
+		<h2>Open Source Analytics</h2>
+		<p>Free and open source analytics for your applications. Contributions welcome!</p>
 		<div class="plans">
 			<div class="plan">
 				<h3>FREE</h3>
-				<p><i class="fas fa-check"></i> 20,000 monthly calls</p>
+				<p><i class="fas fa-check"></i> Unlimited API calls</p>
 				<p><i class="fas fa-check"></i> All Analytics</p>
 				<p><i class="fas fa-check"></i> In-App Alerts</p>
-				<p><i class="fas fa-check"></i> Ideal for small projects and personal use</p>
+				<p><i class="fas fa-check"></i> Email Alerts</p>
+				<p><i class="fas fa-check"></i> Self-hosted and fully customizable</p>
 				<p class="price">$0</p>
-				<button class="btn-primary" on:click={() => changeView('/register')}>Get Started</button>
-			</div>
-			<div class="plan best-value">
-				<h3>STARTER</h3>
-				<p><i class="fas fa-check"></i> 250,000 monthly calls</p>
-				<p><i class="fas fa-check"></i> All Analytics</p>
-				<p><i class="fas fa-check"></i> In-App + Email Alerts</p>
-				<p><i class="fas fa-check"></i> Perfect for growing startups</p>
-				<p class="price">$9</p>
-				<button class="btn-primary" on:click={() => changeView('/register')}>Get Started</button>
-			</div>
-			<div class="plan">
-				<h3>PRO</h3>
-				<p><i class="fas fa-check"></i> 5,000,000 monthly calls</p>
-				<p><i class="fas fa-check"></i> All Analytics</p>
-				<p><i class="fas fa-check"></i> In-App + Email Alerts</p>
-				<p><i class="fas fa-check"></i> Priority Support</p>
-				<p><i class="fas fa-check"></i> Best for larger-scale applications</p>
-				<p class="price">$39</p>
 				<button class="btn-primary" on:click={() => changeView('/register')}>Get Started</button>
 			</div>
 		</div>

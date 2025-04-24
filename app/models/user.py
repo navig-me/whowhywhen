@@ -7,10 +7,6 @@ from pydantic import EmailStr
 from sqlmodel import Field, Relationship, SQLModel, UniqueConstraint
 
 
-class SubscriptionPlan(enum.Enum):
-    free = "free"
-    starter = "starter"
-    pro = "pro"
 
 class User(SQLModel, table=True):
     id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
@@ -20,14 +16,10 @@ class User(SQLModel, table=True):
     created: datetime = Field(default_factory=datetime.now)
     modified: datetime = Field(default_factory=datetime.now)
     active: bool = Field(default=True)
-    subscription_plan: SubscriptionPlan = Field(default=SubscriptionPlan.free)
-    monthly_credit_limit: int = Field(default=20000)
-    monthly_credit_usage_crossed: bool = Field(default=False)
-    monthly_credit_limit_reset: datetime = Field(default_factory=datetime.now)
     projects: List["UserProject"] = Relationship(back_populates="user")
-    stripe_customer_id: Optional[str] = Field(default=None)
     totp_secret: Optional[str] = Field(default=None)
     two_factor_enabled: Optional[bool] = Field(default=False)
+
 
 class UserProject(SQLModel, table=True):
     id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
@@ -41,18 +33,24 @@ class UserProject(SQLModel, table=True):
     api_keys: List["APIKey"] = Relationship(back_populates="user_project")
     api_logs: List["APILog"] = Relationship(back_populates="user_project")
 
+
 class UserAlertConfig(SQLModel, table=True):
     __tablename__ = "useralertconfig"
-    __table_args__ = (UniqueConstraint("user_project_id", name="unique_user_project_id"),)
+    __table_args__ = (
+        UniqueConstraint("user_project_id", name="unique_user_project_id"),
+    )
 
     id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
     user_project_id: uuid.UUID = Field(foreign_key="userproject.id")
-    server_error_threshold: Optional[int] = Field(default=10) # Number of 5xx errors
-    client_error_threshold: Optional[int] = Field(default=20) # Number of 4xx errors
-    slow_threshold: Optional[int] = Field(default=1000) # Slow response threshold in milliseconds
-    slow_threshold_threshold: int = Field(default=10) # Number of slow responses
-    check_interval: int = Field(default=10) # Interval to check for alerts
+    server_error_threshold: Optional[int] = Field(default=10)  # Number of 5xx errors
+    client_error_threshold: Optional[int] = Field(default=20)  # Number of 4xx errors
+    slow_threshold: Optional[int] = Field(
+        default=1000
+    )  # Slow response threshold in milliseconds
+    slow_threshold_threshold: int = Field(default=10)  # Number of slow responses
+    check_interval: int = Field(default=10)  # Interval to check for alerts
     last_checked: Optional[datetime] = Field(default=None)
+
 
 class UserAlertNotificationEmail(SQLModel, table=True):
     id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
@@ -60,13 +58,16 @@ class UserAlertNotificationEmail(SQLModel, table=True):
     email_subject: str = Field(default="")
     email_body: str = Field(default="")
     created: datetime = Field(default_factory=datetime.now)
-    
+
+
 class UserAlertNotification(SQLModel, table=True):
     id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
     user_project_id: uuid.UUID = Field(foreign_key="userproject.id")
-    user_alert_notification_email_id: Optional[uuid.UUID] = Field(foreign_key="useralertnotificationemail.id", default=None)
+    user_alert_notification_email_id: Optional[uuid.UUID] = Field(
+        foreign_key="useralertnotificationemail.id", default=None
+    )
     description: str = Field(default="")
-    
+
     server_error_threshold: Optional[int] = Field(default=None)
     server_error_threshold_actual: Optional[int] = Field(default=None)
 

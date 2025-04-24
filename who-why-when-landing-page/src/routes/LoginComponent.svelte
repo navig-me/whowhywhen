@@ -3,7 +3,7 @@
   import { navigate } from 'svelte-routing';
   import { setToken } from '../stores/userStore';
   import Toast from '../components/Toast.svelte';
-  import { DASH_API_BASE_URL } from '../config';
+  import { DASH_API_BASE_URL, GOOGLE_CLIENT_ID } from '../config';
 
   let username = '';
   let password = '';
@@ -82,7 +82,7 @@
 
   function initializeGoogleSignIn() {
     google.accounts.id.initialize({
-      client_id: '209311359644-gj97vlisirrf64jc3cp11fpf2m8ojd61.apps.googleusercontent.com', // Replace with your Google client ID
+      client_id: GOOGLE_CLIENT_ID, 
       callback: handleGoogleSignIn
     });
     google.accounts.id.renderButton(
