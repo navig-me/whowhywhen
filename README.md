@@ -3,6 +3,7 @@
 <div align="center">
   <img src="who-why-when-landing-page/public/logo.png" alt="WhoWhyWhen Logo" width="200"/>
   <p>Open source API analytics and monitoring for developers</p>
+  <p><a href="https://www.whowhywhen.com">www.whowhywhen.com</a></p>
 </div>
 
 WhoWhyWhen is an open source analytics platform that helps you track and understand your API usage. Built with FastAPI and Svelte, it provides comprehensive request tracking, bot detection, and performance monitoring for your APIs.
@@ -291,5 +292,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
     <a href="https://github.com/navig-me/whowhywhen/stargazers">⭐ Star us on GitHub</a> •
     <a href="https://github.com/navig-me/whowhywhen/issues">🐛 Report Bug</a> •
     <a href="https://github.com/navig-me/whowhywhen/issues">✨ Request Feature</a>
+  </p>
+  <p>
+    <a href="https://buymeacoffee.com/mihirk">
+      <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" >
+    </a>
   </p>
 </div>

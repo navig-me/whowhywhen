@@ -2,6 +2,10 @@
 
 Thank you for considering a contribution to WhoWhyWhen! This document outlines the process for contributing to the project.
 
+## About WhoWhyWhen
+
+WhoWhyWhen is an open source API analytics platform. Learn more at [www.whowhywhen.com](https://www.whowhywhen.com).
+
 ## Code of Conduct
 
 By participating in this project, you agree to abide by the [Code of Conduct](CODE_OF_CONDUCT.md).
